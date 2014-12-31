@@ -1,0 +1,566 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; Jni调用 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="cocos2d-x要在android手机上运行，就需要在java和c++两种语言之间进行调用，在cocos2d-x中完成这个任务的就是jni，它可以使两者之间互相调用，从而让用c++开发的cocos2d-x游戏，在android上完美运行。 cocos2d-x中封装了JniHelper类， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/10/28/cocos2d-x-jnidiao-yong">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; Jni调用</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-28T21:26:14+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>cocos2d-x要在android手机上运行，就需要在java和c++两种语言之间进行调用，在cocos2d-x中完成这个任务的就是jni，它可以使两者之间互相调用，从而让用c++开发的cocos2d-x游戏，在android上完美运行。 <br/>
+cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类位于platform/android/jni/目录下，先来看看这个类都提供了哪些方法。<!--more--></p>
+
+<figure class='code'><figcaption><span>JniHelper.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">JniMethodInfo_</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">JNIEnv</span> <span class="o">*</span>    <span class="n">env</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jclass</span>      <span class="n">classID</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jmethodID</span>   <span class="n">methodID</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">JniMethodInfo</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">JniHelper</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">void</span> <span class="n">setJavaVM</span><span class="p">(</span><span class="n">JavaVM</span> <span class="o">*</span><span class="n">javaVM</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JavaVM</span><span class="o">*</span> <span class="nf">getJavaVM</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">*</span> <span class="nf">getEnv</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">setClassLoaderFrom</span><span class="p">(</span><span class="n">jobject</span> <span class="n">activityInstance</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getStaticMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">jstring2string</span><span class="p">(</span><span class="n">jstring</span> <span class="n">str</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="n">jmethodID</span> <span class="n">loadclassMethod_methodID</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">jobject</span> <span class="n">classloader</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">*</span> <span class="n">cacheEnv</span><span class="p">(</span><span class="n">JavaVM</span><span class="o">*</span> <span class="n">jvm</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getMethodInfo_DefaultClassLoader</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JavaVM</span><span class="o">*</span> <span class="n">_psJavaVM</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+结构体JniMethodInfo中封装了Jni环境，java类，类中的方法。
+JniHelper提供了获取Java虚拟机的接口，JNI环境的接口，以及获取Java静态方法，和普通方法的接口，我们最常使用的就是这两个方法了，以及提供了一个将java字符串与c++字符串转化的函数。</p>
+
+<figure class='code'><figcaption><span>getStaticMethodInfo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">bool</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">className</span><span class="p">)</span> <span class="o">||</span>
+</span><span class='line'>        <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">methodName</span><span class="p">)</span> <span class="o">||</span>
+</span><span class='line'>        <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">paramCode</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">JNIEnv</span> <span class="o">*</span><span class="n">env</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getEnv</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to get JNIEnv&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">jclass</span> <span class="n">classID</span> <span class="o">=</span> <span class="n">_getClassID</span><span class="p">(</span><span class="n">className</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">classID</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to find class %s&quot;</span><span class="p">,</span> <span class="n">className</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">env</span><span class="o">-&gt;</span><span class="n">ExceptionClear</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">jmethodID</span> <span class="n">methodID</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">GetStaticMethodID</span><span class="p">(</span><span class="n">classID</span><span class="p">,</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">methodID</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to find static method id of %s&quot;</span><span class="p">,</span> <span class="n">methodName</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">env</span><span class="o">-&gt;</span><span class="n">ExceptionClear</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">methodinfo</span><span class="p">.</span><span class="n">classID</span> <span class="o">=</span> <span class="n">classID</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">methodinfo</span><span class="p">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">methodinfo</span><span class="p">.</span><span class="n">methodID</span> <span class="o">=</span> <span class="n">methodID</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   <br/>
+getStaticMethodInfo方法中，通过JNIEnv检查传进来的java类，方法等都是否存在，如果存在，最后将其分装在JniMethodInfo中，接下来看看具体的调用。最后一个参数paramCode是用来说明Java函数的参数类型个数及返回值。</p>
+
+<h3>c++调用java</h3>
+
+<p>我以cocos2d-x 3.2生成的例子为例，来看看c++和java的调用。</p>
+
+<h4>调用静态函数</h4>
+
+<p>c++端代码：</p>
+
+<figure class='code'><figcaption><span>getStaticMethodInfo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;staticMethod1&quot;</span><span class="p">,</span> <span class="s">&quot;()V&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method if&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallStaticVoidMethod</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method else&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+java端代码：</p>
+
+<figure class='code'><figcaption><span>getStaticMethodInfo</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">AppActivity</span> <span class="n">extends</span> <span class="n">Cocos2dxActivity</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="k">static</span> <span class="kt">void</span> <span class="n">staticMethod1</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">System</span><span class="p">.</span><span class="n">out</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&quot;this is java static method&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+运行编译cocos2d-x代码，在android上运行，就可以看到c++调用java打印<code>this is java static method</code>。 <br/>
+此处需要注意，在c++端需要先引进JniHelper的类，并判断是在android环境下运行，否则会报错。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)</span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/cocos/platform/android/jni/JniHelper.h&quot;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+c++端首先判断java端的函数是否存在，然后进行调用，主要就是getXXX方法的四个参数</p>
+
+<ul>
+<li>第一个参数 - JniMethodInfo对象，用来封装java类，方法等</li>
+<li>第二个参数 - Java类的路径，以报名加类名的形式</li>
+<li>第三个参数 - 方法名</li>
+<li>第四个参数 - 函数的参数类型，个数及返回值类型</li>
+</ul>
+
+
+<p>这里第四个参数比较特殊，具体说明：
+参数的格式为  <code>(参数)返回值</code> 括号内是参数类型和参数个数，括号外是返回值类型。具体与java类型对照图如下： <br/>
+<img src="/images/jni/javapar.png"> <br/>
+如果函数有多个参数，直接把简写并列即可，但是注意Object与Array型参数简写结尾的分号，示例：<br/>
+IIII //4个int型参数的函数 <br/>
+ILjava/lang/String;I //整形，string类型，整形组合 (int x, String a, int y)<br/>
+所以上边例子第四个参数说明调用的是一个无参无返回值类型的函数。</p>
+
+<h4>调用非静态函数</h4>
+
+<p>c++端代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;voidMethod1&quot;</span><span class="p">,</span> <span class="s">&quot;(II)I&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; void method if&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">jobject</span> <span class="n">jobj</span> <span class="o">=</span> <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">NewObject</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">jint</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jint</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jint</span> <span class="n">result</span> <span class="o">=</span> <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallIntMethod</span><span class="p">(</span><span class="n">jobj</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;------return result %ld&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; void method else&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+java端代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">int</span> <span class="nf">voidMethod1</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;this is java void method a + b = &quot;</span> <span class="o">+</span> <span class="o">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">));</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+编译之后在android上运行，就可以看到打印<code>this is java void method a + b = 30</code>和<code>------return result 30</code>，分别是c++端和java端打印。此处<code>info.env-&gt;NewObject(info.classID, info.methodID)</code>方法也会调用一次voidMethod1函数，此处暂未弄清楚原因。 <br/>
+首先调用JniHelper的getMethodInfo函数确定是否存在调用的函数，如果存在，首先生成java类的对象，然后调用方法，并获得返回值。jni提供了一系列<code>CallXXXMethod()</code>的方法，用来调用不同返回值类型的函数。另外可看到，传入的参数和返回值类型都是用<code>jint</code>类型，这是jni提供的对应的java数据类型，对应关系如下： <br/>
+<img src="/images/jni/javareturn.png"> <br/>
+通过JniHelper提供的方法，我们就可以方便的调用java中的函数，来完成android的操作。</p>
+
+<h3>java调用c++</h3>
+
+<p>java端代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">staticMethod2</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">add</span> <span class="o">=</span> <span class="n">nativeMethod</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">8</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;--- add = &quot;</span> <span class="o">+</span> <span class="n">add</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">native</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">nativeMethod</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+c++端代码：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>    <span class="n">jint</span> <span class="n">Java_org_cocos2dx_cpp_AppActivity_nativeMethod</span><span class="p">(</span><span class="n">JNIEnv</span> <span class="o">*</span><span class="n">env</span><span class="p">,</span> <span class="n">jobject</span> <span class="n">thiz</span><span class="p">,</span> <span class="n">jint</span> <span class="n">a</span><span class="p">,</span> <span class="n">jint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="cp">#ifdef __cplusplus</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//......</span>
+</span><span class='line'><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;staticMethod2&quot;</span><span class="p">,</span> <span class="s">&quot;()V&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method if&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallStaticVoidMethod</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method else&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>此处先从c++端调到java，然后再用java调到c++来实现两端互相调用。看上边代码可知，首先调用从c++调用java端的<code>staticMethod2</code>方法，在java端<code>staticMethod2</code>方法中，再调用<code>nativeMethod</code>方法，此方法具体在c++端实现，运行android程序后，可看到在控制台打印<code>--- add = 9</code>。说明成功调用。 <br/>
+<code>nativeMethod</code>是在c++端进行实现的，java端相当于只进行了声明，但特别注意，在声明中要添加<code>native</code>关键字，以说明次函数为c++端函数。在c++端实现时，方法名具有一定的规则，首先是Java字段，然后是包名，类名，方法名，之间用下划线分开，在参数列表：第一个为Jni运行环境，第二个参数为调用对象，之后的为调用函数时的参数。</p>
+
+<p>本例代码: <a href="https://github.com/ypengju/cocos2d-xTest/tree/master/JniTest">https://github.com/ypengju/cocos2d-xTest/tree/master/JniTest</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-28T21:26:14+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:26 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/" title="Previous Post: cocos2d-x -- 多分辨率适配">&laquo; cocos2d-x &#8211; 多分辨率适配</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/" title="Next Post: cocos2d-x -- Http请求">cocos2d-x &#8211; Http请求 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

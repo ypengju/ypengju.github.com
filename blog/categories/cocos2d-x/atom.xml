@@ -1,0 +1,1279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Cocos2d-x | 左轮]]></title>
+  <link href="http://ypengju.github.io/blog/categories/cocos2d-x/atom.xml" rel="self"/>
+  <link href="http://ypengju.github.io/"/>
+  <updated>2014-12-31T17:43:41+08:00</updated>
+  <id>http://ypengju.github.io/</id>
+  <author>
+    <name><![CDATA[左轮]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- TableView]]></title>
+    <link href="http://ypengju.github.io/blog/2014/12/02/cocos2d-x-tableview/"/>
+    <updated>2014-12-02T15:15:21+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/12/02/cocos2d-x-tableview</id>
+    <content type="html"><![CDATA[<p>TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 <br/>
+TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。   <!--more--></p>
+
+<pre><code class="c++">#include "cocos-ext.h"
+using namespace cocos2d::extension;
+</code></pre>
+
+<p>在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。</p>
+
+<pre><code class="c++ TableViewDelegate">class TableViewDelegate : public ScrollViewDelegate
+{
+public:
+    //点击时调用
+    virtual void tableCellTouched(TableView* table, TableViewCell* cell) = 0;
+
+    //cell点下时调用
+    virtual void tableCellHighlight(TableView* table, TableViewCell* cell){};
+
+    //cell点下释放时调用
+    virtual void tableCellUnhighlight(TableView* table, TableViewCell* cell){};
+
+    //cell回收，在当前cell移除屏幕时调用，或者在reloadData()调用时，调用
+    virtual void tableCellWillRecycle(TableView* table, TableViewCell* cell){};
+
+};
+</code></pre>
+
+<p>TableViewDelegate继承自ScrollViewDelegate，除了上边的这些方法外，还可实现ScrollViewDelegate中的<code>scrollViewDidScroll</code>和<code>scrollViewDidZoom</code>代理方法。</p>
+
+<pre><code class="c++ TableViewDataSource">class TableViewDataSource
+{
+public:
+
+    virtual ~TableViewDataSource() {}
+
+    //每个cell的大小，用于指定tableView中每个Cell的大小
+    virtual Size tableCellSizeForIndex(TableView *table, ssize_t idx) {
+        return cellSizeForTable(table);
+    };
+
+    //默认cell的大小
+    virtual Size cellSizeForTable(TableView *table) {
+        return Size::ZERO;
+    };
+
+    //索引index处的TableViewCell内容
+    virtual TableViewCell* tableCellAtIndex(TableView *table, ssize_t idx) = 0;
+
+    //TableView中cell的个数
+    virtual ssize_t numberOfCellsInTableView(TableView *table) = 0;
+};
+</code></pre>
+
+<p>在使用时，必须实现上边两个类中的纯虚函数，这是布局时必须的一些数据。在TableView中每个cell我们会用到<code>TableViewCell</code>这个类，这个只有一个简单的成员变量_idx用来标记cell的索引，但是它继承子Node，每个cell中用到的控件元素都会添加到这个类实例中进行管理。 <br/>
+下边一个简单例子说明TableView的使用 <br/>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>bool HelloWorld::init()
+</span><span class='line'>{
+</span><span class='line'>    if ( !Layer::init() )
+</span><span class='line'>    {
+</span><span class='line'>        return false;
+</span><span class='line'>    }&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;Size winSize = Director::getInstance()-&gt;getWinSize();
+</span><span class='line'>auto colorLayer = LayerColor::create(Color4B(125, 125, 125, 255));
+</span><span class='line'>addChild(colorLayer);
+</span><span class='line'>
+</span><span class='line'>_tableView = TableView::create(this, Size(100, 500)); //指明此TableView的数据代理和可视区域大小
+</span><span class='line'>_tableView-&gt;setPosition(Point(winSize.width/2, 0));
+</span><span class='line'>_tableView-&gt;setDelegate(this); //指定代理为当前类，调用时调用我们申明的函数
+</span><span class='line'>//设置滑动方向，只有两个方向，垂直滑动和水平滑动，默认垂直滑动，设置方向必须在调用reloadData()函数之前。
+</span><span class='line'>_tableView-&gt;setDirection(ScrollView::Direction::HORIZONTAL); 
+</span><span class='line'>//设置TableView中元素的排序方式，更具索引有从大到小，或者从小到大的顺序,这里值得关注下，在此方法中会调用reloadData()进行加载数据
+</span><span class='line'>_tableView-&gt;setVerticalFillOrder(TableView::VerticalFillOrder::TOP_DOWN); 
+</span><span class='line'>_tableView-&gt;setBounceable(false); //设置滑动是否有惯性
+</span><span class='line'>this-&gt;addChild(_tableView);
+</span><span class='line'>return true;
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;//设置每个cell的内容
+</span><span class='line'>TableViewCell&lt;em&gt; HelloWorld::tableCellAtIndex(TableView &lt;/em&gt;table, ssize_t idx)
+</span><span class='line'>{
+</span><span class='line'>    CCLOG(&ldquo;&mdash;&mdash;&mdash;&ndash;%ld&rdquo;, idx);
+</span><span class='line'>    TableViewCell *cell = table-&gt;dequeueCell(); //对移除屏幕的cell进行重复利用，避免额外开销&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;if (!cell) {
+</span><span class='line'>    cell = TableViewCell::create();
+</span><span class='line'>    auto sp = Sprite::create("CloseNormal.png");
+</span><span class='line'>    sp-&gt;setPosition(Point(0, 0));
+</span><span class='line'>    sp-&gt;setAnchorPoint(Point(0, 0));
+</span><span class='line'>    sp-&gt;setTag(100);
+</span><span class='line'>    cell-&gt;addChild(sp);
+</span><span class='line'>
+</span><span class='line'>    auto label = LabelTTF::create(StringUtils::format("%d", (int)idx).c_str(), "Arial", 20);
+</span><span class='line'>    label-&gt;setPosition(Point(sp-&gt;getContentSize().width/2, sp-&gt;getContentSize().height/2));
+</span><span class='line'>    label-&gt;setTag(200);
+</span><span class='line'>    cell-&gt;addChild(label);
+</span><span class='line'>} else {
+</span><span class='line'>    auto label = (LabelTTF *)cell-&gt;getChildByTag(200);
+</span><span class='line'>    label-&gt;setString(StringUtils::format("%d", (int)idx).c_str());
+</span><span class='line'>}
+</span><span class='line'>return cell;
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;}
+</span><span class='line'>//TableView中的数量
+</span><span class='line'>ssize_t HelloWorld::numberOfCellsInTableView(TableView &lt;em&gt;table)
+</span><span class='line'>{
+</span><span class='line'>    return 100;
+</span><span class='line'>}
+</span><span class='line'>//每个cell的大小
+</span><span class='line'>cocos2d::Size HelloWorld::tableCellSizeForIndex(TableView &lt;/em&gt;table, ssize_t idx)
+</span><span class='line'>{
+</span><span class='line'>    return Size(40, 40);
+</span><span class='line'>}
+</span><span class='line'>//cell点击调用
+</span><span class='line'>void HelloWorld::tableCellTouched(TableView&lt;em&gt; table, TableViewCell&lt;/em&gt; cell)
+</span><span class='line'>{
+</span><span class='line'>    CCLOG(&ldquo;&mdash;&mdash;&ndash;you touch me!!! %ld&rdquo;, cell-&gt;getIdx());
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure> <br/>
+实现这以上几个函数，既可以构建一个简单TableView，在调用过程中数据发生改变，我们只需调用TableView的reloadData()函数就可对数据进行刷新。还有其他几个函数可对TableView中指定索引元素进行更新，插入和删除操作。具体可见CCTableView.h中定义的接口。</p>
+
+<p>在lua中使用时，在定义相应函数后，我们需要对其进行注册，具体如下
+<code>lua
+tableView:registerScriptHandler(TableViewTestLayer.numberOfCellsInTableView,cc.NUMBER_OF_CELLS_IN_TABLEVIEW)  
+tableView:registerScriptHandler(TableViewTestLayer.scrollViewDidScroll,cc.SCROLLVIEW_SCRIPT_SCROLL)
+tableView:registerScriptHandler(TableViewTestLayer.scrollViewDidZoom,cc.SCROLLVIEW_SCRIPT_ZOOM)
+tableView:registerScriptHandler(TableViewTestLayer.tableCellTouched,cc.TABLECELL_TOUCHED)
+tableView:registerScriptHandler(TableViewTestLayer.cellSizeForTable,cc.TABLECELL_SIZE_FOR_INDEX)
+tableView:registerScriptHandler(TableViewTestLayer.tableCellAtIndex,cc.TABLECELL_SIZE_AT_INDEX)
+</code> <br/>
+这些具体函数必须在reloadData()函数之前注册，因为在reloadData()需要对数据进行处理。具体使用可参考官方的例子程序。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- LuaEngine调用Lua代码]]></title>
+    <link href="http://ypengju.github.io/blog/2014/11/12/cocos2d-x-luaengine/"/>
+    <updated>2014-11-12T21:39:06+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/11/12/cocos2d-x-luaengine</id>
+    <content type="html"><![CDATA[<p>cocos2d-x 3.2中，在命令行生成新项目时，我们需要使用<code>-l</code>参数指明使用的语言，如果使用c++语言，则默认不包含脚本库，如果使用lua语言，则项目默认生成lua环境，我们直接可以开始编写lua逻辑，无需关心引擎到lua的调用工作。为了了解引擎如何从c++调用到lua，z这篇文章以c++项目为例。    <!-- more -->
+对新生成的c++项目，首先需要添加脚本库， 将引擎cocos目录下的scripting目录拷贝到新项目的cocos目录下与引擎原始目录结构保持一致即可。除了scripting还需要将external目录下的lua文件夹也一并考过来放在对应目录，需要的文件拷贝好之后，需要在项目中进行配置，右击项目->&ldquo;Add File to &hellip;&rdquo;,然后如下图添加脚本库 <br/>
+<img src="/images/lua/1.png">  <br/>
+<img src="/images/lua/2.png">  <br/>
+添加成功后，如下将库文件添加到工程
+<img src="/images/lua/3.png">
+分别在&#8221;Target Dependence&#8221;和&#8221;Link Binary With Library&#8221;下，这里需要添加另外一个&#8221;MediaPlayer.framework&#8221;,否则会编译出错。 <br/>
+添加好库之后，还需指明搜索路径
+<img src="/images/lua/4.png">
+这样在项目中就可以直接调用<code>#include "CCLuaEngine.h"</code>包含头文件，通过LuaEngine调用lua文件了。
+<code>
+auto engine = LuaEngine::getInstance();
+ScriptEngineManager::getInstance()-&gt;setScriptEngine(engine);
+if (engine-&gt;executeScriptFile("hello.lua")) {
+    return false;
+}
+</code> <br/>
+cocos2d-x支持JS脚本和lua脚本，使用ScriptEngineManager来管理脚本引擎，如上边这个例子，我们获得lua引擎，然后将其设置到脚本管理类中，先来看看这个管理到底是干什么用的。 <br/>
+<code>c++ ScriptEngineManager
+class CC_DLL ScriptEngineManager
+{
+public:
+    ~ScriptEngineManager(void);
+    ScriptEngineProtocol* getScriptEngine(void) {
+        return _scriptEngine;
+    }
+    void setScriptEngine(ScriptEngineProtocol *scriptEngine);
+    void removeScriptEngine(void);
+    static ScriptEngineManager* getInstance();
+    static void destroyInstance();
+    static bool sendNodeEventToJS(Node* node, int action);
+    static bool sendNodeEventToJSExtended(Node* node, int action);
+    static void sendNodeEventToLua(Node* node, int action);
+private:
+    ScriptEngineManager(void)
+    : _scriptEngine(nullptr)
+    {
+    }
+    ScriptEngineProtocol *_scriptEngine;
+};
+</code> <br/>
+ScriptEngineManager就是一个单例，帮助引擎保存ScriptEngineProtocol对象，ScriptEngineProtocol是LuaEngine的父类，类中声明一些纯虚方法。具体操作都由LuaEngine实现。其实LuaEngine也只是外层的一个包装，其中管理者一个LuaStack对象，所有栈操作都是在LuaStack中完成的。 <br/>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>int LuaEngine::executeString(const char *codes)
+</span><span class='line'>{
+</span><span class='line'>    int ret = &lt;em&gt;stack-&gt;executeString(codes);
+</span><span class='line'>    &lt;/em&gt;stack-&gt;clean();
+</span><span class='line'>    return ret;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int LuaEngine::executeScriptFile(const char* filename)
+</span><span class='line'>{
+</span><span class='line'>    int ret = &lt;em&gt;stack-&gt;executeScriptFile(filename);
+</span><span class='line'>    &lt;/em&gt;stack-&gt;clean();
+</span><span class='line'>    return ret;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int LuaEngine::executeGlobalFunction(const char&lt;em&gt; functionName)
+</span><span class='line'>{
+</span><span class='line'>    int ret = &lt;em&gt;stack-&gt;executeGlobalFunction(functionName);
+</span><span class='line'>    &lt;/em&gt;stack-&gt;clean();
+</span><span class='line'>    return ret;
+</span><span class='line'>}
+</span><span class='line'>&lt;code&gt;  
+</span><span class='line'>可以看到LuaEngine都是通调用LuaStack方法来实现的   
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>int LuaStack::executeString(const char &lt;/em&gt;codes)
+</span><span class='line'>{
+</span><span class='line'>    luaL_loadstring(_state, codes);
+</span><span class='line'>    return executeFunction(0);
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int LuaStack::executeScriptFile(const char* filename)
+</span><span class='line'>{
+</span><span class='line'>    std::string code(&ldquo;require \&rdquo;&ldquo;);
+</span><span class='line'>    code.append(filename);
+</span><span class='line'>    code.append(&rdquo;\&ldquo;&rdquo;);
+</span><span class='line'>    return executeString(code.c_str());
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;int LuaStack::executeGlobalFunction(const char&lt;em&gt; functionName)
+</span><span class='line'>{
+</span><span class='line'>    lua_getglobal(_state, functionName);       /&lt;/em&gt; query function by name, stack: function */
+</span><span class='line'>    if (!lua_isfunction(&lt;em&gt;state, -1))
+</span><span class='line'>    {
+</span><span class='line'>        CCLOG(&ldquo;[LUA ERROR] name &lsquo;%s&rsquo; does not represent a Lua function&rdquo;, functionName);
+</span><span class='line'>        lua_pop(&lt;/em&gt;state, 1);
+</span><span class='line'>        return 0;
+</span><span class='line'>    }
+</span><span class='line'>    return executeFunction(0);
+</span><span class='line'>}
+</span><span class='line'>&lt;code&gt;  
+</span><span class='line'>`executeString`和`executeScriptFile`加载代码到栈顶，然后调用`executeFunction`函数，`executeGlobalFunction`将函数名压入栈顶，然后检查是否是是函数，如果是也执行`executeFunction`函数记者来看这个重要的函数：   
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>int LuaStack::executeFunction(int numArgs)
+</span><span class='line'>{
+</span><span class='line'>    int functionIndex = -(numArgs + 1);
+</span><span class='line'>    if (!lua_isfunction(&lt;em&gt;state, functionIndex))
+</span><span class='line'>    {
+</span><span class='line'>        CCLOG(&ldquo;value at stack [%d] is not function&rdquo;, functionIndex);
+</span><span class='line'>        lua_pop(&lt;/em&gt;state, numArgs + 1); // remove function and arguments
+</span><span class='line'>        return 0;
+</span><span class='line'>    }&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;pre&gt;&lt;code&gt;int traceback = 0;
+</span><span class='line'>lua_getglobal(_state, "__G__TRACKBACK__");                         /* L: ... func arg1 arg2 ... G */
+</span><span class='line'>if (!lua_isfunction(_state, -1))
+</span><span class='line'>{
+</span><span class='line'>    lua_pop(_state, 1);                                            /* L: ... func arg1 arg2 ... */
+</span><span class='line'>}
+</span><span class='line'>else
+</span><span class='line'>{
+</span><span class='line'>    lua_insert(_state, functionIndex - 1);                         /* L: ... G func arg1 arg2 ... */
+</span><span class='line'>    traceback = functionIndex - 1;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>int error = 0;
+</span><span class='line'>++_callFromLua;
+</span><span class='line'>error = lua_pcall(_state, numArgs, 1, traceback);                  /* L: ... [G] ret */
+</span><span class='line'>--_callFromLua;
+</span><span class='line'>if (error)
+</span><span class='line'>{
+</span><span class='line'>    if (traceback == 0)
+</span><span class='line'>    {
+</span><span class='line'>        CCLOG("[LUA ERROR] %s", lua_tostring(_state, - 1));        /* L: ... error */
+</span><span class='line'>        lua_pop(_state, 1); // remove error message from stack
+</span><span class='line'>    }
+</span><span class='line'>    else                                                            /* L: ... G error */
+</span><span class='line'>    {
+</span><span class='line'>        lua_pop(_state, 2); // remove __G__TRACKBACK__ and error message from stack
+</span><span class='line'>    }
+</span><span class='line'>    return 0;
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>// get return value
+</span><span class='line'>int ret = 0;
+</span><span class='line'>if (lua_isnumber(_state, -1))
+</span><span class='line'>{
+</span><span class='line'>    ret = (int)lua_tointeger(_state, -1);
+</span><span class='line'>}
+</span><span class='line'>else if (lua_isboolean(_state, -1))
+</span><span class='line'>{
+</span><span class='line'>    ret = (int)lua_toboolean(_state, -1);
+</span><span class='line'>}
+</span><span class='line'>// remove return value from stack
+</span><span class='line'>lua_pop(_state, 1);                                                /* L: ... [G] */
+</span><span class='line'>
+</span><span class='line'>if (traceback)
+</span><span class='line'>{
+</span><span class='line'>    lua_pop(_state, 1); // remove __G__TRACKBACK__ from stack      /* L: ... */
+</span><span class='line'>}
+</span><span class='line'>
+</span><span class='line'>return ret;
+</span><span class='line'>&lt;/code&gt;&lt;/pre&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;}</span></code></pre></td></tr></table></div></figure></p>
+
+<ol>
+<li>先判断栈顶元素是不是函数</li>
+<li>先将<code>__G__TRACKBACK__</code>入栈，检查lua是否定义了此函数，如果没有定义，将<code>__G__TRACKBACK__</code>出战，如果定义了，将此函数插入调用函数之前，来跟踪调用顺序。</li>
+<li>调用<code>lua_pcall</code>函数调用lua代码，如果调用函数出栈，将结果压入栈中，如果调用错误，将错误信息压入栈中。</li>
+<li>对调用结果进行处理</li>
+</ol>
+
+
+<p>这样就完成了cocos2d-x的c++到lua代码的调用。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- Tinyxml2]]></title>
+    <link href="http://ypengju.github.io/blog/2014/11/07/cocos2d-x-tinyxml2/"/>
+    <updated>2014-11-07T22:27:16+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/11/07/cocos2d-x-tinyxml2</id>
+    <content type="html"><![CDATA[<p>tinyxml2是一个简单，高效的xml语言的库，它是一个开源项目，项目代码托管在github上，这个是它的github地址： <a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>，在cocos2d-x中，已经集成了tinyxml2库，所以在使用的时候我们只要引入相应的类就可开始处理xml文件。在cocos2d-x中我们经常会用到的CCUserDefault操作者本地的一个xml文件，其实内部实现就有封装tinyxml2来实现的。<!-- more --></p>
+
+<p>tinyxml2库位于external文件夹下，在tinyxml2中其实就一个.h和一个.cpp文件，非常简单。打开tinyxml2.h文件就可以看到下边几个类
+<code>c++
+class XMLDocument;       //文件节点既根节点
+class XMLElement;        //元素节点  如&lt;dic&gt;&lt;/dic&gt;
+class XMLAttribute;      //属性值   如&lt;dic version="1.0"&gt;&lt;/dic&gt;
+class XMLComment;        //注释      如&lt;!--注释--&gt;
+class XMLNode;           //XMLDocument，XMLAttribute，XMLComment，XMLText，XMLDeclaration，XMLUnknown的父节点
+class XMLText;           //值       如&lt;dic version="1.0"&gt;the text&lt;/dic&gt;
+class XMLDeclaration;    //xml开头的声明，用于声明文件格式，版本信息，及编码   如&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+class XMLUnknown;        //&lt;!unknown&gt;标签
+</code> <br/>
+这几个类就是我们直接操作的xml文件的元素节点及内容。接下来看看具体如何用tinyxml2生成一个xml文件。</p>
+
+<h3>生成XML文件</h3>
+
+<pre><code class="c++ 生成xml文件">void HelloWorld::addXML()
+{
+    XMLDocument *doc = new XMLDocument();
+    if (nullptr == doc) {
+        return;
+    }
+
+    XMLDeclaration *dec = doc-&gt;NewDeclaration();
+    if (nullptr == dec) { return; }
+    doc-&gt;LinkEndChild(dec);
+
+    //根节点
+    XMLElement *root = doc-&gt;NewElement("root");
+    root-&gt;SetAttribute("version", "1.0");
+    doc-&gt;LinkEndChild(root);
+
+    XMLElement *theKey = doc-&gt;NewElement("key");
+    theKey-&gt;LinkEndChild(doc-&gt;NewText("key1"));
+    root-&gt;LinkEndChild(theKey);
+
+    XMLElement *theValue = doc-&gt;NewElement("value");
+    theValue-&gt;LinkEndChild(doc-&gt;NewText("100"));
+    root-&gt;LinkEndChild(theValue);
+
+    XMLComment *comment = doc-&gt;NewComment("数组");
+    root-&gt;LinkEndChild(comment);
+
+    XMLElement *array = doc-&gt;NewElement("array");
+    root-&gt;LinkEndChild(array);
+
+    for (int i = 0; i &lt; 4; i++) {
+        XMLElement *data = doc-&gt;NewElement("data");
+        data-&gt;LinkEndChild(doc-&gt;NewText("arrayData"));
+        array-&gt;LinkEndChild(data);
+    }
+    //将xml文件存储在home目录下的text.xml中
+    doc-&gt;SaveFile("~/text.xml");
+    //在控制台打印
+    doc-&gt;Print();
+}
+</code></pre>
+
+<p>运行程序就可以在控制台打印信息：
+<code>xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;root version="1.0"&gt;
+    &lt;key&gt;key1&lt;/key&gt;
+    &lt;value&gt;100&lt;/value&gt;
+    &lt;!--数组--&gt;
+    &lt;array&gt;
+        &lt;data&gt;arrayData&lt;/data&gt;
+        &lt;data&gt;arrayData&lt;/data&gt;
+        &lt;data&gt;arrayData&lt;/data&gt;
+        &lt;data&gt;arrayData&lt;/data&gt;
+    &lt;/array&gt;
+&lt;/root&gt;
+</code><br/>
+首先使用<code>XMLDocument</code>生成文件，然后使用<code>NewDeclaration()</code>添加文件说明，在说明中我们可以传入字符串，指定格式，版本，字符编码等，如果为空，采取如上默认声明。之后就可以添加元素节点，所有节点都是由XMLDocument生成的，同时可进行嵌套。最后将生成的xml保存到text.xml文件中同时在控制台打印，就如同上边看到的一样。</p>
+
+<h3>解析xml文件</h3>
+
+<p>如上生成的xml文件保存在home目录的text.xml文件中，接下来我们在读取这个文件，然后在程序的解析使用
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">parseXML</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//解析text.xml文件到doc中</span>
+</span><span class='line'>    <span class="n">XMLDocument</span> <span class="o">*</span><span class="n">doc</span> <span class="o">=</span> <span class="k">new</span> <span class="n">XMLDocument</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">doc</span><span class="o">-&gt;</span><span class="n">LoadFile</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">ypengju</span><span class="o">/</span><span class="n">text</span><span class="p">.</span><span class="n">xml</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">XMLElement</span> <span class="o">*</span><span class="n">root</span> <span class="o">=</span> <span class="n">doc</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">RootElement</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">const</span> <span class="n">XMLAttribute</span> <span class="o">*</span><span class="n">firstAttr</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">FirstAttribute</span><span class="p">();</span>
+</span><span class='line'><span class="n">log</span><span class="p">(</span><span class="s">&quot;--name %s, value = %s&quot;</span><span class="p">,</span> <span class="n">firstAttr</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Name</span><span class="p">(),</span> <span class="n">firstAttr</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Value</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">XMLElement</span> <span class="o">*</span><span class="n">first</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">FirstChildElement</span><span class="p">();</span>
+</span><span class='line'><span class="n">log</span><span class="p">(</span><span class="s">&quot;--- first element: name %s, text %s&quot;</span><span class="p">,</span> <span class="n">first</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Name</span><span class="p">(),</span> <span class="n">first</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetText</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">XMLElement</span> <span class="o">*</span><span class="n">second</span> <span class="o">=</span> <span class="n">first</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">NextSiblingElement</span><span class="p">();</span>
+</span><span class='line'><span class="n">log</span><span class="p">(</span><span class="s">&quot;--- second element: name %s, text %s&quot;</span><span class="p">,</span> <span class="n">second</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Name</span><span class="p">(),</span> <span class="n">second</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetText</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">XMLElement</span> <span class="o">*</span><span class="n">array</span> <span class="o">=</span> <span class="n">second</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">NextSiblingElement</span><span class="p">();</span>
+</span><span class='line'><span class="n">log</span><span class="p">(</span><span class="s">&quot;----array element: name %s&quot;</span><span class="p">,</span> <span class="n">array</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Name</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">XMLElement</span> <span class="o">*</span><span class="n">ele</span> <span class="o">=</span> <span class="n">array</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">FirstChildElement</span><span class="p">();</span> <span class="n">ele</span> <span class="o">!=</span> <span class="n">array</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">LastChildElement</span><span class="p">()</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">NextSiblingElement</span><span class="p">();</span> <span class="n">ele</span> <span class="o">=</span> <span class="n">ele</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">NextSiblingElement</span><span class="p">())</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;----- name %s, value %s&quot;</span><span class="p">,</span> <span class="n">ele</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">Name</span><span class="p">(),</span> <span class="n">ele</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">GetText</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure> <br/>
+控制台打印：</p>
+
+<pre><code>cocos2d: --name version, value = 1.0
+cocos2d: --- first element: name key, text key1
+cocos2d: --- second element: name value, text 100
+cocos2d: ----array element: name array
+cocos2d: ----- name data, value arrayData1
+cocos2d: ----- name data, value arrayData2
+cocos2d: ----- name data, value arrayData3
+cocos2d: ----- name data, value arrayData4
+</code></pre>
+
+<p>首先根据路径加载xml文件，将其存在<code>XMLDocument</code>中，然后用其一次获得每个节点及属性值，这样我们在程序中就可以使用了。 <br/>
+以上就是简单的tinyxml2的生成和解析xml文件。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- Http请求]]></title>
+    <link href="http://ypengju.github.io/blog/2014/11/07/cocos2d-x-httpqing-qiu/"/>
+    <updated>2014-11-07T21:40:47+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/11/07/cocos2d-x-httpqing-qiu</id>
+    <content type="html"><![CDATA[<p>cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 <br/>
+newwork目录下主要由这几个类</p>
+
+<ul>
+<li>HttpRequest</li>
+<li>HttpResponse</li>
+<li>HttpClient</li>
+<li>SocketIO</li>
+<li>WebSocket</li>
+</ul>
+
+
+<p>这篇主要总结下Http请求的处理过程。   <!--more-->
+首先请求之前，我们需要组织请求数据，这个就是由HttpRequest来完成的。 <br/>
+比如设置请求地址，请求数据，请求类型，响应回调函数等。如下例 <br/>
+<code>c++
+cocos2d::network::HttpRequest *request = new cocos2d::network::HttpRequest();
+request-&gt;setUrl("http://127.0.0.1:1337/");
+request-&gt;setRequestType(cocos2d::network::HttpRequest::Type::GET);
+request-&gt;setResponseCallback(CC_CALLBACK_2(HelloWorld::onHttpRequestCompleted,this));
+request-&gt;setTag("get request”);
+request-&gt;setRequestData(const char *buffer, size_t len);
+cocos2d::network::HttpClient::getInstance()-&gt;send(request);
+request-&gt;release();
+</code>  <br/>
+上边例子我们处理了一个请求内容，设置请求数据的时候，我们还需要知道他的大小。 <br/>
+请求方式有四种 <br/>
+<code>c++
+enum class Type
+{
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    UNKNOWN,
+};
+</code> <br/>
+有GET，POST，PUT, DELETE分别对应http请求类型，一般应该用得比较多的是GET请求和POST请求了。除此之外，我们还可以通过<code>void setHeaders(std::vector&lt;std::string&gt; pHeaders)</code>方法设置请求头信息。请求数据组织好了，我们就需要把它发送出去了，这个发送管理任务就由HttpClient来完成了，就像上边这句一样：
+<code>cocos2d::network::HttpClient::getInstance()-&gt;send(request)</code>可以看到，他是一个单例。 <br/>
+HttpClient用来管理请求的发送，设置连接超时时间，设置读取响应时间等，以及请求的线程管理等。HttpClient处理请求有两种方法，一种是send(),一种是sendImmediate()直接请求。 <br/>
+先看看send()都干了什么 <br/>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">send</span><span class="p">(</span><span class="n">HttpRequest</span><span class="o">*</span> <span class="n">request</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">false</span> <span class="o">==</span> <span class="n">lazyInitThreadSemphore</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">request</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">request</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">retain</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_requestQueue</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Notify thread start to work</span>
+</span><span class='line'>    <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">notify_one</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="err">首先调用了</span><span class="n">lazyInitThreadSemphore</span><span class="p">(),</span><span class="err">在这个方法中，初始花了请求与响应队列，新起了一个线程，用于请求响应工作。然后将请求数据，添加到请求响应队列中，然后通知线程工作。</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">c</span><span class="o">++</span>
+</span><span class='line'><span class="c1">//Lazy create semaphore &amp;amp; mutex &amp;amp; thread</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">lazyInitThreadSemphore</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">HttpRequest</span><span class="o">*&amp;</span><span class="n">gt</span><span class="p">;();</span>
+</span><span class='line'>    <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">HttpResponse</span><span class="o">*&amp;</span><span class="n">gt</span><span class="p">;();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">s_need_quit</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">detach</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="err">主要工作在</span><span class="n">networkThread</span><span class="err">中完成</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">c</span><span class="o">++</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span><span class='line'>    <span class="n">HttpRequest</span> <span class="o">*</span><span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">auto</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">getScheduler</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">s_need_quit</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// step 1: send http request if the requestQueue isn&#39;t empty</span>
+</span><span class='line'>    <span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//Get request task from queue</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">empty</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">request</span> <span class="o">=</span> <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">erase</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">request</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// Wait for http request tasks from main thread</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">lk</span><span class="p">(</span><span class="n">s_SleepMutex</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lk</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// step 2: libcurl sync access</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Create a HttpResponse object, the default setting is http access failed</span>
+</span><span class='line'>    <span class="n">HttpResponse</span> <span class="o">*</span><span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">processResponse</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">s_errorBuffer</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// add response packet into queue</span>
+</span><span class='line'>    <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">s_responseQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_pHttpClient</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">scheduler</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">performFunctionInCocosThread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">dispatchResponseCallbacks</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// cleanup: if worker thread received quit signal, clean up un-completed request queue</span>
+</span><span class='line'><span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+</span><span class='line'><span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'><span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">delete</span> <span class="n">s_requestQueue</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">delete</span> <span class="n">s_responseQueue</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure> <br/>
+整个处理流程是这样的:</p>
+
+<ul>
+<li>先初始化请求和响应队列，生成新的线程，新线程中调用networkThread()函数</li>
+<li>在networkThread()函数中有一个while(true)循环，用来检查请求队列是否有新的请求数据，如果有，处理之。</li>
+<li>当在send()函数中，将请求数据加入请求队列后，networkThread()随后进行处理。</li>
+<li>在networkThread()中，先将请求数据从请求队列中拿出来，然后此数据生成HttpResponse()响应。</li>
+<li>在HttpResponse中保存有一个请求数据，然后调用processResponse()方法，进行响应处理。</li>
+<li>在processResponse()方法中，先将response中的请求数据拿出来，根据请求类型，调用不同的方法。</li>
+<li>processGetTask(), processPostTask(), processPutTask(), processDeleteTask()</li>
+<li>分别用于处理GET,POST,PUT,DELETE请求。</li>
+<li>在这些方法中，使用curl进行具体网络请求，链接等。并将结果存储到response中。</li>
+<li>然后将response添加到响应队列中。用schedule调回主线程dispatchResponseCallbacks()方法进行处理。</li>
+<li>在dispatchResponseCallbacks()中，先将响应从响应队列中取出。</li>
+<li>得到response中的request请求，然后调用request中的注册的callback函数。</li>
+<li>此时就可以在callback函数中，通过response中的响应数据进行处理了。</li>
+</ul>
+
+
+<p>这样就完成了一次具体的http请求。 <br/>
+相比sendImmediate()请求就简单直接一些：</p>
+
+<ul>
+<li>在新线程中，调用networkThreadAlone()方法。</li>
+<li>在networkThreadAlone()没有将request添加到队列中，而是直接生成response，采用processResponse()方法进行处理。</li>
+<li>处理之后，schedule调回主线程，调用callback，进行数据处理。</li>
+</ul>
+
+
+<p>以上就是对cocos2d-x的Http请求的简单学习总结。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- Jni调用]]></title>
+    <link href="http://ypengju.github.io/blog/2014/10/28/cocos2d-x-jnidiao-yong/"/>
+    <updated>2014-10-28T21:26:14+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/10/28/cocos2d-x-jnidiao-yong</id>
+    <content type="html"><![CDATA[<p>cocos2d-x要在android手机上运行，就需要在java和c++两种语言之间进行调用，在cocos2d-x中完成这个任务的就是jni，它可以使两者之间互相调用，从而让用c++开发的cocos2d-x游戏，在android上完美运行。 <br/>
+cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类位于platform/android/jni/目录下，先来看看这个类都提供了哪些方法。<!--more--> <br/>
+<figure class='code'><figcaption><span>JniHelper.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">JniMethodInfo_</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">JNIEnv</span> <span class="o">*</span>    <span class="n">env</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jclass</span>      <span class="n">classID</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">jmethodID</span>   <span class="n">methodID</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">JniMethodInfo</span><span class="p">;</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">JniHelper</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">void</span> <span class="n">setJavaVM</span><span class="p">(</span><span class="n">JavaVM</span> <span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">javaVM</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JavaVM</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">getJavaVM</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">*</span> <span class="nf">getEnv</span><span class="p">();</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">static</span> <span class="kt">bool</span> <span class="n">setClassLoaderFrom</span><span class="p">(</span><span class="n">jobject</span> <span class="n">activityInstance</span><span class="p">);</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">bool</span> <span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                                <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">bool</span> <span class="n">getMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                          <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                          <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                          <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">jstring2string</span><span class="p">(</span><span class="n">jstring</span> <span class="n">str</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">jmethodID</span> <span class="n">loadclassMethod_methodID</span><span class="p">;</span>
+</span><span class='line'><span class="k">static</span> <span class="n">jobject</span> <span class="n">classloader</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">cacheEnv</span><span class="p">(</span><span class="n">JavaVM</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span> <span class="n">jvm</span><span class="p">);</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">static</span> <span class="kt">bool</span> <span class="n">getMethodInfo_DefaultClassLoader</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">amp</span><span class="p">;</span><span class="n">methodinfo</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">JavaVM</span><span class="o">*</span> <span class="n">_psJavaVM</span><span class="p">;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure> <br/>
+结构体JniMethodInfo中封装了Jni环境，java类，类中的方法。
+JniHelper提供了获取Java虚拟机的接口，JNI环境的接口，以及获取Java静态方法，和普通方法的接口，我们最常使用的就是这两个方法了，以及提供了一个将java字符串与c++字符串转化的函数。</p>
+
+<pre><code class="c++ getStaticMethodInfo">    bool JniHelper::getStaticMethodInfo(JniMethodInfo &amp;methodinfo,
+                                        const char *className, 
+                                        const char *methodName,
+                                        const char *paramCode) {
+        if ((nullptr == className) ||
+            (nullptr == methodName) ||
+            (nullptr == paramCode)) {
+            return false;
+        }
+
+        JNIEnv *env = JniHelper::getEnv();
+        if (!env) {
+            LOGE("Failed to get JNIEnv");
+            return false;
+        }
+
+        jclass classID = _getClassID(className);
+        if (! classID) {
+            LOGE("Failed to find class %s", className);
+            env-&gt;ExceptionClear();
+            return false;
+        }
+
+        jmethodID methodID = env-&gt;GetStaticMethodID(classID, methodName, paramCode);
+        if (! methodID) {
+            LOGE("Failed to find static method id of %s", methodName);
+            env-&gt;ExceptionClear();
+            return false;
+        }
+
+        methodinfo.classID = classID;
+        methodinfo.env = env;
+        methodinfo.methodID = methodID;
+        return true;
+    }
+</code></pre>
+
+<p>getStaticMethodInfo方法中，通过JNIEnv检查传进来的java类，方法等都是否存在，如果存在，最后将其分装在JniMethodInfo中，接下来看看具体的调用。最后一个参数paramCode是用来说明Java函数的参数类型个数及返回值。</p>
+
+<h3>c++调用java</h3>
+
+<p>我以cocos2d-x 3.2生成的例子为例，来看看c++和java的调用。</p>
+
+<h4>调用静态函数</h4>
+
+<p>c++端代码： <br/>
+<code>
+    JniMethodInfo info;
+    bool isHave = JniHelper::getStaticMethodInfo(info, "org/cocos2dx/cpp/AppActivity", "staticMethod1", "()V");
+    if (isHave) {
+        log(" static void method if");
+        info.env-&gt;CallStaticVoidMethod(info.classID, info.methodID);
+    } else {
+        log(" static void method else");
+    }
+</code> <br/>
+java端代码： <br/>
+<code>
+public class AppActivity extends Cocos2dxActivity {
+    public static void staticMethod1() {
+        System.out.println("this is java static method");
+    }
+}
+</code> <br/>
+运行编译cocos2d-x代码，在android上运行，就可以看到c++调用java打印<code>this is java static method</code>。 <br/>
+此处需要注意，在c++端需要先引进JniHelper的类，并判断是在android环境下运行，否则会报错。</p>
+
+<pre><code class="c++">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#include "../cocos2d/cocos/platform/android/jni/JniHelper.h"
+#endif
+</code></pre>
+
+<p>c++端首先判断java端的函数是否存在，然后进行调用，主要就是getXXX方法的四个参数</p>
+
+<ul>
+<li>第一个参数 - JniMethodInfo对象，用来封装java类，方法等</li>
+<li>第二个参数 - Java类的路径，以报名加类名的形式</li>
+<li>第三个参数 - 方法名</li>
+<li>第四个参数 - 函数的参数类型，个数及返回值类型</li>
+</ul>
+
+
+<p>这里第四个参数比较特殊，具体说明：
+参数的格式为  <code>(参数)返回值</code> 括号内是参数类型和参数个数，括号外是返回值类型。具体与java类型对照图如下： <br/>
+<img src="/images/jni/javapar.png"> <br/>
+如果函数有多个参数，直接把简写并列即可，但是注意Object与Array型参数简写结尾的分号，示例：<br/>
+IIII //4个int型参数的函数 <br/>
+ILjava/lang/String;I //整形，string类型，整形组合 (int x, String a, int y)<br/>
+所以上边例子第四个参数说明调用的是一个无参无返回值类型的函数。</p>
+
+<h4>调用非静态函数</h4>
+
+<p>c++端代码：<br/>
+<code>c++
+JniMethodInfo info;
+bool isHave = JniHelper::getMethodInfo(info, "org/cocos2dx/cpp/AppActivity", "voidMethod1", "(II)I");
+if (isHave) {
+    log(" void method if");
+    jobject jobj = info.env-&gt;NewObject(info.classID, info.methodID);
+    jint a = 10;
+    jint b = 20;
+    jint result = info.env-&gt;CallIntMethod(jobj, info.methodID, a, b);
+    log("------return result %ld",result);
+} else {
+    log(" void method else");
+}   
+</code> <br/>
+java端代码： <br/>
+<code>java
+public int voidMethod1(int a, int b) {
+    System.out.println("this is java void method a + b = " + (a + b));
+    return a + b;
+}
+</code> <br/>
+编译之后在android上运行，就可以看到打印<code>this is java void method a + b = 30</code>和<code>------return result 30</code>，分别是c++端和java端打印。此处<code>info.env-&gt;NewObject(info.classID, info.methodID)</code>方法也会调用一次voidMethod1函数，此处暂未弄清楚原因。 <br/>
+首先调用JniHelper的getMethodInfo函数确定是否存在调用的函数，如果存在，首先生成java类的对象，然后调用方法，并获得返回值。jni提供了一系列<code>CallXXXMethod()</code>的方法，用来调用不同返回值类型的函数。另外可看到，传入的参数和返回值类型都是用<code>jint</code>类型，这是jni提供的对应的java数据类型，对应关系如下： <br/>
+<img src="/images/jni/javareturn.png"> <br/>
+通过JniHelper提供的方法，我们就可以方便的调用java中的函数，来完成android的操作。</p>
+
+<h3>java调用c++</h3>
+
+<p>java端代码： <br/>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">staticMethod2</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">add</span> <span class="o">=</span> <span class="n">nativeMethod</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">8</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;&amp;</span><span class="n">mdash</span><span class="o">;</span> <span class="n">add</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">+</span> <span class="n">add</span><span class="o">);</span>
+</span><span class='line'><span class="o">}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kd">public</span> <span class="kd">native</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">nativeMethod</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">);</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">c</span><span class="o">++</span><span class="n">端代码</span><span class="err">：</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">c</span><span class="o">++&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ifdef</span> <span class="n">__cplusplus</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">extern</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">C</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;</span> <span class="o">{&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">endif</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">jint</span> <span class="nf">Java_org_cocos2dx_cpp_AppActivity_nativeMethod</span><span class="o">(</span><span class="n">JNIEnv</span> <span class="o">*</span><span class="n">env</span><span class="o">,</span> <span class="n">jobject</span> <span class="n">thiz</span><span class="o">,</span> <span class="n">jint</span> <span class="n">a</span><span class="o">,</span> <span class="n">jint</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">ifdef</span> <span class="n">__cplusplus</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;}&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span><span class="o">&gt;</span><span class="n">endif</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c1">//&amp;hellip;&amp;hellip;</span>
+</span><span class='line'><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="o">;</span>
+</span><span class='line'><span class="n">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="nl">JniHelper:</span><span class="o">:</span><span class="n">getStaticMethodInfo</span><span class="o">(</span><span class="n">info</span><span class="o">,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">org</span><span class="o">/</span><span class="n">cocos2dx</span><span class="o">/</span><span class="n">cpp</span><span class="o">/</span><span class="n">AppActivity</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;</span><span class="n">staticMethod2</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="o">;()</span><span class="n">V</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;);</span>
+</span><span class='line'><span class="k">if</span> <span class="o">(</span><span class="n">isHave</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">method</span> <span class="k">if</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;);</span>
+</span><span class='line'>    <span class="n">info</span><span class="o">.</span><span class="na">env</span><span class="o">-&gt;</span><span class="n">CallStaticVoidMethod</span><span class="o">(</span><span class="n">info</span><span class="o">.</span><span class="na">classID</span><span class="o">,</span> <span class="n">info</span><span class="o">.</span><span class="na">methodID</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="o">(&amp;</span><span class="n">ldquo</span><span class="o">;</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">method</span> <span class="k">else</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="o">;);</span>
+</span><span class='line'><span class="o">}&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure></p>
+
+<p>此处先从c++端调到java，然后再用java调到c++来实现两端互相调用。看上边代码可知，首先调用从c++调用java端的<code>staticMethod2</code>方法，在java端<code>staticMethod2</code>方法中，再调用<code>nativeMethod</code>方法，此方法具体在c++端实现，运行android程序后，可看到在控制台打印<code>--- add = 9</code>。说明成功调用。 <br/>
+<code>nativeMethod</code>是在c++端进行实现的，java端相当于只进行了声明，但特别注意，在声明中要添加<code>native</code>关键字，以说明次函数为c++端函数。在c++端实现时，方法名具有一定的规则，首先是Java字段，然后是包名，类名，方法名，之间用下划线分开，在参数列表：第一个为Jni运行环境，第二个参数为调用对象，之后的为调用函数时的参数。</p>
+
+<p>本例代码: <a href="https://github.com/ypengju/cocos2d-xTest/tree/master/JniTest">https://github.com/ypengju/cocos2d-xTest/tree/master/JniTest</a></p>
+]]></content>
+  </entry>
+  
+</feed>

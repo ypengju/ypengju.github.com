@@ -1,0 +1,425 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lua &#8211; Table - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 &ndash; Table，可谓以不变应万变了。 lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/10/03/lua-table">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lua &#8211; Table</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-03T20:43:27+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>8:43 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 &ndash; Table，可谓以不变应万变了。 <br/>
+lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据，字符串，函数，甚至表等各种结构，</p>
+
+<h3>整数索引</h3>
+
+<p>lua以整数为下标时，我们就可以像数组一样直接使用，其实lua底层，table是由两部分组成的，一部分是数组，用来存储像整数下标的这些值，一部分用哈希表来实现，用来存储像字符串这样索引的值。lua对table的大小没有限制，也就是说我们可以在使用过程中，在table中添加元素。  <!--more--></p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {10, 30, 50, 70, 90}
+</span><span class='line'>print(table1[0])   -- nil
+</span><span class='line'>print(table1[1])   -- 10</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以看到访问table1[0]返回nil，而table1[1]访问表中第一个值。当我们访问表中不存在的值时会返回nil值，默认table下标是从1开始的，而不是我们熟悉的像其他语言中从0开始，table可以使用任意整数为下标。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, 50, 70, 90}
+</span><span class='line'>table3 = {[1] = 10, [2] = 30, [3] = 50, [4] = 70, [5] = 90}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+上边这两种形式是等价的。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, 50, 70, 90}
+</span><span class='line'>table3 = {[1] = 10, [2] = 30, [3] = 50, [40] = 70, [5] = 90}
+</span><span class='line'>table5 = {[2] = 30, [3] = 50}
+</span><span class='line'>print(#table2)  -- 5
+</span><span class='line'>print(#table3)  -- 3
+</span><span class='line'>print(#table4)  -- 2
+</span><span class='line'>print(#table5)  -- 0</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以使用#操作来计算下标从1开始并连续的table的大小，从上边例子可以看到，如果数组从零开始或者中间有下标不连续，计算的talbe的大小就只是从1到连续结束的元素的个数，如果table元素不是以1下标开始的计算结果为0。</p>
+
+<h3>字符串索引</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {one = 0, two = true, three = "hello"}
+</span><span class='line'>table2 = {["one"] = 0, ["two"] = true, ["three"] = "hello"}
+</span><span class='line'>table3 = {}
+</span><span class='line'>table3.one = 0
+</span><span class='line'>table3.two = true
+</span><span class='line'>table3.three = "hello"</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+上边这三种形式创建的表都是一样的。但是有字符串索引的时候，就不能直接采用#操作求table的大小了。如果需要知道table的大小，肯能就需要一个计数器了。</p>
+
+<h3>遍历</h3>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {10, 30, 50, 70, 90}
+</span><span class='line'>for i=1, #table1 do
+</span><span class='line'>  print(table1[i])
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+像上边这样，当table使用整数索引的时候，我们可以像在其他语言中使用数组一样访问表中的元素。但是当下标不为整数，或者整数下标不连续时，我们就无法求得table的大小，上边这种遍历table的方法就行不通了，为了能够方便的遍历table，lua为我们提供了两个有用的方法pairs和ipairs。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
+</span><span class='line'>for k,v in pairs(table2) do
+</span><span class='line'>  print(k,v)
+</span><span class='line'>end  </span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+使用pairs以key-valued的形式遍历了table2中所有的元素，就像我们在c++中使用迭代器一样。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
+</span><span class='line'>for i,v in ipairs(table2) do
+</span><span class='line'>  print(i,v)
+</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+但是当使用ipairs遍历时，只是访问了前两个元素，这是因为ipairs只遍历下标从1开始，连续增长的表。像上边table1这样的表，ipairs可以完全遍历，所以在使用的时候需要注意，当下标不连续，或者索引不是整数时，ipairs就停止遍历接下来的元素。</p>
+
+<h3>库方法</h3>
+
+<p>为了方便操作表，lua提供了几个对表操作的库方法</p>
+
+<h4>table.concat(list [, sep [, i [, j]]]) - 链接表中的元素，返回字符串。</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua"}
+</span><span class='line'>print(table.concat(tab, ":"))  -- hello:world:lua</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+有四个参数，后三个可选，第一个参数是表， 第二个参数分隔符，像上边的冒号，默认为空字符， 第三个参数，开始字符位置，默认下标为1， 第四个参数，结束下标，默认为表的大小。所以默认是链接整个表，我们也可以指定链接表中指定下标区域内的元素。</p>
+
+<h4>table.insert(list, [pos,] value) - 插入元素</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua"}
+</span><span class='line'>table.insert(tab, 100)
+</span><span class='line'>print(table.concat(tab, ": ")) -- hello: world: lua: 100</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+有三个参数，第一个表，第二个参数可选，插入的位置，默认是#table+1，第三个参数要插入的值，所以默认是讲元素插入到表最后的。像上边这样只有两个参数的，其实是省略掉了中间第二个元素，插值在最后。</p>
+
+<h4>table.pack(···) - 将所有参数打包到一个表中</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = table.pack("hello", "world", "lua", 1, 4)
+</span><span class='line'>for k,v in pairs(tab) do
+</span><span class='line'>  print(k,v)
+</span><span class='line'>end
+</span><span class='line'>print(table.concat(tab, ": "))</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+接收任意多个参数，将所有参数打包到一个下标从1开始的表中，像上边，打包完后<code>tab1 = {"hello", "world", "lua", 1, 4}</code>但是不一定所有参数都是顺序打包的。</p>
+
+<h4>table.unpack (list [, i [, j]]) - 跟table.pack相反</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua", 1, 4}
+</span><span class='line'>a, b, c, d, e = table.unpack(tab)
+</span><span class='line'>print(a) -- hello
+</span><span class='line'>print(b) -- world
+</span><span class='line'>print(c) -- lua
+</span><span class='line'>print(d) -- 1
+</span><span class='line'>print(e) -- 4</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+返回多个参数，也可以指定需要的坐标范围，比如只返回第二到第四个元素，那么就返回3个元素。</p>
+
+<h4>table.remove(list [, pos]) - 移除表中元素</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua", 1, 4}
+</span><span class='line'>table.remove(tab, 2)
+</span><span class='line'>print(table.concat(tab, ": ")) -- hello: lua: 1: 4
+</span><span class='line'>print(tab[2]) -- lua</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+移除表中指定位置元素，有两个参数，第一个表，第二个移除元素的下标，可选，默认值是表中最后一个元素位置。第二个参数要在表的大小范围内，移除后指定位置元素后，下标后边元素向前移动。</p>
+
+<h4>table.sort (list [, comp]) - 排序</h4>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {4, 10, 2, 1, 40, 6}
+</span><span class='line'>table.sort(tab)
+</span><span class='line'>print(table.concat(tab, " "))</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+对表中元素进行排序，默认从小到大，在第二个参数中也可以实现自己的排序条件</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {4, 10, 2, 1, 40, 6}
+</span><span class='line'>table.sort(tab, function(a, b)
+</span><span class='line'>  return a &gt; b
+</span><span class='line'>end)
+</span><span class='line'>print(table.concat(tab, " "))</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+talbe除了像数组这种操作外，还可以用来实现其他数据结构，但是在lua中像List，Set这种数据结构，不一定比table方便，除了数据结构的操作外，lua还可以用表实现类的封装，继承等面向对象特性，而这一切都是基于元表的，感觉Lua的table无所不能啊。</p>
+
+<p>List，Set实现看见<a href="http://www.lua.org/pil/11.3.html">《Programming in lua》</a></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-03T20:43:27+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>8:43 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lua/'>lua</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/28/cocos2d-x-rapidjson/" title="Previous Post: cocos2d-x -- rapidjson">&laquo; cocos2d-x &#8211; rapidjson</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/04/lua-metatables/" title="Next Post: Lua -- metatables">Lua &#8211; metatables &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

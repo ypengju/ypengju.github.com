@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; Rapidjson - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="rapidjson是一个c++中的json解析库，其实还有其他的工具如jsoncpp，但是号称rapidjson效率更高一些，并且cocos2d-x3.x版本中都添加rapidjson支持，所以学习了解了下rapidjson的使用。 rapidjson 主页：https://code.google &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/09/28/cocos2d-x-rapidjson">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; Rapidjson</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-28T16:10:30+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>rapidjson是一个c++中的json解析库，其实还有其他的工具如jsoncpp，但是号称rapidjson效率更高一些，并且cocos2d-x3.x版本中都添加rapidjson支持，所以学习了解了下rapidjson的使用。</p>
+
+<h5>rapidjson 主页：<a href="https://code.google.com/p/rapidjson/">https://code.google.com/p/rapidjson/</a></h5>
+
+<p>下载后在源码中example中可以找到使用方法，在cocos2d-x 3.2中，位于external/json   <!-- more --></p>
+
+<ul>
+<li>document.h</li>
+<li>filestream.h</li>
+<li>prettywriter.h</li>
+<li>rapidjson.h</li>
+<li>reader.h</li>
+<li>stringbuffer.h</li>
+<li>writer.h</li>
+</ul>
+
+
+<p>在使用的时候，我们根据需要,包含进来我们需要的文件，以下是在cocos2d-x中的使用：</p>
+
+<figure class='code'><figcaption><span>引入头文件</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/rapidjson.h&quot;   </span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/document.h&quot;   </span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/stringbuffer.h&quot;   </span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/writer.h&quot;   </span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/filestream.h&quot;   </span>
+</span><span class='line'><span class="cp">#include &quot;../cocos2d/external/json/prettywriter.h&quot;   </span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">rapidjson</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h2>解析</h2>
+
+<p>rapidjson中的所有类型都位于rapidjson命名空间中。以下根据官方使用说明，例句一些具体的使用例子，帮助理解。</p>
+
+<figure class='code'><figcaption><span>简单解析  </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="n">json</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot;{ </span><span class="se">\&quot;</span><span class="s">hello</span><span class="se">\&quot;</span><span class="s"> : </span><span class="se">\&quot;</span><span class="s">world</span><span class="se">\&quot;</span><span class="s"> }&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">Parse</span><span class="o">&lt;</span><span class="n">kParseDefaultFlags</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json</span><span class="p">);</span>
+</span><span class='line'><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">[</span><span class="s">&quot;hello&quot;</span><span class="p">].</span><span class="n">GetString</span><span class="p">());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+运行程序，在输出台中就可以看到打印的 <code>world</code> 了。上边的例子将一个json文本解析成为一个DOM树，其中Parse<kParseDefaultFlags>,中的kParseDefaultFlags是一个默认解析标志。解析的数据默认是以UTF-8的编码格式存储，同时rapidjson还支持UTF-16,UTF-32。</p>
+
+<h4>Document 类型</h4>
+
+<p>Document代表json对象，我们可以下边方式生成一个rapidjson队像。</p>
+
+<figure class='code'><figcaption><span>json对象</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h4>Value 类型</h4>
+
+<p>Value是用于存储json值或者键值对，它可以存储false， true， number， string， array或者object等数据格式。上边讲到的Document类型其实派生自Value。 <br/>
+下边来看个例子：
+json数据 <br/>
+{ <br/>
+　　　&#8221;hello&#8221;:&ldquo;world&rdquo;, <br/>
+　　　&#8221;t&#8221;:true, <br/>
+　　　&#8221;f&#8221;:false, <br/>
+　　　&#8221;n&#8221;:null, <br/>
+　　　&#8221;i&#8221;:123, <br/>
+　　　&#8221;pi&#8221;:3.1416, <br/>
+　　　&#8221;a&#8221;:[1,2,3,4] <br/>
+}</p>
+
+<figure class='code'><figcaption><span>解析例子</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'>
+</span><span class='line'>    <span class="k">const</span> <span class="kt">char</span> <span class="n">json1</span><span class="p">[]</span> <span class="o">=</span> <span class="s">&quot; { </span><span class="se">\&quot;</span><span class="s">hello</span><span class="se">\&quot;</span><span class="s"> : </span><span class="se">\&quot;</span><span class="s">world</span><span class="se">\&quot;</span><span class="s">, </span><span class="se">\&quot;</span><span class="s">t</span><span class="se">\&quot;</span><span class="s"> : true , </span><span class="se">\&quot;</span><span class="s">f</span><span class="se">\&quot;</span><span class="s"> : false, </span><span class="se">\&quot;</span><span class="s">n</span><span class="se">\&quot;</span><span class="s">: null, </span><span class="se">\&quot;</span><span class="s">i</span><span class="se">\&quot;</span><span class="s">:123, </span><span class="se">\&quot;</span><span class="s">pi</span><span class="se">\&quot;</span><span class="s">: 3.1416, </span><span class="se">\&quot;</span><span class="s">a</span><span class="se">\&quot;</span><span class="s">:[1, 2, 3, 4] } &quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//解析数据到document中</span>
+</span><span class='line'>    <span class="n">rapidjson</span><span class="o">::</span><span class="n">Document</span> <span class="n">document</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">document</span><span class="p">.</span><span class="n">Parse</span><span class="o">&lt;</span><span class="n">kParseDefaultFlags</span><span class="o">&gt;</span><span class="p">(</span><span class="n">json1</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">.</span><span class="n">IsObject</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">.</span><span class="n">HasMember</span><span class="p">(</span><span class="s">&quot;hello&quot;</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;hello&quot;</span><span class="p">].</span><span class="n">IsString</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;hello = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;hello&quot;</span><span class="p">].</span><span class="n">GetString</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;t&quot;</span><span class="p">].</span><span class="n">IsBool</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;t = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;t&quot;</span><span class="p">].</span><span class="n">GetBool</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;true&quot;</span> <span class="o">:</span> <span class="s">&quot;false&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">].</span><span class="n">IsBool</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;f = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;f&quot;</span><span class="p">].</span><span class="n">GetBool</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;true&quot;</span> <span class="o">:</span> <span class="s">&quot;false&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;n = %s</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;n&quot;</span><span class="p">].</span><span class="n">IsNull</span><span class="p">()</span> <span class="o">?</span> <span class="s">&quot;null&quot;</span> <span class="o">:</span> <span class="s">&quot;?&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;i&quot;</span><span class="p">].</span><span class="n">IsNumber</span><span class="p">());</span> <span class="c1">// Number is a JSON type, but C++ needs more specific type.</span>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;i&quot;</span><span class="p">].</span><span class="n">IsInt</span><span class="p">());</span>    <span class="c1">// In this case, IsUint()/IsInt64()/IsUInt64() also return true.</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;i = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;i&quot;</span><span class="p">].</span><span class="n">GetInt</span><span class="p">());</span>  <span class="c1">// Alternative (int)document[&quot;i&quot;]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;pi&quot;</span><span class="p">].</span><span class="n">IsNumber</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">assert</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s">&quot;pi&quot;</span><span class="p">].</span><span class="n">IsDouble</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">printf</span><span class="p">(</span><span class="s">&quot;pi = %g</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;pi&quot;</span><span class="p">].</span><span class="n">GetDouble</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//解析数组</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>         <span class="k">const</span> <span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span><span class="o">&amp;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">document</span><span class="p">[</span><span class="s">&quot;a&quot;</span><span class="p">];</span> <span class="c1">//handy and faster.</span>
+</span><span class='line'>         <span class="n">assert</span><span class="p">(</span><span class="n">a</span><span class="p">.</span><span class="n">IsArray</span><span class="p">());</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="n">SizeType</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">a</span><span class="p">.</span><span class="n">Size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>   <span class="p">{</span><span class="c1">// rapidjson uses SizeType instead of size_t.</span>
+</span><span class='line'>             <span class="n">printf</span><span class="p">(</span><span class="s">&quot;a[%d] = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">GetInt</span><span class="p">());</span>
+</span><span class='line'>         <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+此例可在官方例子程序中找到，尤其注意程序中对于数组成员的访问，我们不能直接使用下标访问数组成员，因为[]操作符在c++中是模糊不清的，它也可代表一个const char *的空指针，如果这样写，编辑器会直接提示错误，如上所示，我们在rapidjson中访问数组成员变量时，对类型进行包装，即SizeType(0)，或者在下标后添加u字符， SizeType在rapidjson中代表size_t类型。 <br/>
+运行程序，可在输出看到如下打印： <br/>
+hello = world <br/>
+t = true <br/>
+f = false <br/>
+n = null <br/>
+i = 123 <br/>
+pi = 3.1416 <br/>
+a[0] = 1 <br/>
+a[1] = 2 <br/>
+a[2] = 3 <br/>
+a[3] = 4 <br/>
+此外，调用HasMember()方法可以确定是否包含此值。</p>
+
+<h4>数据遍历</h4>
+
+<p>上边已经说过，因为0在c++中可以代表数值也可以代表空指针，所以我们在遍历数组成员的时候使用下边形式代替：</p>
+
+<ul>
+<li>a[SizeType(0)]</li>
+<li>a[0u]</li>
+</ul>
+
+
+<p>其实我们还可以像遍历std::vector一样，用迭代器，遍历rapidjson数组成员。</p>
+
+<figure class='code'><figcaption><span>遍历数组</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span><span class="o">::</span><span class="n">ConstValueIterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">onBegin</span><span class="p">();</span> <span class="n">itr</span> <span class="o">!=</span> <span class="n">a</span><span class="p">.</span><span class="n">onEnd</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;-------%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">GetInt</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>官方例子给的是a.Begin()和a.End();但在cocos2d-x3.2中使用时调用的是a.onBegin()和a.onEnd()</h5>
+
+<h4>遍历对象</h4>
+
+<p>除了对数组可以使用迭代器进行遍历外，我们还可以用迭代器对对象进行遍历，如下：</p>
+
+<figure class='code'><figcaption><span>遍历对象</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span><span class="o">::</span><span class="n">ConstMemberIterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">document</span><span class="p">.</span><span class="n">MemberonBegin</span><span class="p">();</span> <span class="n">itr</span> <span class="o">!=</span>                <span class="n">document</span><span class="p">.</span><span class="n">MemberonEnd</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;-----type of member %s </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">.</span><span class="n">GetString</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h5>此处注意是document.MemberonBegin()而不是官方文档中的document.MemberBegin()</h5>
+
+<p>在rapidjson中可以判断一个数是是有符号整数，还是无符号整数，是单精度数还是双精度数等方法，如下：</p>
+
+<ul>
+<li>IsNumber() whether the value is a number</li>
+<li>IsInt() whether the number is a int</li>
+<li>IsUint() whether the number is a uint</li>
+<li>IsInt64() whether the number is a int64_t</li>
+<li>IsUint64() whether the number is a uint64_t</li>
+<li>IsDouble() whether the number is a double</li>
+</ul>
+
+
+<p>对于字符串的操作，rapidjson除了可以使用getString()获取字符内容外，还可以使用getStringLength()获取字符串长度。</p>
+
+<h2>生成</h2>
+
+<p>先来看个简单的例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Document</span> <span class="n">docWrite</span><span class="p">;</span>
+</span><span class='line'><span class="n">docWrite</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+</span><span class='line'><span class="c1">//    或者</span>
+</span><span class='line'><span class="c1">//    rapidjson::Value doc;</span>
+</span><span class='line'><span class="c1">//    doc.SetObject();</span>
+</span><span class='line'><span class="n">FileStream</span> <span class="nf">f</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'><span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span><span class='line'><span class="n">docWrite</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+上边我们生成了一个空对象，并把它写到控制台中，这样我们就可以在控制台中看到一个{}了，我们可以用两种方式来生成一个对象，即rapidjson::Document 或者 rapidjson::Value，因为Document是派生自Value的，所以Value能干的事，它也能干。至于写入流程，现在还不是懂，等懂了再说。<br/>
+除了这种SetXXX()的方式外，我们换可以使用构造的方式来完成，rapidjson::Value doc(kObjectType);</p>
+
+<h4>对象操作：</h4>
+
+<p>如果给对象添加成员时，我们可以调用AddMember()方法在其中添加成员，与其对应的还有一个RemoveMember()方法用于删除对象中成员。</p>
+
+<figure class='code'><figcaption><span>对象添加成员</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;Milo&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;married&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="c1">//    doc.RemoveMember(&quot;married&quot;);    </span>
+</span><span class='line'><span class="n">FileStream</span> <span class="nf">f</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'><span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成格式： <br/>
+{ <br/>
+　　　&#8221;name&#8221;: &ldquo;Milo&rdquo;, <br/>
+　　　&#8221;married&#8221;: true <br/>
+}</p>
+
+<h4>字符串操作</h4>
+
+<p>rapidjson对于字符串的操作提供了两种方案。</p>
+
+<ol>
+<li>copy-string</li>
+<li>const-string</li>
+</ol>
+
+
+<p>第一种是将原字符串拷贝了一份，然后，对拷贝后的字符串进行操作，这样做安全很多，但是对于长字符串就比较耗时间了。 <br/>
+另一种只是存储了一份指向原字符串的指针，这样就大大减少了对内存使用。</p>
+
+<figure class='code'><figcaption><span>对象添加成员</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">Document</span> <span class="n">docWriteStr</span><span class="p">;</span>
+</span><span class='line'><span class="n">docWriteStr</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+</span><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">author</span><span class="p">;</span>
+</span><span class='line'><span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s">&quot;%s %s&quot;</span><span class="p">,</span> <span class="s">&quot;Milo&quot;</span><span class="p">,</span> <span class="s">&quot;Yip&quot;</span><span class="p">);</span> <span class="c1">// dynamically created string.</span>
+</span><span class='line'><span class="n">author</span><span class="p">.</span><span class="n">SetString</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">docWriteStr</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="n">memset</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+</span><span class='line'><span class="n">docWriteStr</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;author&quot;</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">docWriteStr</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="n">FileStream</span> <span class="nf">fs</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'><span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writerStr</span><span class="p">(</span><span class="n">fs</span><span class="p">);</span>
+</span><span class='line'><span class="n">docWriteStr</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writerStr</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种在SetString()的时候，先使用零时buffer，对字符传进行了拷贝，计算字符长度，然后使用doc.GetAllocator()进行了内存分配。生成Value成员，然后使用AddMember方法将其添加到docWriteStr对象中。</p>
+
+<p>另一方面，我们不需要生成零时字符串，可直接对字符串进行操作。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">author</span><span class="p">;</span>
+</span><span class='line'><span class="n">author</span><span class="p">.</span><span class="n">SetString</span><span class="p">(</span><span class="s">&quot;rapidjson&quot;</span><span class="p">,</span> <span class="mi">9</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这种方式比上边的效率更高。还可以使用下边这两种形式，但由于不知道字符长度，效率会比较低一点。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">author</span><span class="p">.</span><span class="n">SetString</span><span class="p">(</span><span class="s">&quot;rapidjson&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">author</span> <span class="o">=</span> <span class="s">&quot;rapidjson&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>数组操作：</h4>
+
+<figure class='code'><figcaption><span>生成数组</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">Document</span> <span class="n">docWriteArray</span><span class="p">;</span>
+</span><span class='line'><span class="n">docWriteArray</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+</span><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">array</span><span class="p">(</span><span class="n">kArrayType</span><span class="p">);</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>  <span class="n">array</span><span class="p">.</span><span class="n">PushBack</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">docWriteArray</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">docWriteArray</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;array&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="n">FileStream</span> <span class="nf">fArray</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'><span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writerArray</span><span class="p">(</span><span class="n">fArray</span><span class="p">);</span>
+</span><span class='line'><span class="n">docWriteArray</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writerArray</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成格式： <br/>
+{ <br/>
+　　　&#8221;array&#8221;: [0,1,2,3,4] <br/>
+}  <br/>
+在rapidjson::Value array(kArrayType);中，使用kArrayType声明Value类型为数组，我们也可以使用 array.SetArray();的方式。然后使用PushBack()方法将值加载到数组中，最后将Value添加到对象中。 <br/>
+如果我们想在数组中生成对象，只要将生成新的Value,然后添加就行，像下边这样：</p>
+
+<figure class='code'><figcaption><span>数组中添加对象</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+</span><span class='line'><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">array</span><span class="p">(</span><span class="n">kArrayType</span><span class="p">);</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">tmp</span><span class="p">(</span><span class="n">kObjectType</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">tmp</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;class1&quot;</span><span class="p">,</span> <span class="s">&quot;ypengju&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">tmp</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;class2&quot;</span><span class="p">,</span> <span class="s">&quot;xcode&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'>    <span class="n">array</span><span class="p">.</span><span class="n">PushBack</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;array&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+</span><span class='line'><span class="n">FileStream</span> <span class="nf">f</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+</span><span class='line'><span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+</span><span class='line'><span class="n">doc</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>生成格式： <br/>
+{ <br/>
+　　　&#8221;array&#8221;: [ <br/>
+　　　　　　{ <br/>
+　　　　　　　　　&#8221;class1&#8221;: &ldquo;ypengju&rdquo;, <br/>
+　　　　　　　　　&#8221;class2&#8221;: &ldquo;xcode&rdquo; <br/>
+　　　　　　}, <br/>
+　　　　　　{ <br/>
+　　　　　　　　　&#8221;class1&#8221;: &ldquo;ypengju&rdquo;, <br/>
+　　　　　　　　　&#8221;class2&#8221;: &ldquo;xcode&rdquo; <br/>
+　　　　　　}, <br/>
+　　　　　　{ <br/>
+　　　　　　　　　&#8221;class1&#8221;: &ldquo;ypengju&rdquo;, <br/>
+　　　　　　　　　&#8221;class2&#8221;: &ldquo;xcode&rdquo; <br/>
+　　　　　　} <br/>
+　　　] <br/>
+}</p>
+
+<h5>例子程序地址：<a href="https://github.com/ypengju/cocos2d-xTest">https://github.com/ypengju/cocos2d-xTest</a></h5>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-09-28T16:10:30+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:10 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/26/ios-sheng-ming-zhou-qi/" title="Previous Post: IOS--生命周期">&laquo; IOS&#8211;生命周期</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/03/lua-table/" title="Next Post: Lua -- Table">Lua &#8211; Table &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

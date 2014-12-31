@@ -1,0 +1,962 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; 事件分发机制 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="cocos2d-x 3.2中关于事件分发机制的类都位于base目录下，其中主要三大类： 以Event为基类的，事件类
+以EventListener为基类的，事件监听类
+EventDispatcher，事件分发类 一般我们只注册事件监听类，当发生相应事件时，由事件分发器分发事件， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/10/07/cocos2d-x-shi-jian-fen-fa-ji-zhi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; 事件分发机制</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-07T23:21:25+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:21 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>cocos2d-x 3.2中关于事件分发机制的类都位于base目录下，其中主要三大类：</p>
+
+<ul>
+<li>以Event为基类的，事件类</li>
+<li>以EventListener为基类的，事件监听类</li>
+<li>EventDispatcher，事件分发类</li>
+</ul>
+
+
+<p>一般我们只注册事件监听类，当发生相应事件时，由事件分发器分发事件，调用我们注册的回调函数，完成事件。  <!-- more --></p>
+
+<h3>事件类型</h3>
+
+<p>在Event.h中我们可以看到有以下七种事件类型：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">TOUCH</span><span class="p">,</span>                  <span class="c1">//触摸事件</span>
+</span><span class='line'>    <span class="n">KEYBOARD</span><span class="p">,</span>           <span class="c1">//键盘事件</span>
+</span><span class='line'>    <span class="n">ACCELERATION</span><span class="p">,</span>       <span class="c1">//加速器事件</span>
+</span><span class='line'>    <span class="n">MOUSE</span><span class="p">,</span>              <span class="c1">//鼠标事件</span>
+</span><span class='line'>    <span class="n">FOCUS</span><span class="p">,</span>              <span class="c1">//UI控件事件</span>
+</span><span class='line'><span class="cp">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)</span>
+</span><span class='line'>    <span class="n">GAME_CONTROLLER</span><span class="p">,</span>    <span class="c1">//游戏手柄事件</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>    <span class="n">CUSTOM</span>             <span class="c1">//自定义事件</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+对应的也有七种事件监听，都已CCEventListenerXXX命名，分别用于注册对应事件处理代码。</p>
+
+<h3>使用方法</h3>
+
+<p>先来看一个完整的单点事件触摸例子。</p>
+
+<figure class='code'><figcaption><span>单点触摸</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">auto</span> <span class="n">listener</span> <span class="o">=</span> <span class="n">EventListenerTouchOneByOne</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>   <span class="c1">//生成监听器</span>
+</span><span class='line'><span class="c1">//添加touchBegan方法，手指接触屏幕是调用</span>
+</span><span class='line'><span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchBegan</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch begin method&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="c1">//添加touchMoved方法，手指在屏幕滑动时调用</span>
+</span><span class='line'><span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchMoved</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch moved method&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="c1">//添加touchEnded方法，手指离开屏幕时调用</span>
+</span><span class='line'><span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchEnded</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch ended method&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="c1">//添加touchCancelled，点击事件被打断是调用</span>
+</span><span class='line'><span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchCancelled</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch cancenlled method&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'><span class="c1">//添加监听器</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addEventListenerWithSceneGraphPriority</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ol>
+<li>首先生成单点触摸监听器，对应的还有一个多点触摸监听器。</li>
+<li>注册事件发生时，不同阶段的回调函数。</li>
+<li>将监听器添加到事件分发器中，有系统在事件发生时，完成事件分发</li>
+</ol>
+
+
+<p>这就是基本的事见监听注册过程，其他事件类型，也都按照这个过程来做。</p>
+
+<h3>剖析</h3>
+
+<p>上边的例子，注册了一个点击事件，了解了事件监听的使用方法，但是并不知道从手指点击屏幕到成功调用注册函数之间到底发生了哪些事情，接下来主要剖析下整个调用过程，看引擎是怎么完成一个事件分发的。</p>
+
+<h4>事件</h4>
+
+<p>事件基类Event类中，主要由三个属性</p>
+
+<figure class='code'><figcaption><span>Event.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="p">...</span>
+</span><span class='line'><span class="n">Type</span> <span class="n">_type</span><span class="p">;</span>     <span class="c1">///&lt; Event type</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">_isStopped</span><span class="p">;</span>       <span class="c1">///&lt; whether the event has been stopped.</span>
+</span><span class='line'><span class="n">Node</span><span class="o">*</span> <span class="n">_currentTarget</span><span class="p">;</span>  <span class="c1">///&lt; Current target</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>前后不重要代码省略，三个属性主要说明了事件的类型，调用时事件是否以完成，以及调用事件的当前节点。其子类也基本类似，只是添加新的属性来说明新的事件特性及对应的set、get方法。</p>
+
+<h4>事件监听</h4>
+
+<figure class='code'><figcaption><span>EventListener.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'> <span class="p">...</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">_onEvent</span><span class="p">;</span>   <span class="c1">/// Event callback function</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Type</span> <span class="n">_type</span><span class="p">;</span>                             <span class="c1">/// Event listener type</span>
+</span><span class='line'><span class="n">ListenerID</span> <span class="n">_listenerID</span><span class="p">;</span>                 <span class="c1">/// Event listener ID</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">_isRegistered</span><span class="p">;</span>                     <span class="c1">/// Whether the listener has been added to dispatcher.</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span>   <span class="n">_fixedPriority</span><span class="p">;</span>   <span class="c1">// The higher the number, the higher the priority, 0 is for scene graph base priority.</span>
+</span><span class='line'><span class="n">Node</span><span class="o">*</span> <span class="n">_node</span><span class="p">;</span>            <span class="c1">// scene graph based priority</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">_paused</span><span class="p">;</span>           <span class="c1">// Whether the listener is paused</span>
+</span><span class='line'><span class="kt">bool</span> <span class="n">_isEnabled</span><span class="p">;</span>        <span class="c1">// Whether the listener is enabled</span>
+</span><span class='line'><span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+<code>_onEvent</code> - 注册的监听回调函数，<code>_type</code> - 事件监听类型，如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">UNKNOWN</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">TOUCH_ONE_BY_ONE</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">TOUCH_ALL_AT_ONCE</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">KEYBOARD</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">MOUSE</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">ACCELERATION</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">FOCUS</span><span class="p">,</span>
+</span><span class='line'><span class="cp">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)</span>
+</span><span class='line'>      <span class="n">GAME_CONTROLLER</span><span class="p">,</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>        <span class="n">CUSTOM</span>
+</span><span class='line'>    <span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+这里多了一个默认类型和对单点触摸和多点触摸的监听事件进行了区分。<code>_listenerID</code> - 监听ID，在分发中会用到，<code>_fixedPriority</code> - 优先级，优先级高的会先被调用，<code>_node</code> - 监听节点，<code>_paused</code> - 是否暂停，<code>_isEnabled</code> - 是否可用。其他子类，也基本类似，只是针对不同事件类型，添加了对应的回调函数。每个listen类中都有clone方法，当为其他节点添加监听时，可以使用已有监听的clone来为其添加监听，并在原有监听回调中进行逻辑处理。</p>
+
+<h4>事件分发</h4>
+
+<p>了解了事件和监听后，来具体看下cocos2d-x是怎么注册监听的，已经如何将事件传递给监听调用回调。先来看注册监听。</p>
+
+<h5>注册监听</h5>
+
+<p>前面例子的最后一句话，将我们生成的监听类添加到了分发器中，在3.2中有三类方法，添加监听</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addCustomEventListener</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">eventName</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span> <span class="p">(</span><span class="n">EventCustom</span> <span class="o">*</span><span class="p">)</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">callback</span><span class="p">);</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addEventListenerWithFixedPriority</span><span class="p">(</span><span class="n">cocos2d</span><span class="o">::</span><span class="n">EventListener</span> <span class="o">*</span><span class="n">listener</span><span class="p">,</span> <span class="o">&lt;</span><span class="err">#</span><span class="kt">int</span> <span class="n">fixedPriority</span><span class="p">);</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addEventListenerWithSceneGraphPriority</span><span class="p">(</span><span class="n">cocos2d</span><span class="o">::</span><span class="n">EventListener</span> <span class="o">*</span><span class="n">listener</span><span class="p">,</span> <span class="n">cocos2d</span><span class="o">::</span><span class="n">Node</span> <span class="o">*</span><span class="n">node</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+依次来看看这三种方法的具体实现。</p>
+
+<ol>
+<li>addCustomEventListener(const std::string &amp;eventName, const std::function<void (EventCustom *)> &amp;callback);
+它接受两个参数，一个事件名，一个回调函数。看看内部实现：</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">EventListenerCustom</span><span class="o">*</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addCustomEventListener</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">eventName</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">EventCustom</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">callback</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">EventListenerCustom</span> <span class="o">*</span><span class="n">listener</span> <span class="o">=</span> <span class="n">EventListenerCustom</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">eventName</span><span class="p">,</span> <span class="n">callback</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">addEventListenerWithFixedPriority</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">listener</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>oh，调到addEventListenerWithFixedPriority了，那还是直接看addEventListenerWithFixedPriority吧。 <br/>
+2. addEventListenerWithFixedPriority(cocos2d::EventListener *listener, &lt;#int fixedPriority);
+接两个参数，一个监听器，一个优先级，继续看内部实现</p>
+
+<figure class='code'><figcaption><span>addEventListenerWithFixedPriority</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListenerWithFixedPriority</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fixedPriority</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="s">&quot;Invalid parameters.&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(),</span> <span class="s">&quot;The listener has been registered.&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">fixedPriority</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;0 priority is forbidden for fixed priority since it&#39;s used for scene graph based priority.&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">checkAvailable</span><span class="p">())</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setAssociatedNode</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setFixedPriority</span><span class="p">(</span><span class="n">fixedPriority</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setRegistered</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setPaused</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">addEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+首先断言进行验证，判断是否已经注册过，每个监听类只能注册一次。传入的优先级不能为0，因为0是场景的默认处理优先级。然后检测监听器是否可以，针对不同的监听器，有不同的检测条件，比如单点触摸检测是否注册了touchBegan回调函数，键盘事件是否注册了按下抬起事件等。之后关联节点，因为这里没有节点出入，所以为nullptr，然后设置优先级，设置注册、暂停标志，最后调用addEventListener方法，我们继续看源码</p>
+
+<figure class='code'><figcaption><span>addEventListener</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListener</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_inDispatch</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">forceAddEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_toAddedListeners</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">retain</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以看到，根据事件是否在分发中，对监听器进行了不同的处理。首先看<code>_inDispatch == 0</code>时的调用过程。</p>
+
+<figure class='code'><figcaption><span>forceAddEventListener</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">forceAddEventListener</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">EventListenerVector</span><span class="o">*</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">EventListener</span><span class="o">::</span><span class="n">ListenerID</span> <span class="n">listenerID</span> <span class="o">=</span> <span class="n">listener</span><span class="o">-&gt;</span><span class="n">getListenerID</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">itr</span> <span class="o">==</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">listeners</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventListenerVector</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_listenerMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">listeners</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">listeners</span> <span class="o">=</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">listeners</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">getFixedPriority</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">setDirty</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span><span class="o">::</span><span class="n">SCENE_GRAPH_PRIORITY</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">node</span> <span class="o">=</span> <span class="n">listener</span><span class="o">-&gt;</span><span class="n">getAssociatedNode</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">CCASSERT</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="s">&quot;Invalid scene graph priority!&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">associateNodeAndEventListener</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">listener</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">isRunning</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">resumeEventListenersForTarget</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">setDirty</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span><span class="o">::</span><span class="n">FIXED_PRIORITY</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>生成一个零时数据容器</li>
+<li>获取监听器ID，在_listenerMap监听器容器中进行查找</li>
+<li>如果_listenerMap监听器容器中没有对应的ID的监听容器，穿件一个新的添加进去。</li>
+<li>如果有，将对应ID的注册过的监听器容器赋值给零时容器</li>
+<li>判断传进参数监听器优先级是否为0，然后进行处理，如果为0，设置为脏，至于什么才是脏下边继续分析，此时获得关联节点，然后将节点与监听类进行关联。不为0时，只设置为了脏，下边继续看怎么设置的</li>
+</ul>
+
+
+<figure class='code'><figcaption><span>setDirty   </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">setDirty</span><span class="p">(</span><span class="k">const</span> <span class="n">EventListener</span><span class="o">::</span><span class="n">ListenerID</span><span class="o">&amp;</span> <span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span> <span class="n">flag</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">==</span> <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">flag</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">flag</span> <span class="o">|</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="n">DirtyFlag</span><span class="p">)</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+在<em>priorityDirtyFlagMap中，对对应事件类型ID添加标志，所有添加到</em>priorityDirtyFlagMap中的事件类型都为脏数据。接下来看看怎么关联节点和监听类的</p>
+
+<figure class='code'><figcaption><span>associateNodeAndEventListener</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">associateNodeAndEventListener</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EventListener</span><span class="o">*&gt;*</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">found</span> <span class="o">=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">found</span> <span class="o">!=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">listeners</span> <span class="o">=</span> <span class="n">found</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">listeners</span> <span class="o">=</span> <span class="k">new</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EventListener</span><span class="o">*&gt;</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">listeners</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">listeners</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+由代码可知一个节点的对应注册事件都存储在<code>_nodeListenersMap</code>容器类中。此时将新的监听类添加到节点的监听类容器中。然后递归调用节点的所有类，使节点处于监听状态即设置暂停标志为false。</p>
+
+<figure class='code'><figcaption><span>resumeEventListenersForTarget</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">resumeEventListenersForTarget</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">target</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">recursive</span><span class="cm">/* = false */</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">listenerIter</span> <span class="o">=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">listenerIter</span> <span class="o">!=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">listeners</span> <span class="o">=</span> <span class="n">listenerIter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">l</span> <span class="p">:</span> <span class="o">*</span><span class="n">listeners</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">l</span><span class="o">-&gt;</span><span class="n">setPaused</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span> <span class="nl">listener</span> <span class="p">:</span> <span class="n">_toAddedListeners</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">getAssociatedNode</span><span class="p">()</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setPaused</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">setDirtyForNode</span><span class="p">(</span><span class="n">target</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">recursive</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="n">children</span> <span class="o">=</span> <span class="n">target</span><span class="o">-&gt;</span><span class="n">getChildren</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">child</span> <span class="p">:</span> <span class="n">children</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">resumeEventListenersForTarget</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="nb">true</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果<code>_inDispatch == 0</code>不成立是，调用<code>_toAddedListeners.push_back(listener);</code>说明此时分发器正在工作，则直接将监听器添加到分发表中。</p>
+
+<p>再看addEventListenerWithSceneGraphPriority的注册过程  <br/>
+也接受两个参数，一个监听器，一个监听节点。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListenerWithSceneGraphPriority</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">,</span> <span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">listener</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="p">,</span> <span class="s">&quot;Invalid parameters.&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(),</span> <span class="s">&quot;The listener has been registered.&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">checkAvailable</span><span class="p">())</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setAssociatedNode</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setFixedPriority</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setRegistered</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">addEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+和addEventListenerWithFixedPriority最大不同就在于设置关联节点和设置优先级上，其他都是调到addEventListener方法进行处理，上边以进行了调用分析。</p>
+
+<h5>响应事件</h5>
+
+<p>上边已注册了监听，接下来看看一个事件发生时的处里过程，我以一个单点触摸为例，进行说明。  <br/>
+cocos2d-x点击事件并不是直接从硬件获得的，而是通过不同平台原生点击事件，当点击事件发生时，调用原生点击事件处理器，之后再将点击事件传递给引擎，引擎再对点击事件进行分发处理。如下简单分析下android和ios的点击调用过程。<br/>
+andoird： <br/>
+android的原生点击事件注册在platform/android/java/src/org/cocos2dx/lib/Cocos2dxGLSurfaceView类中的onTouchEvent()方法中。在此方法中对不同点击事件进行处理，然后传递给Cocos2dxRenderer.java类中的对应的handleActionXXX()函数中，在此方法中，通过jni调用注册的c++函数，这些函数具体实现都在android/jni/TouchesJni.cpp这个类中，然后统一调到platform/GLViewProtocol类中的handleTouchesXXX()类中进行事件处理，最后进行事件分发。 <br/>
+ios： <br/>
+是从ios/CCEAGLView.mm类中的ios的touchBegin等方法，调到GLViewProtocol类中，因为oc和c++可以直接调用，所以这里没有android那么复杂。<br/>
+可以看到所有的点击事件都是统一到GLViewProtocol类来进行事件处理的。</p>
+
+<figure class='code'><figcaption><span>GLViewProtocol::handleTouchesBegin</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">GLViewProtocol</span><span class="o">::</span><span class="n">handleTouchesBegin</span><span class="p">(</span><span class="kt">int</span> <span class="n">num</span><span class="p">,</span> <span class="kt">intptr_t</span> <span class="n">ids</span><span class="p">[],</span> <span class="kt">float</span> <span class="n">xs</span><span class="p">[],</span> <span class="kt">float</span> <span class="n">ys</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">intptr_t</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">x</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">y</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">unusedIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">EventTouch</span> <span class="n">touchEvent</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">num</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">id</span> <span class="o">=</span> <span class="n">ids</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">x</span> <span class="o">=</span> <span class="n">xs</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">y</span> <span class="o">=</span> <span class="n">ys</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">g_touchIdReorderMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// it is a new touch</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">==</span> <span class="n">g_touchIdReorderMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">unusedIndex</span> <span class="o">=</span> <span class="n">getUnUsedIndex</span><span class="p">();</span>
+</span><span class='line'>            <span class="c1">// The touches is more than MAX_TOUCHES ?</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">unusedIndex</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>                <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;The touches is more than MAX_TOUCHES, unusedIndex = %d&quot;</span><span class="p">,</span> <span class="n">unusedIndex</span><span class="p">);</span>
+</span><span class='line'>                <span class="k">continue</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">Touch</span><span class="o">*</span> <span class="n">touch</span> <span class="o">=</span> <span class="n">g_touches</span><span class="p">[</span><span class="n">unusedIndex</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Touch</span><span class="p">();</span>
+</span><span class='line'>          <span class="n">touch</span><span class="o">-&gt;</span><span class="n">setTouchInfo</span><span class="p">(</span><span class="n">unusedIndex</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">_viewPortRect</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">_scaleX</span><span class="p">,</span>
+</span><span class='line'>                                     <span class="p">(</span><span class="n">y</span> <span class="o">-</span> <span class="n">_viewPortRect</span><span class="p">.</span><span class="n">origin</span><span class="p">.</span><span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">_scaleY</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">CCLOGINFO</span><span class="p">(</span><span class="s">&quot;x = %f y = %f&quot;</span><span class="p">,</span> <span class="n">touch</span><span class="o">-&gt;</span><span class="n">getLocationInView</span><span class="p">().</span><span class="n">x</span><span class="p">,</span> <span class="n">touch</span><span class="o">-&gt;</span><span class="n">getLocationInView</span><span class="p">().</span><span class="n">y</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">g_touchIdReorderMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">unusedIndex</span><span class="p">));</span>
+</span><span class='line'>            <span class="n">touchEvent</span><span class="p">.</span><span class="n">_touches</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">touch</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">touchEvent</span><span class="p">.</span><span class="n">_touches</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;touchesBegan: size = 0&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">touchEvent</span><span class="p">.</span><span class="n">_eventCode</span> <span class="o">=</span> <span class="n">EventTouch</span><span class="o">::</span><span class="n">EventCode</span><span class="o">::</span><span class="n">BEGAN</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">dispatcher</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">dispatcher</span><span class="o">-&gt;</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="o">&amp;</span><span class="n">touchEvent</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>   <br/>
+以GLViewProtocol::handleTouchesBegin为例，可以看到，所有的触摸点都包装在类Touch中，然后再将Touch点全部放置到EventTouch事件中，然后由引擎进行分发调用。 <br/>
+接着具体看看引擎是如何分发的，从dispatchEvent()方法开始。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span> <span class="n">event</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_isEnabled</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">updateDirtyFlagForSceneGraph</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">DispatchGuard</span> <span class="nf">guard</span><span class="p">(</span><span class="n">_inDispatch</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">TOUCH</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">dispatchTouchEvent</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">EventTouch</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">event</span><span class="p">));</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">listenerID</span> <span class="o">=</span> <span class="n">__getListenerID</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">sortEventListeners</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">!=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">listeners</span> <span class="o">=</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">onEvent</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">event</span><span class="p">](</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span><span class="p">{</span>
+</span><span class='line'>            <span class="n">event</span><span class="o">-&gt;</span><span class="n">setCurrentTarget</span><span class="p">(</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">getAssociatedNode</span><span class="p">());</span>
+</span><span class='line'>            <span class="n">listener</span><span class="o">-&gt;</span><span class="n">_onEvent</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">isStopped</span><span class="p">();</span>
+</span><span class='line'>        <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">dispatchEventToListeners</span><span class="p">(</span><span class="n">listeners</span><span class="p">,</span> <span class="n">onEvent</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">updateListeners</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+* 首先更新了脏数据标志
+* 然后对_inDispatch标志进行了操作
+* 对触摸事件进行了单独处理
+* 获取事件监听器ID，根据ID排序后对事件进行处理，然后调用注册的回调函数</p>
+
+<p>dispatchTouchEvent中分别对单点触摸和多点触摸分别进行了处理，然后调用不同的注册回调函数。完成事件的触摸。 <br/>
+这就是点击事件的整个处理流程，由于对EventDispatcher中的处理，有些地方还是理解的不投透彻，所以后续还会根据理解进行更新。</p>
+
+<p>其他类型的事件与点击事件的处理也都大同小异，比如键盘事件，它只在桌面程序及安卓程序上有效，基本情况也类似，都是在不同平台调用，然后传递给引擎处理。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-07T23:21:25+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:21 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/04/lua-metatables/" title="Previous Post: Lua -- metatables">&laquo; Lua &#8211; metatables</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/" title="Next Post: Lua -- 面向对象编程">Lua &#8211; 面向对象编程 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

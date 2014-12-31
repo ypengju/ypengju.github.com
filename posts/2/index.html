@@ -1,0 +1,341 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="cocos2d-x 3.2中关于事件分发机制的类都位于base目录下，其中主要三大类： 以Event为基类的，事件类
+以EventListener为基类的，事件监听类
+EventDispatcher，事件分发类 一般我们只注册事件监听类，当发生相应事件时，由事件分发器分发事件， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/posts/2">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/07/cocos2d-x-shi-jian-fen-fa-ji-zhi/">Cocos2d-x &#8211; 事件分发机制</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-07T23:21:25+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>11:21 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>cocos2d-x 3.2中关于事件分发机制的类都位于base目录下，其中主要三大类：</p>
+
+<ul>
+<li>以Event为基类的，事件类</li>
+<li>以EventListener为基类的，事件监听类</li>
+<li>EventDispatcher，事件分发类</li>
+</ul>
+
+
+<p>一般我们只注册事件监听类，当发生相应事件时，由事件分发器分发事件，调用我们注册的回调函数，完成事件。  </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/07/cocos2d-x-shi-jian-fen-fa-ji-zhi/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/04/lua-metatables/">Lua &#8211; Metatables</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-04T17:10:37+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>5:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>通过lua中的元表及元方法，我们可以定义一些原本在lua中不存在的操作，比如两个表的相加，相减，大小比较，而且lua中的类的继承，类的封装这些面向对象操作也是借助于元表来完成的。</p>
+
+<h3>设置获取元表</h3>
+
+<p>lua中是通过setmetatable()和getmetatable()方法来分别设置和获取一个表的元表的。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/04/lua-metatables/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/03/lua-table/">Lua &#8211; Table</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-03T20:43:27+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>8:43 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 &ndash; Table，可谓以不变应万变了。 <br/>
+lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据，字符串，函数，甚至表等各种结构，</p>
+
+<h3>整数索引</h3>
+
+<p>lua以整数为下标时，我们就可以像数组一样直接使用，其实lua底层，table是由两部分组成的，一部分是数组，用来存储像整数下标的这些值，一部分用哈希表来实现，用来存储像字符串这样索引的值。lua对table的大小没有限制，也就是说我们可以在使用过程中，在table中添加元素。  </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/03/lua-table/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/28/cocos2d-x-rapidjson/">Cocos2d-x &#8211; Rapidjson</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-28T16:10:30+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:10 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>rapidjson是一个c++中的json解析库，其实还有其他的工具如jsoncpp，但是号称rapidjson效率更高一些，并且cocos2d-x3.x版本中都添加rapidjson支持，所以学习了解了下rapidjson的使用。</p>
+
+<h5>rapidjson 主页：<a href="https://code.google.com/p/rapidjson/">https://code.google.com/p/rapidjson/</a></h5>
+
+<p>下载后在源码中example中可以找到使用方法，在cocos2d-x 3.2中，位于external/json   </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/28/cocos2d-x-rapidjson/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/26/ios-sheng-ming-zhou-qi/">IOS&#8211;生命周期</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-26T14:23:43+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程</p>
+
+<h2>应用的生命周期：</h2>
+
+<p>应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。</p>
+
+<h3>首先看下应用的5个状态   </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/09/26/ios-sheng-ming-zhou-qi/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+    <a class="next" href="/index.html">Newer &rarr;</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

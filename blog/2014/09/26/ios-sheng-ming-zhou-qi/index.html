@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>IOS&#8211;生命周期 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程 应用的生命周期： 应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。 首先看下应用的5个状态 Not Running&ensp;&ensp;&ensp;(非运行状态)&ensp;&ensp;& &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/09/26/ios-sheng-ming-zhou-qi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <!--<li><a href="" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>&#8211;>
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">IOS&#8211;生命周期</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-09-26T14:23:43+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:23 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程</p>
+
+<h2>应用的生命周期：</h2>
+
+<p>应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。</p>
+
+<h3>首先看下应用的5个状态   <!-- more --></h3>
+
+<ul>
+<li>Not Running&ensp;&ensp;&ensp;(非运行状态)&ensp;&ensp;&ensp;应用没有启动或者被系统干掉时</li>
+<li>Inactive&ensp;&ensp;&ensp;(前台非活动状态)&ensp;&ensp;&ensp;应用正在进入前台状态，但是不能接受事件处理</li>
+<li>Active&ensp;&ensp;&ensp;(前台活动状态)&ensp;&ensp;&ensp;应用进入前台状态，可以接受事件处理</li>
+<li>Background&ensp;&ensp;&ensp;(后台状态)&ensp;&ensp;&ensp;应用进入后台</li>
+<li>Suspended&ensp;&ensp;&ensp;(挂起状态)&ensp;&ensp;&ensp;不能执行代码，如果系统内存不够，此应用会被系统干掉</li>
+</ul>
+
+
+<p>在上边5个不同状态切换过程中，应用程序会调用不同的回调函数，这些函数都定义UIApplicationDelegate中，比如一些will和did函数来分别处理过程前和过程后调用。 <br/>
+为了方便看到整个调用过程，我在系统默认生成的AppDelegate中的每个方法中加入了一条打印语句，方便清楚的看到整个调用过程。</p>
+
+<h4>应用从启动到显示（Not Running &ndash;> Active）</h4>
+
+<p>这个过程中会从NotRunning->Inactive，再从Inactive->Active。两个过程中分别会调用两个不同的回调函数，didFinishLaunchingWithOptions和applicationDidBecomeActive函数。 <br/>
+didFinishLaunchingWithOptions   应用启动并进行初始化时会调用此函数，实例化根视图控制器 <br/>
+applicationDidBecomeActive 应用进入前台并处于激活状态时会调用此函数，这个阶段可恢复UI状态，对UI进行刷新 <br/>
+两个方法都会发出Notification通知。</p>
+
+<h4>点击Home键或被中断</h4>
+
+<p>当点击Home键或着由于电话等被中断，应用程序会进入后台，这个过程中分为两种情况，一种是在后台还可继续运行或挂起，一种是在后台不能运行或挂起，这两个过程中会调用不同的方法。这个是由XXXInfo.plist文件中的Application does not run in background属性进行控制的，默认是没有这个设置的，如果需要，可添加进来。</p>
+
+<h5>可运行挂起（Active &ndash;> Suspended）</h5>
+
+<p>这个过程是从Active->Inactive->Background->Suspended,此时Application does not run in background属性值为NO。 <br/>
+Active->Inactive 调用applicationWillResignActive函数，在这个阶段可以暂停任务，暂停游戏等。 <br/>
+Inactive->Background<br/>
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等</p>
+
+<h5>不可运行状态（Active &ndash;> Not Running）</h5>
+
+<p>这个过程是从Active->Inactive->Background->Suspended->Not Running,此时Application does not run in background属性值为YES。 <br/>
+Active->Inactive   <br/>
+Inactive->Background<br/>
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等
+Suspended->Not Running 调用applicationWillTerminate函数，用于保存数据等。</p>
+
+<p>如果双击Home键，系统进入多任务栏(Activie &ndash;> Inactive)，此时不管Application does not run in background设置YES或者NO，都会调用applicationWillResignActive函数。<br/>
+如果点击当前应用，调用applicationDidBecomeActive函数，进入Active激活状态 <br/>
+若果手动删除应用，会依次调用applicationDidEnterBackground和applicationWillTerminate函数，不同的是当Application does not run in background属性值为YES时，applicationDidEnterBackground调用<code>一次</code>，当属性值为NO时，applicationDidEnterBackground调用<code>两次</code>。</p>
+
+<h4>挂起重新运行场景(Suspende &ndash;> Active)</h4>
+
+<p>这个过程是从Suspended->Background->Inactive->Active
+Suspended->Background
+Background->Inactive 调用applicationWillEnterForeground函数。
+Inactive->Active 调用applicationDidBecomeActive函数。
+此时Application does not run in background属性设置为NO，如果设置为YES，这些方法不会调用。</p>
+
+<p>以上就是整个应用的运行状态切换及在不同阶段调用的不同回调函数。</p>
+
+<h2>视图生命周期</h2>
+
+<p>在视图的不同生命周期中，视图控制器会回调不同的方法。 <br/>
+首先视图被创建时，会调用viewDidLoad函数，这个时候视图并未出现，在该方法中通常用来初始化。此方法在整个视图生命周期中只调用一次。 <br/>
+viewWillAppear 在视图可见之前调用 <br/>
+viewDidAppear  在视图可见之后调用 <br/>
+viewWillDisappear  在视图不可见之前调用 <br/>
+viewDidDisAppear   在视图不可见之后调用 <br/>
+这4个方法在整个视图生命周期中可能会被多次调用，比如可见前加载，不可见后释放等，可以有效控制内存使用 <br/>
+didReceiveMemoryWarning  内存警告时用于释放内存</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-09-26T14:23:43+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>2:23 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/09/28/cocos2d-x-rapidjson/" title="Next Post: cocos2d-x -- rapidjson">cocos2d-x &#8211; rapidjson &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/">Lua &#8211; 面向对象编程</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
