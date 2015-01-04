@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-02T11:15:09+08:00</updated>
+  <updated>2015-01-04T15:55:32+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,376 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[C++11 -- 新特性]]></title>
+    <link href="http://ypengju.github.io/blog/2015/01/04/c-plus-plus-11-xin-te-xing/"/>
+    <updated>2015-01-04T09:41:02+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/01/04/c-plus-plus-11-xin-te-xing</id>
+    <content type="html"><![CDATA[<p>在cocos2d-x 3.X之后的版本中，可以看到很多关于c++11新特性的使用，这篇文章学习记录下c++11的新特性及使用方法。</p>
+
+<h3>auto</h3>
+
+<h4>变量初始化</h4>
+
+<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。<!--more--></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;hello world&quot;</span><span class="p">;</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">map</span><span class="p">;</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="n">it</span> <span class="o">=</span> <span class="n">begin</span><span class="p">(</span><span class="n">map</span><span class="p">);</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">end</span><span class="p">(</span><span class="n">map</span><span class="p">);</span> <span class="o">++</span><span class="n">it</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h4>函数返回值</h4>
+
+<p>auto不能用来声明函数的返回值。但如果函数有一个尾随的返回类型时，auto是可以出现在函数声明中返回值位置。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span><span class="o">&gt;</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">compose</span><span class="p">(</span><span class="n">T1</span> <span class="n">t1</span><span class="p">,</span> <span class="n">T2</span> <span class="n">t2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">decltype</span><span class="p">(</span><span class="n">t1</span> <span class="o">+</span> <span class="n">t2</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="k">return</span> <span class="n">t1</span><span class="o">+</span><span class="n">t2</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">compose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">);</span> <span class="c1">// v&#39;s type is double   </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+此时，函数的返回值类型取决于两个参数相加后的数值类型。</p>
+
+<h3>nullptr</h3>
+
+<p>以前都是用0来表示空指针的，但由于0可以被隐式类型转换为整形，这就会存在一些问题。关键字nullptr是std::nullptr_t类型的值，用来指代空指针。nullptr和任何指针类型以及类成员指针类型的空值之间可以发生隐式类型转换，同样也可以隐式转换为bool型（取值为false）。但是不存在到整形的隐式类型转换。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="kt">int</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">func</span><span class="p">(</span> <span class="nb">NULL</span> <span class="p">);</span> <span class="c1">// guess which function gets called?</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+func传入的参数为NULL空指针，按理我们应该调用第二个函数，但是由于NULL就是0，而0是一个整形，所以实际调用的是第一个函数。使用nullptr就避免了这种问题，他明确指的是一个指针，而不会隐式转换为整形。</p>
+
+<h3>基于范围的for循环</h3>
+
+<p>之前使用for语句，我们必须指明下标，访问元素的个数。新的for循环语句像其他语言foreach语句一样，我们只关心遍历了数组中所有元素，而不用关心是按怎么样下标顺序进行访问。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">map</span><span class="p">;</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span class='line'><span class="n">map</span><span class="p">[</span><span class="s">&quot;one&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="k">const</span> <span class="k">auto</span><span class="o">&amp;</span> <span class="nl">kvp</span> <span class="p">:</span> <span class="n">map</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">kvp</span><span class="p">.</span><span class="n">first</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">for</span><span class="p">(</span><span class="k">auto</span> <span class="nl">v</span> <span class="p">:</span> <span class="n">kvp</span><span class="p">.</span><span class="n">second</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>     <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">v</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">arr</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">};</span>
+</span><span class='line'><span class="k">for</span><span class="p">(</span><span class="kt">int</span><span class="o">&amp;</span> <span class="nl">e</span> <span class="p">:</span> <span class="n">arr</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">e</span> <span class="o">=</span> <span class="n">e</span><span class="o">*</span><span class="n">e</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>override和final</h3>
+
+<p>在原来的情况因为疏忽或者不注意我们可能会造成一些微妙的错误。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">short</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;B::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">D</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+D::f 按理应当重写 B::f。然而二者的声明是不同的，一个参数是short，另一个是int。因此D::f（原文为B::f，可能是作者笔误——译者注）只是拥有同样名字的另一个函数（重载）而不是重写。当你通过B类型的指针调用f()可能会期望打印出D::f，但实际上则会打出 B::f 。 <br/>
+另一个很微妙的错误情况：参数相同，但是基类的函数是const的，派生类的函数却不是。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;B::f &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">D</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+同样，这两个函数是重载而不是重写，所以你通过B类型指针调用f()将打印B::f，而不是D::f。</p>
+
+<ul>
+<li>override 表示函数应当重写基类中的虚函数。</li>
+<li>final 表示派生类不应当重写这个虚函数。</li>
+</ul>
+
+
+<p>使用上边两个新的标示符后，我们可以清晰的表达我们的意图。
+可以使用override明确表明此方法是否是父类方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;B::f &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">D</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>    <span class="c1">//OK</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">double</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span> <span class="c1">//Error</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果你希望函数不要再被派生类进一步重写，你可以把它标识为final。可以在基类或任何派生类中使用final。在派生类中，可以同时使用override和final标识。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;B::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">D</span> <span class="o">:</span> <span class="k">public</span> <span class="n">B</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">override</span> <span class="k">final</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;D::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">F</span> <span class="o">:</span> <span class="k">public</span> <span class="n">D</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>   <span class="k">virtual</span> <span class="kt">void</span> <span class="n">f</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="k">override</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;F::f&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+被标记成final的函数将不能再被F::f重写。</p>
+
+<h3>强类型枚举</h3>
+
+<p>传统的C++枚举类型存在一些缺陷：它们会将枚举常量暴露在外层作用域中（这可能导致名字冲突，如果同一个作用域中存在两个不同的枚举类型，但是具有相同的枚举常量就会冲突），而且它们会被隐式转换为整形，无法拥有特定的用户定义类型。</p>
+
+<p>在C++11中通过引入了一个称为强类型枚举的新类型，修正了这种情况。强类型枚举由关键字enum class标识。它不会将枚举常量暴露到外层作用域中，也不会隐式转换为整形，并且拥有用户指定的特定类型（传统枚举也增加了这个性质）。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">enum</span> <span class="k">class</span> <span class="nc">Options</span> <span class="p">{</span><span class="n">None</span><span class="p">,</span> <span class="n">One</span><span class="p">,</span> <span class="n">All</span><span class="p">};</span>
+</span><span class='line'><span class="n">Options</span> <span class="n">o</span> <span class="o">=</span> <span class="n">Options</span><span class="o">::</span><span class="n">All</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>Lambdas</h3>
+
+<p>Lambda表达式是一种描述函数对象的机制，它的主要应用是描述某些具有简单行为的函数（Lambda表达式也可以称为匿名函数)</p>
+
+<h4>语法</h4>
+
+<ol>
+<li>[ capture-list ] ( params ) mutable(optional) exception attribute -> ret { body }</li>
+<li>[ capture-list ] ( params ) -> ret { body }</li>
+<li>[ capture-list ] ( params ) { body }</li>
+<li>[ capture-list ] { body }</li>
+</ol>
+
+
+<p>第一个为完整声明，根据需要参数，返回值等都可省略。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">auto</span> <span class="n">func1</span> <span class="o">=</span> <span class="p">[]{</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;hello world</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span> <span class="p">};</span>  <span class="c1">//省略参数的</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">func2</span> <span class="o">=</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// 隐式返回类型</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">func3</span> <span class="o">=</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">int</span> <span class="p">{</span> <span class="kt">int</span> <span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">;</span> <span class="k">return</span> <span class="n">z</span><span class="p">;</span> <span class="p">}</span> <span class="c1">//显示指定返回类型</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lambda函数可以引用在它之外声明的变量. 这些变量的集合叫做一个闭包. 闭包被定义在Lambda表达式声明中的方括号[]内. 这个机制允许这些变量被按值或按引用捕获。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="p">[]</span>        <span class="c1">//未定义变量.试图在Lambda内使用任何外部变量都是错误的.</span>
+</span><span class='line'><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">]</span>   <span class="c1">//x 按值捕获, y 按引用捕获.</span>
+</span><span class='line'><span class="p">[</span><span class="o">&amp;</span><span class="p">]</span>       <span class="c1">//用到的任何外部变量都隐式按引用捕获</span>
+</span><span class='line'><span class="p">[</span><span class="o">=</span><span class="p">]</span>       <span class="c1">//用到的任何外部变量都隐式按值捕获</span>
+</span><span class='line'><span class="p">[</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>    <span class="c1">//x显式地按值捕获. 其它变量按引用捕获</span>
+</span><span class='line'><span class="p">[</span><span class="o">=</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">z</span><span class="p">]</span>   <span class="c1">//z按引用捕获. 其它变量按值捕获</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>下边是一些列子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+</span><span class='line'><span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">for_each</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">n</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;});</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">auto</span> <span class="n">is_odd</span> <span class="o">=</span> <span class="p">[](</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="n">n</span><span class="o">%</span><span class="mi">2</span><span class="o">==</span><span class="mi">1</span><span class="p">;};</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">find_if</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">begin</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">is_odd</span><span class="p">);</span>
+</span><span class='line'><span class="k">if</span><span class="p">(</span><span class="n">pos</span> <span class="o">!=</span> <span class="n">std</span><span class="o">::</span><span class="n">end</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="o">*</span><span class="n">pos</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在使用递归lambda时，我们不能使用auto来进行申明，因为auto对象类型由初始表达式决定，然而初始表达式又包含了对其自身的引用，因此要求先知道它的类型，这就导致了无穷递归。解决问题的关键就是打破这种循环依赖，用std::function显式的指定函数类型：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">auto</span> <span class="n">fib</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">fib</span><span class="p">](</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">);};</span> <span class="c1">//Error</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">lfib</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">lfib</span><span class="p">](</span><span class="kt">int</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span><span class="k">return</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="n">lfib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">lfib</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">);};</span> <span class="c1">//OK</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>参考</h3>
+
+<p><a href="http://blog.jobbole.com/44015/">C++开发者都应该使用的10个C++11特性</a> <br/>
+<a href="http://blog.jobbole.com/55063/">C++11语言扩展：常规特性</a> <br/>
+<a href="http://en.cppreference.com/w/cpp/language/lambda">Lambda functions</a> <br/>
+<a href="http://www.cnblogs.com/pzhfei/archive/2013/01/14/lambda_expression.html">C++11中的匿名函数(lambda函数,lambda表达式)</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Cocos2d-x -- TableView]]></title>
@@ -4967,6 +5337,107 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 talbe除了像数组这种操作外，还可以用来实现其他数据结构，但是在lua中像List，Set这种数据结构，不一定比table方便，除了数据结构的操作外，lua还可以用表实现类的封装，继承等面向对象特性，而这一切都是基于元表的，感觉Lua的table无所不能啊。</p>
 
 <p>List，Set实现看见<a href="http://www.lua.org/pil/11.3.html">《Programming in lua》</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Octopress搭建博客]]></title>
+    <link href="http://ypengju.github.io/blog/2014/09/28/octopressda-jian-bo-ke/"/>
+    <updated>2014-09-28T20:11:47+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/09/28/octopressda-jian-bo-ke</id>
+    <content type="html"><![CDATA[<p>像黑客一样写博客！</p>
+
+<p>OK，终于有自己的博客站点了，这里记下怎么倒置的。</p>
+
+<p>octopress 官网：<a href="http://octopress.org/">http://octopress.org/</a></p>
+
+<p>首先各种配置ruby，git，github等就不赘述，百度或者官网都有具体步奏，照做即可。或者可以看下这个<a href="http://happycasts.net/episodes/36">视频</a>，happypeter老师讲的很清楚，同时这个网站上有非常精彩的其他工具教程视频，很值得学习。   <!-- more -->
+配置好后，就可以使用自己配置的github page地址来访问了。我基本是按照视频的方式来搭建以及管理的。如果喜欢我的博客也可直接clone，然后修改下就可以了，当然博客内容还是得删掉的。</p>
+
+<p>搭建好后就需要进行一些配置了，比如title,subtitle,author，这样以后你发表的博文才会以你的名义嘛。这些配置都在博客根目录_config.yml文件中，打开进行编辑，我用的是mac，所以这些操作都是很方便的，vim直接打开就可以了，window可以使用相应工具就行。这是一个配置文件，像刚才说到的博客名称，作者，以及第三方插件等都是在这个文件中配置的。这里先改下title，subtitle，author，保存退出然后rake preview， 打开浏览器，输入localhost:4000应该就能看到效果了。</p>
+
+<h3>文章编写</h3>
+
+<p>使用下边这条命令就可以生产一片新的博文，博文位于<code>source/_post</code>文件夹下</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post["博客名称"] </span></code></pre></td></tr></table></div></figure>
+
+
+<p>octopress使用Markdown进行编写，所以有一个合适的Markdown编辑器就很重要了，我在Mac下使用的是Mou编辑器，它可以是对编写文件进行对照，非常方便，如图所示，当然有其他的编辑器可选。
+<img src="http://ypengju.github.io/images/1.png">
+编辑完成后，我们就可以使用下边两个命令将其推送到github中。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$rake generate
+</span><span class='line'>$rake deploy</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>换主题</h3>
+
+<p>默认主题其实也蛮好的，要是自己想弄的不一样一点的，那就自己动手，改一通代码，或者像我这样即懒又不会多少前端的，当然第三方主题最省事了。 <br/>
+这里有收集的octopress第三方主题：<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">octopress theme</a>  <br/>
+里边有很多漂亮的主题，看上自己喜欢的，clone搞定。每个主题github主页都有相应的安装步奏，照做即可。然后你就可以看到自己想要的主题了。比如foxslide</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd blog
+</span><span class='line'>$ git submodule add https://github.com/sevenadrian/foxslide .themes/foxslide
+</span><span class='line'>$ git submodule update --init
+</span><span class='line'>$ rake install['foxslide']
+</span><span class='line'>$ rake generate</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h3>换域名</h3>
+
+<p>如果使用github page托管octopress，都可通过github page地址进行访问，比如我的ypengju.github.com，就可访问。要是想通过自己的域名访问，那只需简单的配置即可。</p>
+
+<ol>
+<li>在source目录下创建CNAME文件，在其中添加域名。比如我的CNAME文件中是ypengju.com</li>
+<li>添加域名解析，在你的域名服务商网站中，对你申请的域名添加解析，添加A解析，设值为207.97.227.245</li>
+<li>再添加CNAME解析，其值为你的github page地址，如我的ypengju.github.com</li>
+</ol>
+
+
+<p>之后将你的修改使用rake generate，rake deploy推送到github上，等上一段时间，就可通过绑定的域名进行访问了。</p>
+
+<h3>加评论</h3>
+
+<p>octopress默认是支持disqus评论工具的。只需在_config.yml文件中，在disqus_short_name：后添加你的disqus账号名就可以在每篇博文后添加评论功能。但是dispus在国内并不好用，所以我采用的是友言评论，与其相同的还有多说等。</p>
+
+<ol>
+<li>注册友言账号，注册地址：<a href="http://www.uyan.cc/">友言</a></li>
+<li>获取代码，将其添加到<code>source/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。</li>
+</ol>
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;!-- UY BEGIN --&gt;
+</span><span class='line'>&lt;div id="uyan_frame"&gt;&lt;/div&gt;
+</span><span class='line'>&lt;script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=xxxxxxx"&gt;&lt;/script&gt;
+</span><span class='line'>&lt;!-- UY END --&gt;</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+3. 在<code>source/post/share.html</code>使用<code>include</code>将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量 <br/>
+4. 在<code>_config.ymb</code>中添加comment_share变量 设置为true。如<code>comment_share: true</code>这样就可以在配置文件中控制是否需要评论系统。</p>
+
+<h3>加分类</h3>
+
+<p>当文章多了，有一个分类对于查阅就非常方便了，我是使用了github上的一个插件，只需简单配置。插件地址<a href="https://github.com/ctdk/octopress-category-list">octopress-category-list</a> <br/>
+根据README提示，将文件拷贝到相应目录。然后在<code>_config.yml</code>进行配置。这个插件提供了三种category类型，根据自己喜好，将相应插件路径配置在<code>default_asides</code>这一项中即可。</p>
+
+<p>octopress还支持其他很多插件，比如分类，tag，微博分享等，可根据自己需要，对其进行配置。这里是github上有人整理的octopress插件。 <br/>
+octopress 插件：<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">octopress plugin</a></p>
 ]]></content>
   </entry>
   
