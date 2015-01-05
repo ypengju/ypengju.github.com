@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Pattern | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/pattern/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T11:12:38+08:00</updated>
+  <updated>2015-01-05T11:16:55+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -18,7 +18,7 @@
     <link href="http://ypengju.github.io/blog/2015/01/04/she-ji-mo-shi-dan-li/"/>
     <updated>2015-01-04T16:54:35+08:00</updated>
     <id>http://ypengju.github.io/blog/2015/01/04/she-ji-mo-shi-dan-li</id>
-    <content type="html"><![CDATA[<p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。
+    <content type="html"><![CDATA[<p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。<!--more-->
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
