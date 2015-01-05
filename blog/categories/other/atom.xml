@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Other | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/other/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T11:16:55+08:00</updated>
+  <updated>2015-01-05T14:26:29+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -75,7 +75,7 @@ $ rake generate
 
 <ol>
 <li>注册友言账号，注册地址：<a href="http://www.uyan.cc/">友言</a></li>
-<li>获取代码，将其添加到<code>source/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。  <br/>
+<li>获取代码，将其添加到<code>source/_includes/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。  <br/>
 &#8220;`</li>
 </ol>
 
@@ -92,8 +92,15 @@ $ rake generate
 <!-- UY END -->
 
 
-<p><code>``  
-3. 在</code>source/post/share.html<code>使用</code>include<code>将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量   
+<pre><code class="">3. 在`source/_includes/post/share.html`使用`include`将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量  
+
+</code></pre>
+
+<p>{% if site.comment_share %}
+  {% include post/share_comment.html %}
+{% endif %}
+<code>``
+
 4. 在</code>_config.ymb<code>中添加comment_share变量 设置为true。如</code>comment_share: true`这样就可以在配置文件中控制是否需要评论系统。</p>
 
 <h3>加分类</h3>

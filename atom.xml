@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T11:16:55+08:00</updated>
+  <updated>2015-01-05T14:26:29+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -5494,7 +5494,7 @@ talbe除了像数组这种操作外，还可以用来实现其他数据结构，
 
 <ol>
 <li>注册友言账号，注册地址：<a href="http://www.uyan.cc/">友言</a></li>
-<li>获取代码，将其添加到<code>source/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。</li>
+<li>获取代码，将其添加到<code>source/_includes/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。</li>
 </ol>
 
 
@@ -5509,13 +5509,25 @@ talbe除了像数组这种操作外，还可以用来实现其他数据结构，
 
 
 <p>
-3. 在<code>source/post/share.html</code>使用<code>include</code>将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量 <br/>
-4. 在<code>_config.ymb</code>中添加comment_share变量 设置为true。如<code>comment_share: true</code>这样就可以在配置文件中控制是否需要评论系统。</p>
+3. 在<code>source/_includes/post/share.html</code>使用<code>include</code>将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>{% if site.comment_share %}
+</span><span class='line'>  {% include post/share_comment.html %}
+</span><span class='line'>{% endif %}</span></code></pre></td></tr></table></div></figure>
+
+
+<ol>
+<li>在<code>_config.ymb</code>中添加comment_share变量 设置为true。如<code>comment_share: true</code>这样就可以在配置文件中控制是否需要评论系统。
 
 <h3>加分类</h3>
 
 <p>当文章多了，有一个分类对于查阅就非常方便了，我是使用了github上的一个插件，只需简单配置。插件地址<a href="https://github.com/ctdk/octopress-category-list">octopress-category-list</a> <br/>
-根据README提示，将文件拷贝到相应目录。然后在<code>_config.yml</code>进行配置。这个插件提供了三种category类型，根据自己喜好，将相应插件路径配置在<code>default_asides</code>这一项中即可。</p>
+根据README提示，将文件拷贝到相应目录。然后在<code>_config.yml</code>进行配置。这个插件提供了三种category类型，根据自己喜好，将相应插件路径配置在<code>default_asides</code>这一项中即可。</p></li>
+</ol>
+
 
 <p>octopress还支持其他很多插件，比如分类，tag，微博分享等，可根据自己需要，对其进行配置。这里是github上有人整理的octopress插件。 <br/>
 octopress 插件：<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">octopress plugin</a></p>
