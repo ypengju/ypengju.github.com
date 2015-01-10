@@ -107,7 +107,7 @@
   </header>
 
 
-<div class="entry-content"><p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。<!--more--></p>
+<div class="entry-content"><p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -170,14 +170,12 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ul>
-<li>私有构造，确保类不能被实例化，避免多个实例存在。</li>
-<li>因为这个类其他地方不能实例化，所以需要类自己在静态方法中进行实例，这个方法是在new自己，因为其可以访问私有的构造函数，所以他是可以保证实例被创建出来的。</li>
-<li>使用一个静态方法，对其进行实例化，先判断是否已经实例化，如果没有，创建实例，否则返回实例。</li>
-<li>实例化保存在私有静态成员中。</li>
-<li>然后在其他类中我们就可以使用Singleton::getInstance()来访问实例。</li>
-</ul>
-
+<p>   <!--more-->
+* 私有构造，确保类不能被实例化，避免多个实例存在。
+* 因为这个类其他地方不能实例化，所以需要类自己在静态方法中进行实例，这个方法是在new自己，因为其可以访问私有的构造函数，所以他是可以保证实例被创建出来的。
+* 使用一个静态方法，对其进行实例化，先判断是否已经实例化，如果没有，创建实例，否则返回实例。
+* 实例化保存在私有静态成员中。
+* 然后在其他类中我们就可以使用Singleton::getInstance()来访问实例。</p>
 
 <p>这是一个非线程安全的，没有考虑内存释放的粗糙版本，为什么，请看这篇文章<a href="http://blog.csdn.net/haoel/article/details/4028232">深入浅出单实例Singleton设计模式</a></p>
 </div>
@@ -225,6 +223,8 @@
         <a class="basic-alignment left" href="/blog/2015/01/04/c-plus-plus-11-xin-te-xing/" title="Previous Post: c++11 -- 新特性">&laquo; c++11 &#8211; 新特性</a>
       
       
+        <a class="basic-alignment right" href="/blog/2015/01/08/ios-ben-di-tui-song/" title="Next Post: IOS -- 本地通知">IOS &#8211; 本地通知 &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -236,6 +236,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
@@ -273,10 +277,6 @@
         <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -285,7 +285,7 @@
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (2)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

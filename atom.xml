@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T14:26:29+08:00</updated>
+  <updated>2015-01-10T14:15:00+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -14,11 +14,318 @@
 
   
   <entry>
+    <title type="html"><![CDATA[IOS -- 本地通知]]></title>
+    <link href="http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song/"/>
+    <updated>2015-01-08T11:33:25+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song</id>
+    <content type="html"><![CDATA[<p>为了提高用户的关注度，我们经常会推送一些新的内容给用户。ios中主要有两种推送，一种是远程通知，一种是本地通知，远程通知是和服务器端配合完成的，这里暂不说明，这篇文章主要说下本地通知。 <br/>
+本地通知是在ios4.0之后添加的，但是在ios8之后，在设置通知之前，需要先对通知进行注册，注册需要的通知类型，否则收不到响应类型的通知消息。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="c1">//ios8需要注册推送</span>
+</span><span class='line'><span class="k">if</span> <span class="p">([</span><span class="bp">UIApplication</span> <span class="nl">instancesRespondToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">registerUserNotificationSettings</span><span class="p">:)]){</span>
+</span><span class='line'>    <span class="c1">//通知类型</span>
+</span><span class='line'>    <span class="n">UIUserNotificationType</span> <span class="n">types</span> <span class="o">=</span> <span class="n">UIUserNotificationTypeBadge</span> <span class="o">|</span>
+</span><span class='line'>    <span class="n">UIUserNotificationTypeSound</span> <span class="o">|</span> <span class="n">UIUserNotificationTypeAlert</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//设置通知类型和动画</span>
+</span><span class='line'>    <span class="n">UIUserNotificationSettings</span> <span class="o">*</span><span class="n">mySettings</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIUserNotificationSettings</span> <span class="nl">settingsForTypes</span><span class="p">:</span><span class="n">types</span> <span class="nl">categories</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//注册</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">registerUserNotificationSettings</span><span class="p">:</span><span class="n">mySettings</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<!--more-->
+
+
+<p>上边注册了Icon角标，声音，和警告通知，当程序第一次调用<code>registerUserNotificationSettings</code>的时候，程序会询问用户是否允许程序发送通知，在用户选择之后(不管是同意与否)，程序会异步调用<code>- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)</code>函数。所有的注册类型都会可通过<code>currentUserNotificationSettings</code>变量获得。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="n">notification</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UILocalNotification</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">notification</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//设置时区</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">timeZone</span><span class="o">=</span><span class="p">[</span><span class="bp">NSTimeZone</span> <span class="n">defaultTimeZone</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//设置推送的时间点</span>
+</span><span class='line'>    <span class="bp">NSDateFormatter</span> <span class="o">*</span><span class="n">formatter</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSDateFormatter</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">formatter</span> <span class="nl">setDateFormat</span><span class="p">:</span><span class="s">@&quot;HH:mm:ss&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSDate</span> <span class="o">*</span><span class="n">date</span> <span class="o">=</span> <span class="p">[</span><span class="n">formatter</span> <span class="nl">dateFromString</span><span class="p">:</span><span class="s">@&quot;09:00:00&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">fireDate</span><span class="o">=</span><span class="n">date</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//通知重复提示的单位，可以是天、周、月</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">repeatInterval</span> <span class="o">=</span> <span class="n">kCFCalendarUnitDay</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//推送的内容</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">alertBody</span> <span class="o">=</span> <span class="s">@&quot;this is a notificaiton&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//推送声音</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">soundName</span> <span class="o">=</span> <span class="n">UILocalNotificationDefaultSoundName</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//应用右上角红色图标数字</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">applicationIconBadgeNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//自定义信息</span>
+</span><span class='line'>    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDictionary</span> <span class="nl">dictionaryWithObject</span><span class="p">:</span><span class="s">@&quot;two&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span> <span class="o">=</span> <span class="n">infoDict</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIApplication</span> <span class="o">*</span><span class="n">app</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">app</span> <span class="nl">scheduleLocalNotification</span><span class="p">:</span><span class="n">notification</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>本地通知是通过<code>UILocalNotification</code>类来完成的，首先需要通过<code>fireDate</code>设置通知的时间点，还可设置通知的内容，声音，角标数等。除此之外，用户还可通过<code>userInfo</code>设置自定义数据。具体可参考<a href="https://developer.apple.com/library/ios/documentation/iPhone/Reference/UILocalNotification_Class/index.html#//apple_ref/occ/cl/UILocalNotification">UILocalNotification官方文档</a></p>
+
+<p>当程序正在运行时，收到通知时，会调用<code>application:didReceiveLocalNotification</code>方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didReceiveLocalNotification:</span><span class="p">(</span><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="p">)</span><span class="nv">notification</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span><span class="p">;</span>
+</span><span class='line'>    <span class="bp">NSString</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="p">[</span><span class="n">infoDict</span> <span class="nl">objectForKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">str</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;two&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;--------yes  equal&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;--------no &quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>取消通知时，可以使用<code>cancelLocalNotification</code>取消具体某个通知或者通过<code>cancelAllLocalNotifications</code>取消全部通知。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="n">cancelAllLocalNotifications</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果我们添加了角标，在通知之后，角标会一直存在，当需要取消角标时，可利用下边语句</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">setApplicationIconBadgeNumber</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从ios8开始，通知添加了通知动作事件，如果有注意到，我们上边的进行注册的时候categories赋值为nil，此变量就是用来添加动作事件的。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="c1">//ios8需要注册推送</span>
+</span><span class='line'><span class="k">if</span> <span class="p">([</span><span class="bp">UIApplication</span> <span class="nl">instancesRespondToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">registerUserNotificationSettings</span><span class="p">:)]){</span>
+</span><span class='line'>    <span class="n">UIMutableUserNotificationAction</span> <span class="o">*</span><span class="n">acceptAction</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">UIMutableUserNotificationAction</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">acceptAction</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;accept_action&quot;</span><span class="p">;</span> <span class="c1">//ID</span>
+</span><span class='line'>    <span class="n">acceptAction</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Accept&quot;</span><span class="p">;</span>             <span class="c1">//按钮内容</span>
+</span><span class='line'>    <span class="n">acceptAction</span><span class="p">.</span><span class="n">activationMode</span> <span class="o">=</span> <span class="n">UIUserNotificationActivationModeBackground</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">acceptAction</span><span class="p">.</span><span class="n">destructive</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">acceptAction</span><span class="p">.</span><span class="n">authenticationRequired</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">UIMutableUserNotificationAction</span> <span class="o">*</span><span class="n">cancelAction</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">UIMutableUserNotificationAction</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">cancelAction</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;cancel_action&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cancelAction</span><span class="p">.</span><span class="n">title</span><span class="o">=</span><span class="s">@&quot;Cancel&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cancelAction</span><span class="p">.</span><span class="n">activationMode</span> <span class="o">=</span> <span class="n">UIUserNotificationActivationModeBackground</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cancelAction</span><span class="p">.</span><span class="n">destructive</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">cancelAction</span><span class="p">.</span><span class="n">authenticationRequired</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// First create the category</span>
+</span><span class='line'>    <span class="n">UIMutableUserNotificationCategory</span> <span class="o">*</span><span class="n">inviteCategory</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">[[</span><span class="n">UIMutableUserNotificationCategory</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">inviteCategory</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;INVITE_CATEGORY&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">inviteCategory</span> <span class="nl">setActions</span><span class="p">:</span><span class="l">@[</span><span class="n">acceptAction</span><span class="p">,</span> <span class="n">cancelAction</span><span class="l">]</span>
+</span><span class='line'>                    <span class="nl">forContext</span><span class="p">:</span><span class="n">UIUserNotificationActionContextDefault</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSSet</span> <span class="o">*</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSSet</span> <span class="nl">setWithObject</span><span class="p">:</span><span class="n">inviteCategory</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//通知类型</span>
+</span><span class='line'>    <span class="n">UIUserNotificationType</span> <span class="n">types</span> <span class="o">=</span> <span class="n">UIUserNotificationTypeBadge</span> <span class="o">|</span>
+</span><span class='line'>    <span class="n">UIUserNotificationTypeSound</span> <span class="o">|</span> <span class="n">UIUserNotificationTypeAlert</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">UIUserNotificationSettings</span> <span class="o">*</span><span class="n">mySettings</span> <span class="o">=</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">UIUserNotificationSettings</span> <span class="nl">settingsForTypes</span><span class="p">:</span><span class="n">types</span> <span class="nl">categories</span><span class="p">:</span><span class="n">categories</span><span class="p">];</span>
+</span><span class='line'>    <span class="c1">//注册</span>
+</span><span class='line'>    <span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">registerUserNotificationSettings</span><span class="p">:</span><span class="n">mySettings</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="n">notification</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UILocalNotification</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">notification</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="c1">//时区</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">timeZone</span><span class="o">=</span><span class="p">[</span><span class="bp">NSTimeZone</span> <span class="n">defaultTimeZone</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSDateFormatter</span> <span class="o">*</span><span class="n">formatter</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSDateFormatter</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">formatter</span> <span class="nl">setDateFormat</span><span class="p">:</span><span class="s">@&quot;ss&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="bp">NSDate</span> <span class="o">*</span><span class="n">date</span> <span class="o">=</span> <span class="p">[</span><span class="n">formatter</span> <span class="nl">dateFromString</span><span class="p">:</span><span class="s">@&quot;10&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">alertBody</span> <span class="o">=</span> <span class="s">@&quot;haha&quot;</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">fireDate</span><span class="o">=</span><span class="n">date</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//通知重复提示的单位，可以是天、周、月</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">repeatInterval</span> <span class="o">=</span> <span class="n">kCFCalendarUnitMinute</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//推送声音</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">soundName</span> <span class="o">=</span> <span class="n">UILocalNotificationDefaultSoundName</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//应用右上角红色图标数字</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">applicationIconBadgeNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">category</span> <span class="o">=</span> <span class="s">@&quot;INVITE_CATEGORY&quot;</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDictionary</span> <span class="nl">dictionaryWithObject</span><span class="p">:</span><span class="s">@&quot;two&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span> <span class="o">=</span> <span class="n">infoDict</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="bp">UIApplication</span> <span class="o">*</span><span class="n">app</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">];</span>
+</span><span class='line'><span class="p">[</span><span class="n">app</span> <span class="nl">scheduleLocalNotification</span><span class="p">:</span><span class="n">notification</span><span class="p">];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上就是一个动作的事件的注册过程，其中用到了<code>UIMutableUserNotificationAction</code>和<code>UIMutableUserNotificationCategory</code>具体用法可参考官方文档 <br/>
+<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationAction_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationAction">UIMutableUserNotificationAction</a> <br/>
+<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationCategory_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationCategory">UIMutableUserNotificationCategory</a> <br/>
+这两个类，注册完之后，特别需要主意，要在本地通知中进行设置，否则没有效果。值为注册时category指定的ID</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="n">notification</span><span class="p">.</span><span class="n">category</span> <span class="o">=</span> <span class="s">@&quot;INVITE_CATEGORY&quot;</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样当我们收到通知，下拉一下就可看到动作事件，有事件，就有事件的回调函数</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='objective-c'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">handleActionWithIdentifier:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">identifier</span> <span class="nf">forLocalNotification:</span><span class="p">(</span><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="p">)</span><span class="nv">notification</span> <span class="nf">completionHandler:</span><span class="p">(</span><span class="kt">void</span> <span class="p">(</span><span class="o">^</span><span class="p">)())</span><span class="nv">completionHandler</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">([</span><span class="n">identifier</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;accept_action&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;-----accept action&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">([</span><span class="n">identifier</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;cancel_action&quot;</span><span class="p">])</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;-----cancel action&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">completionHandler</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">completionHandler</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>通过id我们就可以区分不同的动作，然后对其进行相应处理，最后调用<code>completionHandler();</code>。</p>
+
+<h3>参考</h3>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW26">官方文档:Local and Remote Notification Programming Guide</a> <br/>
+<a href="http://www.cocoachina.com/ios/20141009/9857.html">iOS 8创建交互式通知</a></p>
+
+<h3>源码</h3>
+
+<p><a href="https://github.com/ypengju/IOSTest/tree/master/LocalNotification">https://github.com/ypengju/IOSTest/tree/master/LocalNotification</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[设计模式 -- 单例]]></title>
     <link href="http://ypengju.github.io/blog/2015/01/04/she-ji-mo-shi-dan-li/"/>
     <updated>2015-01-04T16:54:35+08:00</updated>
     <id>http://ypengju.github.io/blog/2015/01/04/she-ji-mo-shi-dan-li</id>
-    <content type="html"><![CDATA[<p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。<!--more--></p>
+    <content type="html"><![CDATA[<p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -81,14 +388,12 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<ul>
-<li>私有构造，确保类不能被实例化，避免多个实例存在。</li>
-<li>因为这个类其他地方不能实例化，所以需要类自己在静态方法中进行实例，这个方法是在new自己，因为其可以访问私有的构造函数，所以他是可以保证实例被创建出来的。</li>
-<li>使用一个静态方法，对其进行实例化，先判断是否已经实例化，如果没有，创建实例，否则返回实例。</li>
-<li>实例化保存在私有静态成员中。</li>
-<li>然后在其他类中我们就可以使用Singleton::getInstance()来访问实例。</li>
-</ul>
-
+<p>   <!--more-->
+* 私有构造，确保类不能被实例化，避免多个实例存在。
+* 因为这个类其他地方不能实例化，所以需要类自己在静态方法中进行实例，这个方法是在new自己，因为其可以访问私有的构造函数，所以他是可以保证实例被创建出来的。
+* 使用一个静态方法，对其进行实例化，先判断是否已经实例化，如果没有，创建实例，否则返回实例。
+* 实例化保存在私有静态成员中。
+* 然后在其他类中我们就可以使用Singleton::getInstance()来访问实例。</p>
 
 <p>这是一个非线程安全的，没有考虑内存释放的粗糙版本，为什么，请看这篇文章<a href="http://blog.csdn.net/haoel/article/details/4028232">深入浅出单实例Singleton设计模式</a></p>
 ]]></content>
@@ -105,7 +410,7 @@
 
 <h4>变量初始化</h4>
 
-<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。<!--more--></p>
+<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -117,7 +422,7 @@
 
 
 <p> <br/>
-这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。</p>
+这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。<!--more--></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -470,7 +775,7 @@ D::f 按理应当重写 B::f。然而二者的声明是不同的，一个参数�
     <updated>2014-12-02T15:15:21+08:00</updated>
     <id>http://ypengju.github.io/blog/2014/12/02/cocos2d-x-tableview</id>
     <content type="html"><![CDATA[<p>TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 <br/>
-TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。   <!--more--></p>
+TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -480,7 +785,7 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
 
 
 <p> <br/>
-在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。</p>
+在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。  <!--more--></p>
 
 <figure class='code'><figcaption><span>TableViewDelegate</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

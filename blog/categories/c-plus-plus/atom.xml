@@ -4,7 +4,7 @@
   <title><![CDATA[Category: C++ | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/c-plus-plus/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T14:26:29+08:00</updated>
+  <updated>2015-01-10T14:15:00+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -24,13 +24,13 @@
 
 <h4>变量初始化</h4>
 
-<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。<!--more-->
+<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。
 <code>cpp  
 auto i = 10;
 auto str = "hello world";
 auto p = Sprite::create("CloseNormal.png");
 </code> <br/>
-这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。
+这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。<!--more-->
 <code>cpp
 std::map&lt;std::string, std::vector&lt;int&gt;&gt; map;
 for(auto it = begin(map); it != end(map); ++it)

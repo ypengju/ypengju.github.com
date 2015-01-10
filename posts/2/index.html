@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="cocos2d-x采用引用计数来对内存进行管理。在2.X版本中，所有类都继承CCObject类来完成内存的管理，而在3.X版本中，cocos2d-x将管理引用计数的内单独了处理命名为Ref，在这个类中对引用计数进行操作。">
+  <meta name="description" content="因为现在并不了解OpenGL ES的渲染过程，这里只能简单理清整个cocos2d-x 3.2版本的渲染顺序及调用过程，具体OpenGL ES实现，之后会学习总结。 在3.0之前的版本中，cocos2d-x渲染每个节点都是放在节点的draw()方法中直接调用OpenGL命令来进行渲染的，比如2.2. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,39 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-19T20:52:49+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>19</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:52 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>因为现在并不了解OpenGL ES的渲染过程，这里只能简单理清整个cocos2d-x 3.2版本的渲染顺序及调用过程，具体OpenGL ES实现，之后会学习总结。 <br/>
+在3.0之前的版本中，cocos2d-x渲染每个节点都是放在节点的draw()方法中直接调用OpenGL命令来进行渲染的，比如2.2.5中的CCSprite::draw()</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -368,6 +401,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
       </li>
     
@@ -403,10 +440,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/">Cocos2d-x &#8211; 渲染流程</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -415,7 +448,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (1)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (2)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

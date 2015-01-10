@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T14:26:29+08:00</updated>
+  <updated>2015-01-10T14:15:00+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,232 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[IOS -- 本地通知]]></title>
+    <link href="http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song/"/>
+    <updated>2015-01-08T11:33:25+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song</id>
+    <content type="html"><![CDATA[<p>为了提高用户的关注度，我们经常会推送一些新的内容给用户。ios中主要有两种推送，一种是远程通知，一种是本地通知，远程通知是和服务器端配合完成的，这里暂不说明，这篇文章主要说下本地通知。 <br/>
+本地通知是在ios4.0之后添加的，但是在ios8之后，在设置通知之前，需要先对通知进行注册，注册需要的通知类型，否则收不到响应类型的通知消息。
+<code>objective-c
+//ios8需要注册推送
+if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+    //通知类型
+    UIUserNotificationType types = UIUserNotificationTypeBadge |
+    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    //设置通知类型和动画
+    UIUserNotificationSettings *mySettings =
+    [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    //注册
+    [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+}
+</code></p>
+
+<!--more-->
+
+
+<p>上边注册了Icon角标，声音，和警告通知，当程序第一次调用<code>registerUserNotificationSettings</code>的时候，程序会询问用户是否允许程序发送通知，在用户选择之后(不管是同意与否)，程序会异步调用<code>- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)</code>函数。所有的注册类型都会可通过<code>currentUserNotificationSettings</code>变量获得。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>UILocalNotification &lt;em&gt;notification = [[UILocalNotification alloc] init];
+</span><span class='line'>if (notification) {
+</span><span class='line'>    //设置时区
+</span><span class='line'>    notification.timeZone=[NSTimeZone defaultTimeZone];
+</span><span class='line'>    //设置推送的时间点
+</span><span class='line'>    NSDateFormatter &lt;/em&gt;formatter = [[NSDateFormatter alloc] init];
+</span><span class='line'>    [formatter setDateFormat:@&ldquo;HH:mm:ss&rdquo;];
+</span><span class='line'>    NSDate &lt;em&gt;date = [formatter dateFromString:@&ldquo;09:00:00&rdquo;];
+</span><span class='line'>    notification.fireDate=date;
+</span><span class='line'>    //通知重复提示的单位，可以是天、周、月
+</span><span class='line'>    notification.repeatInterval = kCFCalendarUnitDay;
+</span><span class='line'>    //推送的内容
+</span><span class='line'>    notification.alertBody = @&ldquo;this is a notificaiton&rdquo;;
+</span><span class='line'>    //推送声音
+</span><span class='line'>    notification.soundName = UILocalNotificationDefaultSoundName;
+</span><span class='line'>    //应用右上角红色图标数字
+</span><span class='line'>    notification.applicationIconBadgeNumber = 1;
+</span><span class='line'>    //自定义信息
+</span><span class='line'>    NSDictionary &lt;/em&gt;infoDict = [NSDictionary dictionaryWithObject:@&ldquo;two&rdquo; forKey:@&ldquo;one&rdquo;];
+</span><span class='line'>    notification.userInfo = infoDict;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;UIApplication *app = [UIApplication sharedApplication];
+</span><span class='line'>[app scheduleLocalNotification:notification];
+</span><span class='line'>&lt;code&gt;``
+</span><span class='line'>本地通知是通过&lt;/code&gt;UILocalNotification&lt;code&gt;类来完成的，首先需要通过&lt;/code&gt;fireDate&lt;code&gt;设置通知的时间点，还可设置通知的内容，声音，角标数等。除此之外，用户还可通过&lt;/code&gt;userInfo`设置自定义数据。具体可参考&lt;a href="https://developer.apple.com/library/ios/documentation/iPhone/Reference/UILocalNotification_Class/index.html#//apple_ref/occ/cl/UILocalNotification"&gt;UILocalNotification官方文档&lt;/a&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;当程序正在运行时，收到通知时，会调用&lt;code&gt;application:didReceiveLocalNotification&lt;/code&gt;方法。&lt;br/&gt;
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+</span><span class='line'>{
+</span><span class='line'>    NSDictionary *infoDict = notification.userInfo;
+</span><span class='line'>    NSString *str = [infoDict objectForKey:@"one"];
+</span><span class='line'>    if ([str isEqualToString:@"two"]) {
+</span><span class='line'>        NSLog(@"--------yes  equal");
+</span><span class='line'>    } else {
+</span><span class='line'>        NSLog(@"--------no ");
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;取消通知时，可以使用&lt;code&gt;cancelLocalNotification&lt;/code&gt;取消具体某个通知或者通过&lt;code&gt;cancelAllLocalNotifications&lt;/code&gt;取消全部通知。
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>[[UIApplication sharedApplication] cancelAllLocalNotifications];
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>如果我们添加了角标，在通知之后，角标会一直存在，当需要取消角标时，可利用下边语句
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;从ios8开始，通知添加了通知动作事件，如果有注意到，我们上边的进行注册的时候categories赋值为nil，此变量就是用来添加动作事件的。  &lt;br/&gt;</span></code></pre></td></tr></table></div></figure>objective-c
+    //ios8需要注册推送
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+        UIMutableUserNotificationAction *acceptAction =
+        [[UIMutableUserNotificationAction alloc] init];
+        acceptAction.identifier = @&ldquo;accept_action&rdquo;; //ID
+        acceptAction.title = @&ldquo;Accept&rdquo;;             //按钮内容
+        acceptAction.activationMode = UIUserNotificationActivationModeBackground;
+        acceptAction.destructive = NO;
+        acceptAction.authenticationRequired = NO;</p>
+
+<pre><code>    UIMutableUserNotificationAction *cancelAction =
+    [[UIMutableUserNotificationAction alloc] init];
+    cancelAction.identifier = @"cancel_action";
+    cancelAction.title=@"Cancel";
+    cancelAction.activationMode = UIUserNotificationActivationModeBackground;
+    cancelAction.destructive = NO;
+    cancelAction.authenticationRequired = NO;
+
+    // First create the category
+    UIMutableUserNotificationCategory *inviteCategory =
+    [[UIMutableUserNotificationCategory alloc] init];
+    inviteCategory.identifier = @"INVITE_CATEGORY";
+    [inviteCategory setActions:@[acceptAction, cancelAction]
+                    forContext:UIUserNotificationActionContextDefault];
+    NSSet *categories = [NSSet setWithObject:inviteCategory];
+
+    //通知类型
+    UIUserNotificationType types = UIUserNotificationTypeBadge |
+    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *mySettings =
+    [UIUserNotificationSettings settingsForTypes:types categories:categories];
+    //注册
+    [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+}
+
+UILocalNotification *notification = [[UILocalNotification alloc] init];
+if (notification) {
+    //时区
+    notification.timeZone=[NSTimeZone defaultTimeZone];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"ss"];
+    NSDate *date = [formatter dateFromString:@"10"];
+    notification.alertBody = @"haha";
+    notification.fireDate=date;
+    //通知重复提示的单位，可以是天、周、月
+    notification.repeatInterval = kCFCalendarUnitMinute;
+    //推送声音
+    notification.soundName = UILocalNotificationDefaultSoundName;
+    //应用右上角红色图标数字
+    notification.applicationIconBadgeNumber = 1;
+    notification.category = @"INVITE_CATEGORY";
+
+    NSDictionary *infoDict = [NSDictionary dictionaryWithObject:@"two" forKey:@"one"];
+    notification.userInfo = infoDict;
+
+}
+
+UIApplication *app = [UIApplication sharedApplication];
+[app scheduleLocalNotification:notification];
+</code></pre>
+
+<pre><code>以上就是一个动作的事件的注册过程，其中用到了`UIMutableUserNotificationAction`和`UIMutableUserNotificationCategory`具体用法可参考官方文档   
+[UIMutableUserNotificationAction](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationAction_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationAction)   
+[UIMutableUserNotificationCategory](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationCategory_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationCategory)   
+这两个类，注册完之后，特别需要主意，要在本地通知中进行设置，否则没有效果。值为注册时category指定的ID   
+</code></pre>
+
+<p>notification.category = @&ldquo;INVITE_CATEGORY&rdquo;;
+<code>
+这样当我们收到通知，下拉一下就可看到动作事件，有事件，就有事件的回调函数
+</code>objective-c
+- (void)application:(UIApplication <em>)application handleActionWithIdentifier:(NSString </em>)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler
+{
+    if ([identifier isEqualToString:@&ldquo;accept_action&rdquo;]) {
+        NSLog(@&ldquo;&mdash;&ndash;accept action&rdquo;);
+    } else if ([identifier isEqualToString:@&ldquo;cancel_action&rdquo;]) {
+        NSLog(@&ldquo;&mdash;&ndash;cancel action&rdquo;);
+    }</p>
+
+<pre><code>if (completionHandler) {
+    completionHandler();
+}
+</code></pre>
+
+<p>}
+<code>``
+通过id我们就可以区分不同的动作，然后对其进行相应处理，最后调用</code>completionHandler();`。</p>
+
+<h3>参考</h3>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW26">官方文档:Local and Remote Notification Programming Guide</a> <br/>
+<a href="http://www.cocoachina.com/ios/20141009/9857.html">iOS 8创建交互式通知</a></p>
+
+<h3>源码</h3>
+
+<p><a href="https://github.com/ypengju/IOSTest/tree/master/LocalNotification">https://github.com/ypengju/IOSTest/tree/master/LocalNotification</a></p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[IOS--生命周期]]></title>

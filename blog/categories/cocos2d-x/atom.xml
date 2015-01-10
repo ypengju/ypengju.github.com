@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Cocos2d-x | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/cocos2d-x/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-05T14:26:29+08:00</updated>
+  <updated>2015-01-10T14:15:00+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -19,13 +19,13 @@
     <updated>2014-12-02T15:15:21+08:00</updated>
     <id>http://ypengju.github.io/blog/2014/12/02/cocos2d-x-tableview</id>
     <content type="html"><![CDATA[<p>TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 <br/>
-TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。   <!--more--></p>
+TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。</p>
 
 <pre><code class="c++">#include "cocos-ext.h"
 using namespace cocos2d::extension;
 </code></pre>
 
-<p>在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。</p>
+<p>在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。  <!--more--></p>
 
 <pre><code class="c++ TableViewDelegate">class TableViewDelegate : public ScrollViewDelegate
 {
