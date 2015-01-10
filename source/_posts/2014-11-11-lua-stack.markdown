@@ -1,0 +1,150 @@
+---
+layout: post
+title: "Lua -- stack"
+date: 2014-11-11 21:32:01 +0800
+comments: true
+categories: lua
+---
+c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：[Lua教程: C++嵌入Lua脚本(1)](http://4gamers.cn/blog/2014/06/28/embeded-lua-tutorial-one/)，我也是按照这篇博文进行配置，使用的lua版本为5.2.3。<!-- more -->   
+看lua的api可以知道，lua库提供的方法主要分为三个类：  
+
+* Lua functions     --lua代码中使用的函数库
+* C API 			--c中使用的函数库
+* auxiliary library --辅助库，是对c函数的包装
+
+先来看一个简单的例子，看c++如何调用lua文件   
+
+```c++ 
+#include <iostream>
+#include "lua.hpp"
+
+int main(int argc, const char * argv[]) {
+    
+    //1. 初始化Lua虚拟机，初始话新lua栈
+    lua_State *lua_state;
+    lua_state = luaL_newstate();
+    
+    //2. 打开所有的标准库
+    luaL_openlibs(lua_state);
+    
+    //3、运行hello.lua脚本
+    luaL_dofile(lua_state, "hello.lua");
+    
+    //4. 关闭Lua虚拟机
+    lua_close(lua_state);
+    
+}
+```   
+首先在使用之前需要导入头文件，这里导入lua.hpp，同时导入如下三个类库：   
+
+```c++ lua.hpp
+extern "C" {
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
+}
+```   
+lua.h和lualib.h包含以lua_为前缀的C API库，lauxlib.h包含以luaL_为前缀的辅助类库。   
+
+1. 首先初始化lua虚拟机，也是就初始化一个新的调用栈   
+2. 打开所有的标准库，也可以根据需要只导入需要的库
+3. 加载和运行lua文件
+4. 当调用完成后，需要关掉栈   
+
+```lua hello.lua
+print("hello world")
+```   
+
+此时运行程序便可以看到调用lua文件打印的hello world。   
+像上边程序一样，我们在进行c++调用lua之前都会创建一个新的栈，然后所有的操作都是通过栈来进行的，为什么需要这样做？   
+因为lua是动态语言，c++是静态语言，lua的变量可能是任意一种类型，无法直接与c变量对应起来，而且lua是一种嵌入式语言，它不仅可以嵌套在c++中使用，也可能会嵌套在其他语言中使用，那这种对应关系就更复杂了。所以就采用了这种虚拟栈的交互方式，当c++和lua相互调用的时候，先将变量压入栈中，然后由另一端从栈中取出，然后转换成对应类型进行处理，所以lua提供了如下这些将不同类型压入栈的操作：  
+```c++
+void lua_pushnil(lua_State *L)
+void lua_pushboolean (lua_State *L, int bool);
+void lua_pushnumber (lua_State *L, lua_Number n);
+void lua_pushinteger (lua_State *L, lua_Integer n);
+void lua_pushunsigned (lua_State *L, lua_Unsigned n);
+const char *lua_pushstring (lua_State *L, const char *s);
+const char *lua_pushstring (lua_State *L, const char *s);
+```   
+另一个原因就是内存的管理，c++中是手动进行内存释放的，而在lua中是采用自动垃圾回收处理的，如果你保存一个lua的table在c++变量中，lua无法知道这个table在c++中是否使用，在lua中可能由于不使用而被标记为垃圾而回收。   
+对于不同类型操作，lua不仅定义了上边的`lua_pushXXX`函数，还定义了`void lua_isXXXX(lua_State *L, int index)`等c函数库用来辨别栈中具体位置的变量是哪种类型。和`lua_toXXXX(lua_State *L, int index)`函数，将栈中对应位置的元素转换为具体类型返回。除了上边这些，lua还提供了一些对栈顶操作，替换栈内元素，删除等操作：   
+
+```c++
+int lua_gettop (lua_State *L);
+void lua_settop (lua_State *L, int index);
+void lua_pushvalue (lua_State *L, int index);
+void lua_remove (lua_State *L, int index);
+void lua_insert (lua_State *L, int index);
+void lua_replace (lua_State *L, int index);
+void lua_copy (lua_State *L, int fromidx, int toidx);
+```   
+下边具体看个例子，对栈的操作：    
+
+```
+lua_State *lua_state = luaL_newstate();
+
+lua_pushboolean(lua_state, 1);
+lua_pushnumber(lua_state, 100);
+lua_pushstring(lua_state, "hello world");
+
+int top = lua_gettop(lua_state);
+
+printf("------first------\n");
+for (int i = 1; i <= top; i++) {
+    int t = lua_type(lua_state, i);
+    switch (t) {
+        case LUA_TSTRING:
+            printf("%s  \n", lua_tostring(lua_state, i));
+            break;
+        case LUA_TNUMBER:
+            printf("%g  \n", lua_tonumber(lua_state, i));
+            break;
+        case LUA_TBOOLEAN:
+            printf(lua_toboolean(lua_state, i) ? "true  \n" : "false  \n");
+            break;
+        default:
+            break;
+    }
+}
+
+printf("-------second--------\n");
+for (int i =-1; i >= -top; i--) {
+    int t = lua_type(lua_state, i);
+    switch (t) {
+        case LUA_TSTRING:
+            printf("%s  \n", lua_tostring(lua_state, i));
+            break;
+        case LUA_TNUMBER:
+            printf("%g  \n", lua_tonumber(lua_state, i));
+            break;
+        case LUA_TBOOLEAN:
+            printf(lua_toboolean(lua_state, i) ? "true  \n" : "false  \n");
+            break;
+        default:
+            break;
+    }
+}
+```   
+运行打印结果为：   
+
+```
+------first------
+true  
+100  
+hello world  
+-------second--------
+hello world  
+100  
+true  
+```   
+首先生成新的栈，然后依次向其中压入true，100，"hello world"，采用`lua_gettop(luaState *L)`获取栈中元素个数，第一次遍历从栈底到栈顶，第二次遍历从栈顶到栈底。     
+默认情况下，lua栈的大小为20个存储空间，大多数情况下足够程序使用，但有些情况下我们可能需要更多的栈空间，这时就可以采用`lua_checkstack(lua_State *L, int sz)`检查栈空间是否够用。由上边打印的结果可以看到，第一个push进去的值的索引为1，接着第二个位2，换句话说，从栈底到栈顶的顺序为1到n。同时栈顶也可以用-1索引访问，所以栈顶到栈底也可以用-1到-n遍历访问。在好多操作中，会经常看到用索引-1，访问栈顶元素。除了用-1索引操作外，我们还可以直接用`lua_settop`和`lua_gettop`函数操作栈顶。  
+以上就是对栈的一个简单操作，对于更加复杂的如对lua函数，Table操作等，也都是基于栈来操作的。
+
+
+
+
+
+
+

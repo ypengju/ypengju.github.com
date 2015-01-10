@@ -1,0 +1,127 @@
+---
+layout: post
+title: "Lua -- Table"
+date: 2014-10-03 20:43:27 +0800
+comments: true
+categories: lua
+---
+lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 -- Table，可谓以不变应万变了。   
+lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据，字符串，函数，甚至表等各种结构，   
+###整数索引
+
+lua以整数为下标时，我们就可以像数组一样直接使用，其实lua底层，table是由两部分组成的，一部分是数组，用来存储像整数下标的这些值，一部分用哈希表来实现，用来存储像字符串这样索引的值。lua对table的大小没有限制，也就是说我们可以在使用过程中，在table中添加元素。  <!--more--> 
+```
+table1 = {10, 30, 50, 70, 90}
+print(table1[0])   -- nil
+print(table1[1])   -- 10
+```   
+可以看到访问table1[0]返回nil，而table1[1]访问表中第一个值。当我们访问表中不存在的值时会返回nil值，默认table下标是从1开始的，而不是我们熟悉的像其他语言中从0开始，table可以使用任意整数为下标。
+```
+table2 = {10, 30, 50, 70, 90}
+table3 = {[1] = 10, [2] = 30, [3] = 50, [4] = 70, [5] = 90}
+```  
+上边这两种形式是等价的。   
+```
+table2 = {10, 30, 50, 70, 90}
+table3 = {[1] = 10, [2] = 30, [3] = 50, [40] = 70, [5] = 90}
+table5 = {[2] = 30, [3] = 50}
+print(#table2)  -- 5
+print(#table3)  -- 3
+print(#table4)  -- 2
+print(#table5)  -- 0
+```   
+可以使用#操作来计算下标从1开始并连续的table的大小，从上边例子可以看到，如果数组从零开始或者中间有下标不连续，计算的talbe的大小就只是从1到连续结束的元素的个数，如果table元素不是以1下标开始的计算结果为0。   
+###字符串索引   
+```
+table1 = {one = 0, two = true, three = "hello"}
+table2 = {["one"] = 0, ["two"] = true, ["three"] = "hello"}
+table3 = {}
+table3.one = 0
+table3.two = true
+table3.three = "hello"
+```   
+上边这三种形式创建的表都是一样的。但是有字符串索引的时候，就不能直接采用#操作求table的大小了。如果需要知道table的大小，肯能就需要一个计数器了。   
+###遍历
+```
+table1 = {10, 30, 50, 70, 90}
+for i=1, #table1 do
+	print(table1[i])
+end
+```   
+像上边这样，当table使用整数索引的时候，我们可以像在其他语言中使用数组一样访问表中的元素。但是当下标不为整数，或者整数下标不连续时，我们就无法求得table的大小，上边这种遍历table的方法就行不通了，为了能够方便的遍历table，lua为我们提供了两个有用的方法pairs和ipairs。   
+```
+table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
+for k,v in pairs(table2) do
+	print(k,v)
+end  
+```   
+使用pairs以key-valued的形式遍历了table2中所有的元素，就像我们在c++中使用迭代器一样。  
+```
+table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
+for i,v in ipairs(table2) do
+	print(i,v)
+end
+```   
+但是当使用ipairs遍历时，只是访问了前两个元素，这是因为ipairs只遍历下标从1开始，连续增长的表。像上边table1这样的表，ipairs可以完全遍历，所以在使用的时候需要注意，当下标不连续，或者索引不是整数时，ipairs就停止遍历接下来的元素。   
+###库方法
+为了方便操作表，lua提供了几个对表操作的库方法   
+####table.concat(list [, sep [, i [, j]]]) - 链接表中的元素，返回字符串。
+```
+tab = {"hello", "world", "lua"}
+print(table.concat(tab, ":"))  -- hello:world:lua
+```  
+有四个参数，后三个可选，第一个参数是表， 第二个参数分隔符，像上边的冒号，默认为空字符， 第三个参数，开始字符位置，默认下标为1， 第四个参数，结束下标，默认为表的大小。所以默认是链接整个表，我们也可以指定链接表中指定下标区域内的元素。   
+####table.insert(list, [pos,] value) - 插入元素
+```
+tab = {"hello", "world", "lua"}
+table.insert(tab, 100)
+print(table.concat(tab, ": ")) -- hello: world: lua: 100
+```   
+有三个参数，第一个表，第二个参数可选，插入的位置，默认是#table+1，第三个参数要插入的值，所以默认是讲元素插入到表最后的。像上边这样只有两个参数的，其实是省略掉了中间第二个元素，插值在最后。  
+####table.pack(···) - 将所有参数打包到一个表中
+```
+tab = table.pack("hello", "world", "lua", 1, 4)
+for k,v in pairs(tab) do
+	print(k,v)
+end
+print(table.concat(tab, ": "))
+```    
+接收任意多个参数，将所有参数打包到一个下标从1开始的表中，像上边，打包完后`tab1 = {"hello", "world", "lua", 1, 4}`但是不一定所有参数都是顺序打包的。
+####table.unpack (list [, i [, j]]) - 跟table.pack相反
+```
+tab = {"hello", "world", "lua", 1, 4}
+a, b, c, d, e = table.unpack(tab)
+print(a) -- hello
+print(b) -- world
+print(c) -- lua
+print(d) -- 1
+print(e) -- 4
+```   
+返回多个参数，也可以指定需要的坐标范围，比如只返回第二到第四个元素，那么就返回3个元素。
+####table.remove(list [, pos]) - 移除表中元素
+```
+tab = {"hello", "world", "lua", 1, 4}
+table.remove(tab, 2)
+print(table.concat(tab, ": ")) -- hello: lua: 1: 4
+print(tab[2]) -- lua
+```   
+移除表中指定位置元素，有两个参数，第一个表，第二个移除元素的下标，可选，默认值是表中最后一个元素位置。第二个参数要在表的大小范围内，移除后指定位置元素后，下标后边元素向前移动。  
+####table.sort (list [, comp]) - 排序
+```
+tab = {4, 10, 2, 1, 40, 6}
+table.sort(tab)
+print(table.concat(tab, " "))
+```   
+对表中元素进行排序，默认从小到大，在第二个参数中也可以实现自己的排序条件   
+```
+tab = {4, 10, 2, 1, 40, 6}
+table.sort(tab, function(a, b)
+	return a > b
+end)
+print(table.concat(tab, " "))
+```   
+talbe除了像数组这种操作外，还可以用来实现其他数据结构，但是在lua中像List，Set这种数据结构，不一定比table方便，除了数据结构的操作外，lua还可以用表实现类的封装，继承等面向对象特性，而这一切都是基于元表的，感觉Lua的table无所不能啊。
+
+List，Set实现看见[《Programming in lua》](http://www.lua.org/pil/11.3.html)
+
+

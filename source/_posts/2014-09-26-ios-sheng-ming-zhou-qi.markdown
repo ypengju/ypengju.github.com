@@ -1,0 +1,60 @@
+---
+layout: post
+title: "IOS--生命周期"
+date: 2014-09-26 14:23:43 +0800
+comments: true
+categories: ios
+---
+这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程  
+
+##应用的生命周期：   
+
+应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。   
+###首先看下应用的5个状态   <!-- more -->
+* Not Running&ensp;&ensp;&ensp;(非运行状态)&ensp;&ensp;&ensp;应用没有启动或者被系统干掉时   
+* Inactive&ensp;&ensp;&ensp;(前台非活动状态)&ensp;&ensp;&ensp;应用正在进入前台状态，但是不能接受事件处理   
+* Active&ensp;&ensp;&ensp;(前台活动状态)&ensp;&ensp;&ensp;应用进入前台状态，可以接受事件处理   
+* Background&ensp;&ensp;&ensp;(后台状态)&ensp;&ensp;&ensp;应用进入后台
+* Suspended&ensp;&ensp;&ensp;(挂起状态)&ensp;&ensp;&ensp;不能执行代码，如果系统内存不够，此应用会被系统干掉   
+
+在上边5个不同状态切换过程中，应用程序会调用不同的回调函数，这些函数都定义UIApplicationDelegate中，比如一些will和did函数来分别处理过程前和过程后调用。   
+为了方便看到整个调用过程，我在系统默认生成的AppDelegate中的每个方法中加入了一条打印语句，方便清楚的看到整个调用过程。
+####应用从启动到显示（Not Running --> Active）
+这个过程中会从NotRunning->Inactive，再从Inactive->Active。两个过程中分别会调用两个不同的回调函数，didFinishLaunchingWithOptions和applicationDidBecomeActive函数。   
+didFinishLaunchingWithOptions   应用启动并进行初始化时会调用此函数，实例化根视图控制器   
+applicationDidBecomeActive 应用进入前台并处于激活状态时会调用此函数，这个阶段可恢复UI状态，对UI进行刷新   
+两个方法都会发出Notification通知。
+####点击Home键或被中断
+当点击Home键或着由于电话等被中断，应用程序会进入后台，这个过程中分为两种情况，一种是在后台还可继续运行或挂起，一种是在后台不能运行或挂起，这两个过程中会调用不同的方法。这个是由XXXInfo.plist文件中的Application does not run in background属性进行控制的，默认是没有这个设置的，如果需要，可添加进来。
+#####可运行挂起（Active --> Suspended）
+这个过程是从Active->Inactive->Background->Suspended,此时Application does not run in background属性值为NO。   
+Active->Inactive 调用applicationWillResignActive函数，在这个阶段可以暂停任务，暂停游戏等。   
+Inactive->Background  
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等   
+#####不可运行状态（Active --> Not Running）
+这个过程是从Active->Inactive->Background->Suspended->Not Running,此时Application does not run in background属性值为YES。   
+Active->Inactive     
+Inactive->Background  
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等 
+Suspended->Not Running 调用applicationWillTerminate函数，用于保存数据等。   
+
+如果双击Home键，系统进入多任务栏(Activie --> Inactive)，此时不管Application does not run in background设置YES或者NO，都会调用applicationWillResignActive函数。  
+如果点击当前应用，调用applicationDidBecomeActive函数，进入Active激活状态   
+若果手动删除应用，会依次调用applicationDidEnterBackground和applicationWillTerminate函数，不同的是当Application does not run in background属性值为YES时，applicationDidEnterBackground调用`一次`，当属性值为NO时，applicationDidEnterBackground调用`两次`。   
+####挂起重新运行场景(Suspende --> Active)
+这个过程是从Suspended->Background->Inactive->Active
+Suspended->Background
+Background->Inactive 调用applicationWillEnterForeground函数。
+Inactive->Active 调用applicationDidBecomeActive函数。
+此时Application does not run in background属性设置为NO，如果设置为YES，这些方法不会调用。   
+   
+以上就是整个应用的运行状态切换及在不同阶段调用的不同回调函数。   
+##视图生命周期
+在视图的不同生命周期中，视图控制器会回调不同的方法。   
+首先视图被创建时，会调用viewDidLoad函数，这个时候视图并未出现，在该方法中通常用来初始化。此方法在整个视图生命周期中只调用一次。   
+viewWillAppear 在视图可见之前调用   
+viewDidAppear  在视图可见之后调用   
+viewWillDisappear  在视图不可见之前调用   
+viewDidDisAppear   在视图不可见之后调用   
+这4个方法在整个视图生命周期中可能会被多次调用，比如可见前加载，不可见后释放等，可以有效控制内存使用   
+didReceiveMemoryWarning  内存警告时用于释放内存   
