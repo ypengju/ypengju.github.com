@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://ypengju.github.io/blog/2015/01/27/ios-bian-yi-jing-tai-ku/</loc>
+    <lastmod>2015-01-27T16:47:25+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song/</loc>
     <lastmod>2015-01-08T11:33:25+08:00</lastmod>
     <priority>0.8</priority>
@@ -97,13 +102,13 @@
   </url>
   <url>
     <loc>http://ypengju.github.io/blog/archives/</loc>
-    <lastmod>2015-01-10T14:25:10+08:00</lastmod>
+    <lastmod>2015-01-28T14:18:35+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://ypengju.github.io/</loc>
-    <lastmod>2015-01-10T14:25:10+08:00</lastmod>
+    <lastmod>2015-01-28T14:18:35+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

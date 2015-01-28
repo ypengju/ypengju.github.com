@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="因为现在并不了解OpenGL ES的渲染过程，这里只能简单理清整个cocos2d-x 3.2版本的渲染顺序及调用过程，具体OpenGL ES实现，之后会学习总结。 在3.0之前的版本中，cocos2d-x渲染每个节点都是放在节点的draw()方法中直接调用OpenGL命令来进行渲染的，比如2.2. &hellip;">
+  <meta name="description" content="多分辨率适配一直是cocos2d-x游戏关注的一个重点，所以搞清楚cocos2d-x适配方案尤为重要。 假设不存在多分辨率适配问题，只有一种分辨率，那我们就为该分辨率设计大小和屏幕一样的图片就OK了，但是因为现在市场手机大小不一，苹果及安卓分辨率各种大小应有尽有。">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,39 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-20T21:06:21+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:06 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>多分辨率适配一直是cocos2d-x游戏关注的一个重点，所以搞清楚cocos2d-x适配方案尤为重要。 <br/>
+假设不存在多分辨率适配问题，只有一种分辨率，那我们就为该分辨率设计大小和屏幕一样的图片就OK了，但是因为现在市场手机大小不一，苹果及安卓分辨率各种大小应有尽有。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -401,6 +434,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
       </li>
     
@@ -436,10 +473,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -448,7 +481,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (2)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

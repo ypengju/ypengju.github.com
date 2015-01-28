@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="为了提高用户的关注度，我们经常会推送一些新的内容给用户。ios中主要有两种推送，一种是远程通知，一种是本地通知，远程通知是和服务器端配合完成的，这里暂不说明，这篇文章主要说下本地通知。 本地通知是在ios4.0之后添加的，但是在ios8之后，在设置通知之前，需要先对通知进行注册，注册需要的通知类型 &hellip;">
+  <meta name="description" content="今天项目接第三方静态库被坑了一下，模拟器编译错误，真机编译通过，原来不懂，以为项目路径等问题，查了半天，没发现问题，后来才发现是第三方静态库的问题，被坑也叫坑，有坑赶紧填，填了就是路，上！ 原来ios静态库分为两种，模拟器和真机的，两个静态是不一样的，原因在于模拟器用的是i386框架的， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,46 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-01-27T16:47:25+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>今天项目接第三方静态库被坑了一下，模拟器编译错误，真机编译通过，原来不懂，以为项目路径等问题，查了半天，没发现问题，后来才发现是第三方静态库的问题，被坑也叫坑，有坑赶紧填，填了就是路，上！  <br/>
+原来ios静态库分为两种，模拟器和真机的，两个静态是不一样的，原因在于模拟器用的是i386框架的，真机使用的arm6,arm7框架的，上边的坑就是这样埋下的。下边来从一个新的静态库工程开始，看看静态库的创建过程。</p>
+
+<h4>创建静态库工程</h4>
+
+<p>如下图开始创建静态库工程
+<img src="/images/libstatic/1.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -480,39 +520,6 @@ cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-20T21:06:21+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>20</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:06 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>多分辨率适配一直是cocos2d-x游戏关注的一个重点，所以搞清楚cocos2d-x适配方案尤为重要。 <br/>
-假设不存在多分辨率适配问题，只有一种分辨率，那我们就为该分辨率设计大小和屏幕一样的图片就OK了，但是因为现在市场手机大小不一，苹果及安卓分辨率各种大小应有尽有。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -526,6 +533,10 @@ cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
@@ -563,10 +574,6 @@ cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类�
         <a href="/blog/2014/10/28/cocos2d-x-jnidiao-yong/">Cocos2d-x &#8211; Jni调用</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/10/20/cocos2d-x-duo-fen-bian-lu-gua-pei/">Cocos2d-x &#8211; 多分辨率适配</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -575,7 +582,7 @@ cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类�
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (2)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (10)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   
