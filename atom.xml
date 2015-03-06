@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-01-28T14:18:35+08:00</updated>
+  <updated>2015-03-06T11:14:01+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,730 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- 富文本RichText]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/"/>
+    <updated>2015-03-05T14:45:11+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext</id>
+    <content type="html"><![CDATA[<p>cocos2d-x在3.X版本中增加了富文本控件，使得处理游戏中多颜色字体及图片方便很多，这篇文章就学习总结下富文本控件RichText。RichText继承自Widget类，每个具体节点由RichElement的子类RichElementText，RichElementImage，RichElementCustomNode来处理文字，图片和自定义节点。当我们生成好RichElement的子类时，将其添加到RichText中，来进行富文本显示，像下边这样显示两种颜色文字。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">auto</span> <span class="n">rich</span> <span class="o">=</span> <span class="n">RichText</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+</span><span class='line'><span class="n">rich</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Vec2</span><span class="p">(</span><span class="n">visibleSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">visibleSize</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">));</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">rich</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">auto</span> <span class="n">element1</span> <span class="o">=</span> <span class="n">RichElementText</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">Color3B</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">123</span><span class="p">),</span> <span class="mi">125</span><span class="p">,</span> <span class="s">&quot;Hello world&quot;</span><span class="p">,</span> <span class="s">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</span><span class='line'><span class="n">rich</span><span class="o">-&gt;</span><span class="n">pushBackElement</span><span class="p">(</span><span class="n">element1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">auto</span> <span class="n">element2</span> <span class="o">=</span> <span class="n">RichElementText</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="n">Color3B</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">255</span><span class="p">,</span> <span class="s">&quot;Hello cocos2d-x&quot;</span><span class="p">,</span> <span class="s">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</span><span class='line'><span class="n">rich</span><span class="o">-&gt;</span><span class="n">pushBackElement</span><span class="p">(</span><span class="n">element2</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>先来看看RichElement和它的几个子类。<!--more--></p>
+
+<figure class='code'><figcaption><span>RichElement</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">CC_GUI_DLL</span> <span class="nl">RichElement</span> <span class="p">:</span> <span class="k">public</span> <span class="n">Ref</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">TEXT</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">IMAGE</span><span class="p">,</span>
+</span><span class='line'>        <span class="n">CUSTOM</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>    <span class="n">RichElement</span><span class="p">(){};</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="o">~</span><span class="n">RichElement</span><span class="p">(){};</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="nf">init</span><span class="p">(</span><span class="kt">int</span> <span class="n">tag</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'><span class="k">protected</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">Type</span> <span class="n">_type</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">_tag</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">Color3B</span> <span class="n">_color</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">GLubyte</span> <span class="n">_opacity</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">friend</span> <span class="k">class</span> <span class="nc">RichText</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RichElement是父类，记录了子类一些公有的属性，类型，标签，颜色，透明度等。 <br/>
+RichElementText添加了字体文本，字体，字体大小属性。  <br/>
+RichElementImage添加了图片路径属性。 <br/>
+RichElementCustomNode添加了一个Node节点，自定义的一些内容，都存储在这个节点中。 <br/>
+其实单独看这几个类也没干什么，只是包装了一些信息，而具体的操作，都在RichText类中。</p>
+
+<figure class='code'><figcaption><span>RichText</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">CC_GUI_DLL</span> <span class="nl">RichText</span> <span class="p">:</span> <span class="k">public</span> <span class="n">Widget</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">RichText</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="o">~</span><span class="n">RichText</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">RichText</span><span class="o">*</span> <span class="nf">create</span><span class="p">();</span>
+</span><span class='line'>    <span class="c1">//对Vector进行操作</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">insertElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">pushBackElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">removeElement</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">removeElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//设置行间距</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">setVerticalSpace</span><span class="p">(</span><span class="kt">float</span> <span class="n">space</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//设置锚点</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">setAnchorPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">Vec2</span> <span class="o">&amp;</span><span class="n">pt</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//获取content大小</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="n">Size</span> <span class="n">getVirtualRendererSize</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//格式化文本</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">formatText</span><span class="p">();</span>
+</span><span class='line'>    <span class="c1">//设置为false时，setContentSize才有效</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">ignoreContentAdaptWithSize</span><span class="p">(</span><span class="kt">bool</span> <span class="n">ignore</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//获取描述</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">getDescription</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nl">CC_CONSTRUCTOR_ACCESS</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">init</span><span class="p">()</span> <span class="k">override</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">protected</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">adaptRenderers</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">initRenderer</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">pushToContainer</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">renderer</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">handleTextRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fontName</span><span class="p">,</span> <span class="kt">float</span> <span class="n">fontSize</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">handleImageRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fileParh</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">handleCustomRenderer</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">renderer</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">formarRenderers</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">addNewLine</span><span class="p">();</span>
+</span><span class='line'><span class="k">protected</span><span class="o">:</span>
+</span><span class='line'>    <span class="c1">//标记是否格式化文本</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">_formatTextDirty</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//存储RichElement的容器，所有RichText添加进来的RichElement都存储在该容器中</span>
+</span><span class='line'>    <span class="n">Vector</span><span class="o">&lt;</span><span class="n">RichElement</span><span class="o">*&gt;</span> <span class="n">_richElements</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//_elementRenders中的每个Vector&lt;Node*&gt;中的节点，是每行的所有节点</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*&gt;</span> <span class="n">_elementRenders</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//每行剩余宽度，在需要换行时使用</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">_leftSpaceWidth</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//行间距</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">_verticalSpace</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//代表Rich的节点，所有的RichElement都添加在该节点下</span>
+</span><span class='line'>    <span class="n">Node</span><span class="o">*</span> <span class="n">_elementRenderersContainer</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>首先来看添加删除的几个方法</p>
+
+<figure class='code'><figcaption><span>RichText</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">insertElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_richElements</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">pushBackElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_richElements</span><span class="p">.</span><span class="n">pushBack</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">removeElement</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_richElements</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">removeElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_richElements</span><span class="p">.</span><span class="n">eraseObject</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>看这几个方法就会发现，添加和删除其实都是在操作_richElements容器，并标记需要格式化文本。  <br/>
+拿来看看添加后格式化文本干了什么</p>
+
+<figure class='code'><figcaption><span>formatText()</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">formatText</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//判断是否需要格式化文本</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_formatTextDirty</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//清除_elementRenderersContainer节点下的所有子节点</span>
+</span><span class='line'>        <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">removeAllChildren</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_elementRenders</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'>        <span class="c1">//判断是否忽略content大小</span>
+</span><span class='line'>        <span class="c1">//默认为true，此时调用setContentSize()无效，文本不会换行，否则会根据设置宽度对文本换行</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">_ignoreSize</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//此时不进行距离计算，遍历_richElements，根据类型还原RichElement子类，</span>
+</span><span class='line'>            <span class="c1">//调用pushToContainer()添加到_elementRenders渲染容器中。</span>
+</span><span class='line'>            <span class="n">addNewLine</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_richElements</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span> <span class="o">=</span> <span class="n">_richElements</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">Node</span><span class="o">*</span> <span class="n">elementRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">switch</span> <span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_type</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">TEXT</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementText</span><span class="o">*</span> <span class="n">elmtText</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementText</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">FileUtils</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isFileExist</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">))</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">);</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                        <span class="k">else</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">);</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">IMAGE</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementImage</span><span class="o">*</span> <span class="n">elmtImage</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementImage</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_filePath</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">CUSTOM</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementCustomNode</span><span class="o">*</span> <span class="n">elmtCustom</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementCustomNode</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">elmtCustom</span><span class="o">-&gt;</span><span class="n">_customNode</span><span class="p">;</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="n">elementRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">elementRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">pushToContainer</span><span class="p">(</span><span class="n">elementRenderer</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//因为要根据contentSize进行换行，所以要根据RichElement内容进行长度计算，调用对应handleXXXRenderer方法进行计算</span>
+</span><span class='line'>            <span class="n">addNewLine</span><span class="p">();</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_richElements</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElement</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">_richElements</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+</span><span class='line'>                <span class="k">switch</span> <span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_type</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">TEXT</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementText</span><span class="o">*</span> <span class="n">elmtText</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementText</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">handleTextRenderer</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">IMAGE</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementImage</span><span class="o">*</span> <span class="n">elmtImage</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementImage</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">handleImageRenderer</span><span class="p">(</span><span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_filePath</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">,</span> <span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">CUSTOM</span><span class="p">:</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">RichElementCustomNode</span><span class="o">*</span> <span class="n">elmtCustom</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementCustomNode</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+</span><span class='line'>                        <span class="n">handleCustomRenderer</span><span class="p">(</span><span class="n">elmtCustom</span><span class="o">-&gt;</span><span class="n">_customNode</span><span class="p">);</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">formarRenderers</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>formatText()主要对_richElements容器内的元素进行分类，text其实就是一个Label,image是Sprite,而custom就是一个Node节点。忽略content大小的比较简单，直接添加节点就好了，而计算的就比较麻烦了，可以看看对text的计算方法，image和custom类似。</p>
+
+<figure class='code'><figcaption><span>handleTextRenderer</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">handleTextRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fontName</span><span class="p">,</span> <span class="kt">float</span> <span class="n">fontSize</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span> <span class="o">&amp;</span><span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//先判断是否存在字体文件，然后调用不同的Label方法</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">fileExist</span> <span class="o">=</span> <span class="n">FileUtils</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isFileExist</span><span class="p">(</span><span class="n">fontName</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">Label</span><span class="o">*</span> <span class="n">textRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">fileExist</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">textRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">textRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//获取文本宽度</span>
+</span><span class='line'>    <span class="kt">float</span> <span class="n">textRendererWidth</span> <span class="o">=</span> <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">width</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//计算一行剩下的宽度</span>
+</span><span class='line'>    <span class="n">_leftSpaceWidth</span> <span class="o">-=</span> <span class="n">textRendererWidth</span><span class="p">;</span>
+</span><span class='line'>    <span class="c1">//如果剩余宽度小于0，就需要对文本进行换行，创建新的Label</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_leftSpaceWidth</span> <span class="o">&lt;</span> <span class="mf">0.0f</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//计算超出文本的比例</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">overstepPercent</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">_leftSpaceWidth</span><span class="p">)</span> <span class="o">/</span> <span class="n">textRendererWidth</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">curText</span> <span class="o">=</span> <span class="n">text</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//计算原始文本长度</span>
+</span><span class='line'>        <span class="kt">size_t</span> <span class="n">stringLength</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">::</span><span class="n">getCharacterCountInUTF8String</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//计算未超出长度</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">leftLength</span> <span class="o">=</span> <span class="n">stringLength</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0f</span> <span class="o">-</span> <span class="n">overstepPercent</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//未超出文本</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">leftWords</span> <span class="o">=</span> <span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">curText</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">leftLength</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//超出文本</span>
+</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">cutWords</span> <span class="o">=</span> <span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">curText</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">,</span> <span class="n">stringLength</span> <span class="o">-</span> <span class="n">leftLength</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">//对未查出文本生成的Label</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">leftLength</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Label</span><span class="o">*</span> <span class="n">leftRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">fileExist</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">leftRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">leftWords</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">leftRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">leftWords</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">leftRenderer</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">leftRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">color</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">leftRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">pushToContainer</span><span class="p">(</span><span class="n">leftRenderer</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">//换行，递归调用handleTextRenderer()对超出文本进行计算</span>
+</span><span class='line'>        <span class="n">addNewLine</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">handleTextRenderer</span><span class="p">(</span><span class="n">cutWords</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">color</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">opacity</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">pushToContainer</span><span class="p">(</span><span class="n">textRenderer</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边方法处理了RichText文本宽度问题，那高度问题是怎么处理的，那就得看formarRenderers方法了</p>
+
+<figure class='code'><figcaption><span>formarRenderers</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">formarRenderers</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_ignoreSize</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//不需要换行的，以所有元素中高度最高的为_elementRenderersContainer节点的高度</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">newContentSizeWidth</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">newContentSizeHeight</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*</span> <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">_elementRenders</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">nextPosX</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">row</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Node</span><span class="o">*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">row</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">l</span><span class="o">-&gt;</span><span class="n">setAnchorPoint</span><span class="p">(</span><span class="n">Vec2</span><span class="o">::</span><span class="n">ZERO</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">l</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">nextPosX</span><span class="p">,</span> <span class="mf">0.0f</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">Size</span> <span class="n">iSize</span> <span class="o">=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">();</span>
+</span><span class='line'>            <span class="n">newContentSizeWidth</span> <span class="o">+=</span> <span class="n">iSize</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">newContentSizeHeight</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">newContentSizeHeight</span><span class="p">,</span> <span class="n">iSize</span><span class="p">.</span><span class="n">height</span><span class="p">);</span>
+</span><span class='line'>            <span class="n">nextPosX</span> <span class="o">+=</span> <span class="n">iSize</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">setContentSize</span><span class="p">(</span><span class="n">Size</span><span class="p">(</span><span class="n">newContentSizeWidth</span><span class="p">,</span> <span class="n">newContentSizeHeight</span><span class="p">));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//需要换行的，需要计算每行最高的外，还需要加上行间距</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">newContentSizeHeight</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">float</span> <span class="o">*</span><span class="n">maxHeights</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">float</span><span class="p">[</span><span class="n">_elementRenders</span><span class="p">.</span><span class="n">size</span><span class="p">()];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_elementRenders</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*</span> <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">_elementRenders</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>            <span class="kt">float</span> <span class="n">maxHeight</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">row</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">Node</span><span class="o">*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">row</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">maxHeight</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">height</span><span class="p">,</span> <span class="n">maxHeight</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">maxHeights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">maxHeight</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">newContentSizeHeight</span> <span class="o">+=</span> <span class="n">maxHeights</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">float</span> <span class="n">nextPosY</span> <span class="o">=</span> <span class="n">_customSize</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_elementRenders</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*</span> <span class="n">row</span> <span class="o">=</span> <span class="p">(</span><span class="n">_elementRenders</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>            <span class="kt">float</span> <span class="n">nextPosX</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">nextPosY</span> <span class="o">-=</span> <span class="p">(</span><span class="n">maxHeights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">_verticalSpace</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">j</span><span class="o">&lt;</span><span class="n">row</span><span class="o">-&gt;</span><span class="n">size</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">Node</span><span class="o">*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">row</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">l</span><span class="o">-&gt;</span><span class="n">setAnchorPoint</span><span class="p">(</span><span class="n">Vec2</span><span class="o">::</span><span class="n">ZERO</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">l</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">nextPosX</span><span class="p">,</span> <span class="n">nextPosY</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>                <span class="n">nextPosX</span> <span class="o">+=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">width</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">setContentSize</span><span class="p">(</span><span class="n">_contentSize</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">delete</span> <span class="p">[]</span> <span class="n">maxHeights</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">//清除_elementRenders容器元素</span>
+</span><span class='line'>    <span class="kt">size_t</span> <span class="n">length</span> <span class="o">=</span> <span class="n">_elementRenders</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="kt">size_t</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">length</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*</span> <span class="n">l</span> <span class="o">=</span> <span class="n">_elementRenders</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>        <span class="n">l</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">delete</span> <span class="n">l</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">_elementRenders</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_ignoreSize</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Size</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getVirtualRendererSize</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">-&gt;</span><span class="n">setContentSize</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">-&gt;</span><span class="n">setContentSize</span><span class="p">(</span><span class="n">_customSize</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">updateContentSizeWithTextureSize</span><span class="p">(</span><span class="n">_contentSize</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">_contentSize</span><span class="p">.</span><span class="n">width</span> <span class="o">/</span> <span class="mf">2.0f</span><span class="p">,</span> <span class="n">_contentSize</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="mf">2.0f</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+以上就是RichText富文本处理过程了。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[IOS -- 编译静态库]]></title>
@@ -6323,84 +7047,6 @@ a[3] = 4 <br/>
 }</p>
 
 <h5>例子程序地址：<a href="https://github.com/ypengju/cocos2d-xTest">https://github.com/ypengju/cocos2d-xTest</a></h5>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[IOS--生命周期]]></title>
-    <link href="http://ypengju.github.io/blog/2014/09/26/ios-sheng-ming-zhou-qi/"/>
-    <updated>2014-09-26T14:23:43+08:00</updated>
-    <id>http://ypengju.github.io/blog/2014/09/26/ios-sheng-ming-zhou-qi</id>
-    <content type="html"><![CDATA[<p>这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程</p>
-
-<h2>应用的生命周期：</h2>
-
-<p>应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。</p>
-
-<h3>首先看下应用的5个状态   <!-- more --></h3>
-
-<ul>
-<li>Not Running&ensp;&ensp;&ensp;(非运行状态)&ensp;&ensp;&ensp;应用没有启动或者被系统干掉时</li>
-<li>Inactive&ensp;&ensp;&ensp;(前台非活动状态)&ensp;&ensp;&ensp;应用正在进入前台状态，但是不能接受事件处理</li>
-<li>Active&ensp;&ensp;&ensp;(前台活动状态)&ensp;&ensp;&ensp;应用进入前台状态，可以接受事件处理</li>
-<li>Background&ensp;&ensp;&ensp;(后台状态)&ensp;&ensp;&ensp;应用进入后台</li>
-<li>Suspended&ensp;&ensp;&ensp;(挂起状态)&ensp;&ensp;&ensp;不能执行代码，如果系统内存不够，此应用会被系统干掉</li>
-</ul>
-
-
-<p>在上边5个不同状态切换过程中，应用程序会调用不同的回调函数，这些函数都定义UIApplicationDelegate中，比如一些will和did函数来分别处理过程前和过程后调用。 <br/>
-为了方便看到整个调用过程，我在系统默认生成的AppDelegate中的每个方法中加入了一条打印语句，方便清楚的看到整个调用过程。</p>
-
-<h4>应用从启动到显示（Not Running &ndash;> Active）</h4>
-
-<p>这个过程中会从NotRunning->Inactive，再从Inactive->Active。两个过程中分别会调用两个不同的回调函数，didFinishLaunchingWithOptions和applicationDidBecomeActive函数。 <br/>
-didFinishLaunchingWithOptions   应用启动并进行初始化时会调用此函数，实例化根视图控制器 <br/>
-applicationDidBecomeActive 应用进入前台并处于激活状态时会调用此函数，这个阶段可恢复UI状态，对UI进行刷新 <br/>
-两个方法都会发出Notification通知。</p>
-
-<h4>点击Home键或被中断</h4>
-
-<p>当点击Home键或着由于电话等被中断，应用程序会进入后台，这个过程中分为两种情况，一种是在后台还可继续运行或挂起，一种是在后台不能运行或挂起，这两个过程中会调用不同的方法。这个是由XXXInfo.plist文件中的Application does not run in background属性进行控制的，默认是没有这个设置的，如果需要，可添加进来。</p>
-
-<h5>可运行挂起（Active &ndash;> Suspended）</h5>
-
-<p>这个过程是从Active->Inactive->Background->Suspended,此时Application does not run in background属性值为NO。 <br/>
-Active->Inactive 调用applicationWillResignActive函数，在这个阶段可以暂停任务，暂停游戏等。 <br/>
-Inactive->Background<br/>
-Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等</p>
-
-<h5>不可运行状态（Active &ndash;> Not Running）</h5>
-
-<p>这个过程是从Active->Inactive->Background->Suspended->Not Running,此时Application does not run in background属性值为YES。 <br/>
-Active->Inactive   <br/>
-Inactive->Background<br/>
-Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等
-Suspended->Not Running 调用applicationWillTerminate函数，用于保存数据等。</p>
-
-<p>如果双击Home键，系统进入多任务栏(Activie &ndash;> Inactive)，此时不管Application does not run in background设置YES或者NO，都会调用applicationWillResignActive函数。<br/>
-如果点击当前应用，调用applicationDidBecomeActive函数，进入Active激活状态 <br/>
-若果手动删除应用，会依次调用applicationDidEnterBackground和applicationWillTerminate函数，不同的是当Application does not run in background属性值为YES时，applicationDidEnterBackground调用<code>一次</code>，当属性值为NO时，applicationDidEnterBackground调用<code>两次</code>。</p>
-
-<h4>挂起重新运行场景(Suspende &ndash;> Active)</h4>
-
-<p>这个过程是从Suspended->Background->Inactive->Active
-Suspended->Background
-Background->Inactive 调用applicationWillEnterForeground函数。
-Inactive->Active 调用applicationDidBecomeActive函数。
-此时Application does not run in background属性设置为NO，如果设置为YES，这些方法不会调用。</p>
-
-<p>以上就是整个应用的运行状态切换及在不同阶段调用的不同回调函数。</p>
-
-<h2>视图生命周期</h2>
-
-<p>在视图的不同生命周期中，视图控制器会回调不同的方法。 <br/>
-首先视图被创建时，会调用viewDidLoad函数，这个时候视图并未出现，在该方法中通常用来初始化。此方法在整个视图生命周期中只调用一次。 <br/>
-viewWillAppear 在视图可见之前调用 <br/>
-viewDidAppear  在视图可见之后调用 <br/>
-viewWillDisappear  在视图不可见之前调用 <br/>
-viewDidDisAppear   在视图不可见之后调用 <br/>
-这4个方法在整个视图生命周期中可能会被多次调用，比如可见前加载，不可见后释放等，可以有效控制内存使用 <br/>
-didReceiveMemoryWarning  内存警告时用于释放内存</p>
 ]]></content>
   </entry>
   
