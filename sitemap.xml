@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://ypengju.github.io/blog/2015/03/07/cocos2d-x-clippingnode/</loc>
+    <lastmod>2015-03-07T14:24:05+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://ypengju.github.io/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/</loc>
     <lastmod>2015-03-05T14:45:11+08:00</lastmod>
     <priority>0.8</priority>
@@ -107,13 +112,13 @@
   </url>
   <url>
     <loc>http://ypengju.github.io/blog/archives/</loc>
-    <lastmod>2015-03-06T11:14:01+08:00</lastmod>
+    <lastmod>2015-03-08T10:11:37+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://ypengju.github.io/</loc>
-    <lastmod>2015-03-06T11:14:01+08:00</lastmod>
+    <lastmod>2015-03-08T10:11:37+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

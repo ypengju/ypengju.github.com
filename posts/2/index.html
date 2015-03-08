@@ -9,7 +9,11 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="cocos2d-x要在android手机上运行，就需要在java和c++两种语言之间进行调用，在cocos2d-x中完成这个任务的就是jni，它可以使两者之间互相调用，从而让用c++开发的cocos2d-x游戏，在android上完美运行。 cocos2d-x中封装了JniHelper类， &hellip;">
+  <meta name="description" content="cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 newwork目录下主要由这几个类 HttpRequest
+HttpResponse
+HttpClient
+SocketIO
+WebSocket 这篇主要总结下Http请求的处理过程。 ">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +62,50 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-11-07T21:40:47+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:40 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 <br/>
+newwork目录下主要由这几个类</p>
+
+<ul>
+<li>HttpRequest</li>
+<li>HttpResponse</li>
+<li>HttpClient</li>
+<li>SocketIO</li>
+<li>WebSocket</li>
+</ul>
+
+
+<p>这篇主要总结下Http请求的处理过程。   </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -378,42 +426,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/28/cocos2d-x-rapidjson/">Cocos2d-x &#8211; Rapidjson</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-28T16:10:30+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>4:10 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>rapidjson是一个c++中的json解析库，其实还有其他的工具如jsoncpp，但是号称rapidjson效率更高一些，并且cocos2d-x3.x版本中都添加rapidjson支持，所以学习了解了下rapidjson的使用。</p>
-
-<h5>rapidjson 主页：<a href="https://code.google.com/p/rapidjson/">https://code.google.com/p/rapidjson/</a></h5>
-
-<p>下载后在源码中example中可以找到使用方法，在cocos2d-x 3.2中，位于external/json   </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/28/cocos2d-x-rapidjson/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -429,6 +441,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
@@ -466,10 +482,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -478,7 +490,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (11)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

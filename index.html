@@ -9,7 +9,28 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="cocos2d-x在3.X版本中增加了富文本控件，使得处理游戏中多颜色字体及图片方便很多，这篇文章就学习总结下富文本控件RichText。RichText继承自Widget类，每个具体节点由RichElement的子类RichElementText，RichElementImage， &hellip;">
+  <meta name="description" content="ClippingNode是一个用于剪切的类，例如在游戏新手引导中会指定特定点击区域就可以使用此类来做，或者在游戏滚动公告中，也可以使用此类来完成。 如下边这个例子： 1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+Size &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +79,86 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-07T14:24:05+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>2:24 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ClippingNode是一个用于剪切的类，例如在游戏新手引导中会指定特定点击区域就可以使用此类来做，或者在游戏滚动公告中，也可以使用此类来完成。  <br/>
+如下边这个例子：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">Size</span> <span class="n">visibleSize</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getVisibleSize</span><span class="p">();</span>
+</span><span class='line'><span class="n">Vec2</span> <span class="n">origin</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getVisibleOrigin</span><span class="p">();</span>
+</span><span class='line'><span class="c1">//文字</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">label</span> <span class="o">=</span> <span class="n">LabelTTF</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;这是一个美好的早上，我坐在窗前敲代码&quot;</span><span class="p">,</span> <span class="s">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</span><span class='line'><span class="n">label</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Vec2</span><span class="p">(</span><span class="n">visibleSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">visibleSize</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">));</span>
+</span><span class='line'><span class="n">label</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">Color3B</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">label</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//遮罩形状及大小</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">stencil</span> <span class="o">=</span> <span class="n">LayerColor</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">Color4B</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">50</span><span class="p">);</span>
+</span><span class='line'><span class="n">stencil</span><span class="o">-&gt;</span><span class="n">ignoreAnchorPointForPosition</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+</span><span class='line'><span class="n">stencil</span><span class="o">-&gt;</span><span class="n">setAnchorPoint</span><span class="p">(</span><span class="n">Vec2</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">));</span>
+</span><span class='line'><span class="c1">//剪切</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">clipping</span> <span class="o">=</span> <span class="n">ClippingNode</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+</span><span class='line'><span class="n">clipping</span><span class="o">-&gt;</span><span class="n">setStencil</span><span class="p">(</span><span class="n">stencil</span><span class="p">);</span>
+</span><span class='line'><span class="n">clipping</span><span class="o">-&gt;</span><span class="n">setInverted</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+</span><span class='line'><span class="n">clipping</span><span class="o">-&gt;</span><span class="n">set</span>
+</span><span class='line'><span class="n">clipping</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Vec2</span><span class="p">(</span><span class="n">visibleSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">origin</span><span class="p">.</span><span class="n">x</span><span class="p">,</span> <span class="n">visibleSize</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span> <span class="o">+</span> <span class="n">origin</span><span class="p">.</span><span class="n">y</span><span class="p">));</span>
+</span><span class='line'><span class="k">this</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">clipping</span><span class="p">);</span>
+</span><span class='line'><span class="c1">//要剪切的内容，此处为一个背景</span>
+</span><span class='line'><span class="k">auto</span> <span class="n">sprite</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;HelloWorld.png&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">clipping</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">sprite</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/07/cocos2d-x-clippingnode/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -498,50 +599,6 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-07T21:40:47+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:40 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 <br/>
-newwork目录下主要由这几个类</p>
-
-<ul>
-<li>HttpRequest</li>
-<li>HttpResponse</li>
-<li>HttpClient</li>
-<li>SocketIO</li>
-<li>WebSocket</li>
-</ul>
-
-
-<p>这篇主要总结下Http请求的处理过程。   </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -555,6 +612,10 @@ newwork目录下主要由这几个类</p>
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
@@ -592,10 +653,6 @@ newwork目录下主要由这几个类</p>
         <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/11/07/cocos2d-x-httpqing-qiu/">Cocos2d-x &#8211; Http请求</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -604,7 +661,7 @@ newwork目录下主要由这几个类</p>
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (11)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

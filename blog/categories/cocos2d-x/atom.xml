@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Cocos2d-x | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/cocos2d-x/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-03-06T11:14:01+08:00</updated>
+  <updated>2015-03-08T10:11:37+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,47 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Cocos2d-x -- ClippingNode]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/07/cocos2d-x-clippingnode/"/>
+    <updated>2015-03-07T14:24:05+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/07/cocos2d-x-clippingnode</id>
+    <content type="html"><![CDATA[<p>ClippingNode是一个用于剪切的类，例如在游戏新手引导中会指定特定点击区域就可以使用此类来做，或者在游戏滚动公告中，也可以使用此类来完成。  <br/>
+如下边这个例子：
+<code>cpp
+Size visibleSize = Director::getInstance()-&gt;getVisibleSize();
+Vec2 origin = Director::getInstance()-&gt;getVisibleOrigin();
+//文字
+auto label = LabelTTF::create("这是一个美好的早上，我坐在窗前敲代码", "Arial", 20);
+label-&gt;setPosition(Vec2(visibleSize.width/2, visibleSize.height/2));
+label-&gt;setColor(Color3B(0, 255, 0));
+this-&gt;addChild(label);
+//遮罩形状及大小
+auto stencil = LayerColor::create(Color4B(255, 255, 255, 255), 400, 50);
+stencil-&gt;ignoreAnchorPointForPosition(false);
+stencil-&gt;setAnchorPoint(Vec2(0.5, 0.5));
+//剪切
+auto clipping = ClippingNode::create();
+clipping-&gt;setStencil(stencil);
+clipping-&gt;setInverted(true);
+clipping-&gt;set
+clipping-&gt;setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+this-&gt;addChild(clipping);
+//要剪切的内容，此处为一个背景
+auto sprite = Sprite::create("HelloWorld.png");
+clipping-&gt;addChild(sprite);
+</code></p>
+
+<!--more-->
+
+
+<p><img src="/images/clippingnode/1.png">  <br/>
+本来屏幕中间有一句话，但是在上边放一张图片会遮住文字的显示，为了能看到图片下边的文字，那就需要在图片上挖个洞，ClippingNode就是用来挖这个洞的，挖洞就得有形状大小啊，这就是stencil遮罩的作用了，此处定义了一个LayerColor,它本身就是一个矩形，然后使用了他的尺寸，所以意思就是此处需要挖一个长400，宽50的矩形洞。（除了矩形，我们还可以设置其他任一形状）规则设置好了，开始挖洞，生成ClippingNode节点，将规则尺寸通过setStencil()方法设置进去，将节点添加到层。好了规则设置好了，现在就需要设置挖的内容了，就是要在什么上挖洞，前边知道要在一张图片上挖洞，那么把这个图片添加进来，此处用Sprite创建了一张图片，注意，这个精灵节点是添加到ClippingNode中的，不是添加到层。到目前为止，完成了在一张图片上挖一个长400，宽50的矩形洞，挖完洞有两个东西，一个就是挖掉的400x50的矩形，另一个就是图片剩下的内容，到底显示那个里，我们可以通过setInverted()方法进行设置，当为true的时候，显示挖掉剩下的内容，当为false时，显示挖掉的内容。上边例子，设置为true，显示挖掉剩下的图片，通过洞，就可以看到图片地下的内容，这就是我们需要的结果。下边图片就是设置为false时，显示的效果。 <br/>
+ <img src="/images/clippingnode/2.png">
+ ClippingNode还有一个方法setAlphaThreshold()这个方法设置alpha测试值，值的范围是0.0~1.0，默认是1，当这个值为1时，引擎绘制所有内容，当这个值小于1时，只有剪切的内容的alpha值大于这个值的时候，才会被引擎绘制，否则不进行绘制。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Cocos2d-x -- 富文本RichText]]></title>
@@ -1398,326 +1439,6 @@ cocos2d: ----- name data, value arrayData4
 
 <p>首先根据路径加载xml文件，将其存在<code>XMLDocument</code>中，然后用其一次获得每个节点及属性值，这样我们在程序中就可以使用了。 <br/>
 以上就是简单的tinyxml2的生成和解析xml文件。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Cocos2d-x -- Http请求]]></title>
-    <link href="http://ypengju.github.io/blog/2014/11/07/cocos2d-x-httpqing-qiu/"/>
-    <updated>2014-11-07T21:40:47+08:00</updated>
-    <id>http://ypengju.github.io/blog/2014/11/07/cocos2d-x-httpqing-qiu</id>
-    <content type="html"><![CDATA[<p>cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 <br/>
-newwork目录下主要由这几个类</p>
-
-<ul>
-<li>HttpRequest</li>
-<li>HttpResponse</li>
-<li>HttpClient</li>
-<li>SocketIO</li>
-<li>WebSocket</li>
-</ul>
-
-
-<p>这篇主要总结下Http请求的处理过程。   <!--more-->
-首先请求之前，我们需要组织请求数据，这个就是由HttpRequest来完成的。 <br/>
-比如设置请求地址，请求数据，请求类型，响应回调函数等。如下例 <br/>
-<code>c++
-cocos2d::network::HttpRequest *request = new cocos2d::network::HttpRequest();
-request-&gt;setUrl("http://127.0.0.1:1337/");
-request-&gt;setRequestType(cocos2d::network::HttpRequest::Type::GET);
-request-&gt;setResponseCallback(CC_CALLBACK_2(HelloWorld::onHttpRequestCompleted,this));
-request-&gt;setTag("get request”);
-request-&gt;setRequestData(const char *buffer, size_t len);
-cocos2d::network::HttpClient::getInstance()-&gt;send(request);
-request-&gt;release();
-</code>  <br/>
-上边例子我们处理了一个请求内容，设置请求数据的时候，我们还需要知道他的大小。 <br/>
-请求方式有四种 <br/>
-<code>c++
-enum class Type
-{
-    GET,
-    POST,
-    PUT,
-    DELETE,
-    UNKNOWN,
-};
-</code> <br/>
-有GET，POST，PUT, DELETE分别对应http请求类型，一般应该用得比较多的是GET请求和POST请求了。除此之外，我们还可以通过<code>void setHeaders(std::vector&lt;std::string&gt; pHeaders)</code>方法设置请求头信息。请求数据组织好了，我们就需要把它发送出去了，这个发送管理任务就由HttpClient来完成了，就像上边这句一样：
-<code>cocos2d::network::HttpClient::getInstance()-&gt;send(request)</code>可以看到，他是一个单例。 <br/>
-HttpClient用来管理请求的发送，设置连接超时时间，设置读取响应时间等，以及请求的线程管理等。HttpClient处理请求有两种方法，一种是send(),一种是sendImmediate()直接请求。 <br/>
-先看看send()都干了什么 <br/>
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">send</span><span class="p">(</span><span class="n">HttpRequest</span><span class="o">*</span> <span class="n">request</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="nb">false</span> <span class="o">==</span> <span class="n">lazyInitThreadSemphore</span><span class="p">())</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">request</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">request</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">retain</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_requestQueue</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Notify thread start to work</span>
-</span><span class='line'>    <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">notify_one</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="err">首先调用了</span><span class="n">lazyInitThreadSemphore</span><span class="p">(),</span><span class="err">在这个方法中，初始花了请求与响应队列，新起了一个线程，用于请求响应工作。然后将请求数据，添加到请求响应队列中，然后通知线程工作。</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">c</span><span class="o">++</span>
-</span><span class='line'><span class="c1">//Lazy create semaphore &amp;amp; mutex &amp;amp; thread</span>
-</span><span class='line'><span class="kt">bool</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">lazyInitThreadSemphore</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span>    <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">HttpRequest</span><span class="o">*&amp;</span><span class="n">gt</span><span class="p">;();</span>
-</span><span class='line'>    <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">HttpResponse</span><span class="o">*&amp;</span><span class="n">gt</span><span class="p">;();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">s_need_quit</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
-</span><span class='line'>    <span class="n">t</span><span class="p">.</span><span class="n">detach</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>
-</span><span class='line'><span class="err">主要工作在</span><span class="n">networkThread</span><span class="err">中完成</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">c</span><span class="o">++</span>
-</span><span class='line'><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>  <span class="o">&lt;</span><span class="n">br</span><span class="o">/&gt;</span>
-</span><span class='line'>    <span class="n">HttpRequest</span> <span class="o">*</span><span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">auto</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">getScheduler</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">s_need_quit</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// step 1: send http request if the requestQueue isn&#39;t empty</span>
-</span><span class='line'>    <span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">//Get request task from queue</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">empty</span><span class="p">())</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="n">request</span> <span class="o">=</span> <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">erase</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">request</span><span class="p">)</span>
-</span><span class='line'>    <span class="p">{</span>
-</span><span class='line'>        <span class="c1">// Wait for http request tasks from main thread</span>
-</span><span class='line'>        <span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">lk</span><span class="p">(</span><span class="n">s_SleepMutex</span><span class="p">);</span>
-</span><span class='line'>        <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lk</span><span class="p">);</span>
-</span><span class='line'>        <span class="k">continue</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// step 2: libcurl sync access</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// Create a HttpResponse object, the default setting is http access failed</span>
-</span><span class='line'>    <span class="n">HttpResponse</span> <span class="o">*</span><span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">processResponse</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">s_errorBuffer</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c1">// add response packet into queue</span>
-</span><span class='line'>    <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-</span><span class='line'>    <span class="n">s_responseQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
-</span><span class='line'>    <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_pHttpClient</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">scheduler</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">performFunctionInCocosThread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">dispatchResponseCallbacks</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">// cleanup: if worker thread received quit signal, clean up un-completed request queue</span>
-</span><span class='line'><span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
-</span><span class='line'><span class="n">s_requestQueue</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">clear</span><span class="p">();</span>
-</span><span class='line'><span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="k">delete</span> <span class="n">s_requestQueue</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
-</span><span class='line'>    <span class="k">delete</span> <span class="n">s_responseQueue</span><span class="p">;</span>
-</span><span class='line'>    <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure> <br/>
-整个处理流程是这样的:</p>
-
-<ul>
-<li>先初始化请求和响应队列，生成新的线程，新线程中调用networkThread()函数</li>
-<li>在networkThread()函数中有一个while(true)循环，用来检查请求队列是否有新的请求数据，如果有，处理之。</li>
-<li>当在send()函数中，将请求数据加入请求队列后，networkThread()随后进行处理。</li>
-<li>在networkThread()中，先将请求数据从请求队列中拿出来，然后此数据生成HttpResponse()响应。</li>
-<li>在HttpResponse中保存有一个请求数据，然后调用processResponse()方法，进行响应处理。</li>
-<li>在processResponse()方法中，先将response中的请求数据拿出来，根据请求类型，调用不同的方法。</li>
-<li>processGetTask(), processPostTask(), processPutTask(), processDeleteTask()</li>
-<li>分别用于处理GET,POST,PUT,DELETE请求。</li>
-<li>在这些方法中，使用curl进行具体网络请求，链接等。并将结果存储到response中。</li>
-<li>然后将response添加到响应队列中。用schedule调回主线程dispatchResponseCallbacks()方法进行处理。</li>
-<li>在dispatchResponseCallbacks()中，先将响应从响应队列中取出。</li>
-<li>得到response中的request请求，然后调用request中的注册的callback函数。</li>
-<li>此时就可以在callback函数中，通过response中的响应数据进行处理了。</li>
-</ul>
-
-
-<p>这样就完成了一次具体的http请求。 <br/>
-相比sendImmediate()请求就简单直接一些：</p>
-
-<ul>
-<li>在新线程中，调用networkThreadAlone()方法。</li>
-<li>在networkThreadAlone()没有将request添加到队列中，而是直接生成response，采用processResponse()方法进行处理。</li>
-<li>处理之后，schedule调回主线程，调用callback，进行数据处理。</li>
-</ul>
-
-
-<p>以上就是对cocos2d-x的Http请求的简单学习总结。</p>
 ]]></content>
   </entry>
   
