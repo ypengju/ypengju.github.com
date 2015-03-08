@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-03-08T10:11:37+08:00</updated>
+  <updated>2015-03-08T22:14:05+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android -- 再学android]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/08/android-new-android/"/>
+    <updated>2015-03-08T21:39:13+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/08/android-new-android</id>
+    <content type="html"><![CDATA[<p>新的征程，再学Android。</p>
+
+<p>原来在学校的时候学习过一段时间Android开发，毕业找工作的时候也一直想找个Android的工作，可是后来阴差阳错的却做了cocos2d-x开发，虽然交叉编译有用到Android，但是毕竟不多，比起原来，现在Android已经变化很多，新的编辑器，新的版本，快速的Genymotion模拟器，再也不用一跑一下午了。所以想利用闲暇时间了重新学一下Android，在以后cocos2d-x开发中也能更得心应手。</p>
+
+<p>这里会记录一下学习的笔记，也好做个备忘录，也方便以后查找。虽然现在大部分开发Android，以及cocos2d-x使用都是在eclipse进行的，但是学习还是会用Android Studio编辑器，毕竟这是以后的趋势。</p>
+
+<p>今天下午同时配置了eclipse和Android Studio开发环境，同时也在window下同步了我的octopress博客方便记录，以前没在windows下搭建octopress,以为不行，因为看到官方文档都是在命令行下操作的，后来找到这篇文章<a href="http://www.cnblogs.com/javac/archive/2012/07/31/2617432.html">（Windows7下，用Octopress在Github上搭建博客）</a>轻松搞定，因为之前有在mac上搭建，所以直接从github上clone下来就好，稍微配置就可使用。其中ruby使用的是ruby1.9.3。<a href="http://rubyinstaller.org/downloads/">下载地址</a>。此文章就是在windows下写的。最后下载传说中的超快模拟器Genymotion，自己也安装后跑了一下，确实速度很快，再也不用提起模拟器就头疼了。</p>
+
+<p>谨以此文记录Andorid的开始！</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Cocos2d-x -- ClippingNode]]></title>
@@ -6569,119 +6586,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 talbe除了像数组这种操作外，还可以用来实现其他数据结构，但是在lua中像List，Set这种数据结构，不一定比table方便，除了数据结构的操作外，lua还可以用表实现类的封装，继承等面向对象特性，而这一切都是基于元表的，感觉Lua的table无所不能啊。</p>
 
 <p>List，Set实现看见<a href="http://www.lua.org/pil/11.3.html">《Programming in lua》</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Octopress搭建博客]]></title>
-    <link href="http://ypengju.github.io/blog/2014/09/28/octopressda-jian-bo-ke/"/>
-    <updated>2014-09-28T20:11:47+08:00</updated>
-    <id>http://ypengju.github.io/blog/2014/09/28/octopressda-jian-bo-ke</id>
-    <content type="html"><![CDATA[<p>像黑客一样写博客！</p>
-
-<p>OK，终于有自己的博客站点了，这里记下怎么倒置的。</p>
-
-<p>octopress 官网：<a href="http://octopress.org/">http://octopress.org/</a></p>
-
-<p>首先各种配置ruby，git，github等就不赘述，百度或者官网都有具体步奏，照做即可。或者可以看下这个<a href="http://happycasts.net/episodes/36">视频</a>，happypeter老师讲的很清楚，同时这个网站上有非常精彩的其他工具教程视频，很值得学习。   <!-- more -->
-配置好后，就可以使用自己配置的github page地址来访问了。我基本是按照视频的方式来搭建以及管理的。如果喜欢我的博客也可直接clone，然后修改下就可以了，当然博客内容还是得删掉的。</p>
-
-<p>搭建好后就需要进行一些配置了，比如title,subtitle,author，这样以后你发表的博文才会以你的名义嘛。这些配置都在博客根目录_config.yml文件中，打开进行编辑，我用的是mac，所以这些操作都是很方便的，vim直接打开就可以了，window可以使用相应工具就行。这是一个配置文件，像刚才说到的博客名称，作者，以及第三方插件等都是在这个文件中配置的。这里先改下title，subtitle，author，保存退出然后rake preview， 打开浏览器，输入localhost:4000应该就能看到效果了。</p>
-
-<h3>文章编写</h3>
-
-<p>使用下边这条命令就可以生产一片新的博文，博文位于<code>source/_post</code>文件夹下</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>rake new_post["博客名称"] </span></code></pre></td></tr></table></div></figure>
-
-
-<p>octopress使用Markdown进行编写，所以有一个合适的Markdown编辑器就很重要了，我在Mac下使用的是Mou编辑器，它可以是对编写文件进行对照，非常方便，如图所示，当然有其他的编辑器可选。
-<img src="http://ypengju.github.io/images/1.png">
-编辑完成后，我们就可以使用下边两个命令将其推送到github中。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$rake generate
-</span><span class='line'>$rake deploy</span></code></pre></td></tr></table></div></figure>
-
-
-<h3>换主题</h3>
-
-<p>默认主题其实也蛮好的，要是自己想弄的不一样一点的，那就自己动手，改一通代码，或者像我这样即懒又不会多少前端的，当然第三方主题最省事了。 <br/>
-这里有收集的octopress第三方主题：<a href="https://github.com/imathis/octopress/wiki/3rd-Party-Octopress-Themes">octopress theme</a>  <br/>
-里边有很多漂亮的主题，看上自己喜欢的，clone搞定。每个主题github主页都有相应的安装步奏，照做即可。然后你就可以看到自己想要的主题了。比如foxslide</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>$ cd blog
-</span><span class='line'>$ git submodule add https://github.com/sevenadrian/foxslide .themes/foxslide
-</span><span class='line'>$ git submodule update --init
-</span><span class='line'>$ rake install['foxslide']
-</span><span class='line'>$ rake generate</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<h3>换域名</h3>
-
-<p>如果使用github page托管octopress，都可通过github page地址进行访问，比如我的ypengju.github.com，就可访问。要是想通过自己的域名访问，那只需简单的配置即可。</p>
-
-<ol>
-<li>在source目录下创建CNAME文件，在其中添加域名。比如我的CNAME文件中是ypengju.com</li>
-<li>添加域名解析，在你的域名服务商网站中，对你申请的域名添加解析，添加A解析，设值为207.97.227.245</li>
-<li>再添加CNAME解析，其值为你的github page地址，如我的ypengju.github.com</li>
-</ol>
-
-
-<p>之后将你的修改使用rake generate，rake deploy推送到github上，等上一段时间，就可通过绑定的域名进行访问了。</p>
-
-<h3>加评论</h3>
-
-<p>octopress默认是支持disqus评论工具的。只需在_config.yml文件中，在disqus_short_name：后添加你的disqus账号名就可以在每篇博文后添加评论功能。但是dispus在国内并不好用，所以我采用的是友言评论，与其相同的还有多说等。</p>
-
-<ol>
-<li>注册友言账号，注册地址：<a href="http://www.uyan.cc/">友言</a></li>
-<li>获取代码，将其添加到<code>source/_includes/post/share_comment.html</code>文件中。默认没有此html文件，创建一个即可。</li>
-</ol>
-
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;!-- UY BEGIN --&gt;
-</span><span class='line'>&lt;div id="uyan_frame"&gt;&lt;/div&gt;
-</span><span class='line'>&lt;script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=xxxxxxx"&gt;&lt;/script&gt;
-</span><span class='line'>&lt;!-- UY END --&gt;</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-3. 在<code>source/_includes/post/share.html</code>使用<code>include</code>将share_comment.html文件包含进来，在引入时先判断有没有定义comment_share变量</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>{% if site.comment_share %}
-</span><span class='line'>  {% include post/share_comment.html %}
-</span><span class='line'>{% endif %}</span></code></pre></td></tr></table></div></figure>
-
-
-<ol>
-<li>在<code>_config.ymb</code>中添加comment_share变量 设置为true。如<code>comment_share: true</code>这样就可以在配置文件中控制是否需要评论系统。
-
-<h3>加分类</h3>
-
-<p>当文章多了，有一个分类对于查阅就非常方便了，我是使用了github上的一个插件，只需简单配置。插件地址<a href="https://github.com/ctdk/octopress-category-list">octopress-category-list</a> <br/>
-根据README提示，将文件拷贝到相应目录。然后在<code>_config.yml</code>进行配置。这个插件提供了三种category类型，根据自己喜好，将相应插件路径配置在<code>default_asides</code>这一项中即可。</p></li>
-</ol>
-
-
-<p>octopress还支持其他很多插件，比如分类，tag，微博分享等，可根据自己需要，对其进行配置。这里是github上有人整理的octopress插件。 <br/>
-octopress 插件：<a href="https://github.com/imathis/octopress/wiki/3rd-party-plugins">octopress plugin</a></p>
 ]]></content>
   </entry>
   

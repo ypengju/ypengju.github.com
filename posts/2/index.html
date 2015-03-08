@@ -9,11 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="cocos2d-x的网络请求相关代码是放在network目录下的，所以在使用的时候，首先要导入头文件。 newwork目录下主要由这几个类 HttpRequest
-HttpResponse
-HttpClient
-SocketIO
-WebSocket 这篇主要总结下Http请求的处理过程。 ">
+  <meta name="description" content="tinyxml2是一个简单，高效的xml语言的库，它是一个开源项目，项目代码托管在github上，这个是它的github地址： tinyxml2，在cocos2d-x中，已经集成了tinyxml2库，所以在使用的时候我们只要引入相应的类就可开始处理xml文件。在cocos2d- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -62,6 +58,38 @@ WebSocket 这篇主要总结下Http请求的处理过程。 ">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-11-07T22:27:16+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:27 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>tinyxml2是一个简单，高效的xml语言的库，它是一个开源项目，项目代码托管在github上，这个是它的github地址： <a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>，在cocos2d-x中，已经集成了tinyxml2库，所以在使用的时候我们只要引入相应的类就可开始处理xml文件。在cocos2d-x中我们经常会用到的CCUserDefault操作者本地的一个xml文件，其实内部实现就有封装tinyxml2来实现的。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -388,44 +416,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/09/28/octopressda-jian-bo-ke/">Octopress搭建博客</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-09-28T20:11:47+08:00'><span class='date'><span class='date-month'>Sep</span> <span class='date-day'>28</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>8:11 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>像黑客一样写博客！</p>
-
-<p>OK，终于有自己的博客站点了，这里记下怎么倒置的。</p>
-
-<p>octopress 官网：<a href="http://octopress.org/">http://octopress.org/</a></p>
-
-<p>首先各种配置ruby，git，github等就不赘述，百度或者官网都有具体步奏，照做即可。或者可以看下这个<a href="http://happycasts.net/episodes/36">视频</a>，happypeter老师讲的很清楚，同时这个网站上有非常精彩的其他工具教程视频，很值得学习。   </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/09/28/octopressda-jian-bo-ke/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -441,6 +431,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
@@ -478,10 +472,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -490,7 +480,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (1)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   
