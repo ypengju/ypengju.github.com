@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="tinyxml2是一个简单，高效的xml语言的库，它是一个开源项目，项目代码托管在github上，这个是它的github地址： tinyxml2，在cocos2d-x中，已经集成了tinyxml2库，所以在使用的时候我们只要引入相应的类就可开始处理xml文件。在cocos2d- &hellip;">
+  <meta name="description" content="c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：Lua教程: C++嵌入Lua脚本(1)，我也是按照这篇博文进行配置， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,38 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-11-11T21:32:01+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:32 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：<a href="http://4gamers.cn/blog/2014/06/28/embeded-lua-tutorial-one/">Lua教程: C++嵌入Lua脚本(1)</a>，我也是按照这篇博文进行配置，使用的lua版本为5.2.3。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/11/11/lua-stack/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -379,43 +411,6 @@ cocos2d-x中封装了JniHelper类，方便通过c++来调用java方法，此类�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/10/03/lua-table/">Lua &#8211; Table</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-10-03T20:43:27+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2014</span></span> <span class='time'>8:43 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 &ndash; Table，可谓以不变应万变了。 <br/>
-lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据，字符串，函数，甚至表等各种结构，</p>
-
-<h3>整数索引</h3>
-
-<p>lua以整数为下标时，我们就可以像数组一样直接使用，其实lua底层，table是由两部分组成的，一部分是数组，用来存储像整数下标的这些值，一部分用哈希表来实现，用来存储像字符串这样索引的值。lua对table的大小没有限制，也就是说我们可以在使用过程中，在table中添加元素。  </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/10/03/lua-table/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/3">&larr; Older</a>
@@ -431,6 +426,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
@@ -468,10 +467,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -480,7 +475,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>android (1)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (2)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

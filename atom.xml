@@ -4,7 +4,7 @@
   <title><![CDATA[左轮]]></title>
   <link href="http://ypengju.github.io/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-03-08T22:14:05+08:00</updated>
+  <updated>2015-03-12T00:04:02+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,132 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android -- Activity]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/08/android-activity-lifttime/"/>
+    <updated>2015-03-08T23:07:17+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/08/android-activity-lifttime</id>
+    <content type="html"><![CDATA[<p>Activity是应用程序的一个组件，它提供一个屏幕使用户可以与程序进行交互，像打电话，看微博，发邮件，浏览地图等其实都是在Activity中完成的，我们平时看到Android应用程序的界面，其实就是一个Activity。通常一个应用程序会含有多个Activity，像左右滑动切换界面，不同的功能界面等。其实就是从一个Activity切换的另一个Activity，新的Activity显示了，那么旧的Activity呢，它被压入了手机后台的一个栈中，栈具有后进先出的特性，所以当我们点击Back键的时候，程序就会从后台栈中取出上次压入的Activity。Activity在前台与后台之间切换的时候，会调用不同的回调函数，这就是Activity的生命周期了，我们可以在这些对应的函数中完成我们想要的操作。</p>
+
+<h3>创建Activity</h3>
+
+<p>当我们创建Activity的时候，必须继承自Activity或者它的子类。同时必须实现父类中的<code>onCreate()</code>方法。因为系统会调用改方法来创建Activity，在该方法中，我们应该对页面进行显示处理。还有其他一些生命周期方法，比如<code>onStart()</code>， <code>onStop()</code>， <code>onResume()</code>等可根据需要来自己实现。创建好Activity后，我们就需要对页面添加空间，使程序可以和用户进行交互。Android提供了大量的控件供程序使用，比如按钮，复选框，图片等。我们可以通过程序对这些控件进行布局管理，通常每个Activity我们都会配置一个对应的XML文件进行布局管理，然后通过程序进行调用响应事件处理。<!--more--></p>
+
+<h3>Activity配置</h3>
+
+<p>每个Activity我们都需在AndroidManifest.xml文件中进行生命，生命方式：</p>
+
+<figure class='code'><figcaption><span>Activity声明</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;manifest</span> <span class="err">...</span> <span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;application</span> <span class="err">...</span> <span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">&quot;.ExampleActivity&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      ...
+</span><span class='line'>  <span class="err">&lt;</span>/application ... &gt;
+</span><span class='line'>  ...
+</span><span class='line'><span class="nt">&lt;/manifest &gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>activity元素只有一个属性<code>android:name</code>，此属性用来指明Activity的名称。如果你想使你的Activity能被其他应用程序使用，你就需要为这个Activity标签指定<inetent-filter>元素,在每个程序的AndroidManifest.xml文件中，都会有类似下边的代码</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;activity</span> <span class="na">android:name=</span><span class="s">&quot;.ExampleActivity&quot;</span> <span class="na">android:icon=</span><span class="s">&quot;@drawable/app_icon&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;intent-filter&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.action.MAIN&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;category</span> <span class="na">android:name=</span><span class="s">&quot;android.intent.category.LAUNCHER&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/intent-filter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/activity&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>上边的activity被指定为程序打开时第一个加载的Activity。<action>元素指定这是一个这个应用程序主入口点。<category>元素指定，这个activity应该被列入系统应用程序列表中（为了允许用户启动这个activity）。如果想让你自己的Activity被其他程序使用，你就必须在此<activity>元素中包涵<inetent-filter>元素和<action>元素，可以选择性的包涵<category>元素或者一个<data>元素。这些元素指定你的activity能响应的intent的类型。</p>
+
+<h3>打开一个Activity</h3>
+
+<p>当我们在Activity直接切换的时候，我们需要用到Intent类，我们需要在Intent中指定我们跳转到的Activity，然后调用<code>startActivity()</code>方法，就像下边调用一样：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Intent intent = new Intent(this, SecondActivity.class)
+</span><span class='line'>startActivity(intent)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>除了直接调用外，有时我们还需要在两个Activity之间传输数据，我们可以使用Intent的<code>putExtra()</code>方法在Intent中添加数据。这样在SecondActivity中我们可以将传输过来的数据解析使用。除了startActivityForResult()，这个方法有两个参数，第一个为Intent，第二个为自定义的请求码，调用这个函数的时候，我们需要在调用的Acitivity中实现<code>onActivityResult()</code>方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'>Intent intent = new Intent(LifecycleActivity.this, SecondActivity.class);
+</span><span class='line'>startActivityForResult(intent, INTENT_FOR_RESULT);
+</span><span class='line'>@Override
+</span><span class='line'>protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+</span><span class='line'>    super.onActivityResult(requestCode, resultCode, data);
+</span><span class='line'>    System.out.println(&quot;--result --&quot;);
+</span><span class='line'>}
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>是否调用成功需要根据resultCode进行判断，并且通过requestCode不同的请求。</p>
+
+<h3>生命周期</h3>
+
+<p>Activity中最重要的一个知识点，这个我们必须搞清楚并记牢，那就是一个Activity的生命周期，我们在做开发的时候要时刻清楚，Activity在什么时候会干什么事。下边是官网文档给出的一个Activity生命周期图。</p>
+
+<p><img src="http://ypengju.github.io/images/android/activity/activity_lifecycle.png"></p>
+
+<p>一个Activity从创建到显示我们可以看到它依次调用了<code>onCreate()</code>，<code>onStart()</code>，<code>onResume()</code>等方法。</p>
+
+<ul>
+<li>onCreate()方法 在Activity第一次被创建的时候调用</li>
+<li>onStart()方法  在Activity需要显示的时候调用</li>
+<li>onResume()方法 在Activity重新获取屏幕显示的时候调用</li>
+</ul>
+
+
+<p>在调用玩onResume()方法后，Activity处于用户可见状态。如果此时被另一个Activity替换，当前Activity由可见到不可见，进入后台栈中，依次会调用<code>onPause()</code>，<code>onStop()</code>方法。</p>
+
+<ul>
+<li>onPause() 在Activity被另一个Activity替换的时候调用</li>
+<li>onStop()  在Activity完全不可见的时候调用</li>
+</ul>
+
+
+<p>此时Activity并没有被系统回收而处于后台，如果系统资源不够用，系统会选择性的清楚一些后台程序，所以处于后台的Activity有可能被系统回收，在被系统回收或者我们选择退出程序的时候，<code>onDestroy()</code>方法会被调用，用于回收资源。 <br/>
+如果一个后台的Activity从后台重新回到可见状态，系统会重新调用<code>onRestart()</code>，<code>onStart()</code>，<code>onResume()</code>方法，此处注意，调用了onRestart()方法，而在第一次创建到可见的时候，并不会调用该方法。下边两个Activity之间切换的时候回调函数的调用次序。</p>
+
+<p>图1 第一次打开Activity1的时候
+<img src="http://ypengju.github.io/images/android/activity/1.png"></p>
+
+<p>图2 从Activity1跳转到Activity2的时候 <br/>
+<img src="http://ypengju.github.io/images/android/activity/2.png">
+先调用了Activity1的<code>onPause()</code>方法，保存状态，然后创建Activity2，当Activity2完全显示的时候，调用Activity1的<code>onStop()</code>方法，停止Activity1的活动。</p>
+
+<p>图3 点击Back回到Activity1
+<img src="http://ypengju.github.io/images/android/activity/3.png">  <br/>
+注意此时多调用了Activity1的<code>onRestart()</code>方法和Activity2的<code>onDestroy()</code>方法</p>
+
+<h3>保存状态</h3>
+
+<p>当我们的Activity回到后台是，它并没有被系统销毁，所以Activity的状态和信息都被系统所保持，当Activity回到屏幕时，又可以正常显现，但是当我们Activity被系统销毁的时候，我们就会丢失这些信息。为了保存在数据，可以调用<code>onSaveInstanceState()</code>方法保存状态，并实现onRestoreInstanceState()，在Activity不可见的时候，系统会调用onSaveInstanceState()保存状态，万一Activity被销毁，当Activity被重新创建的时候，系统会调用onRestoreInstanceState()恢复之前的状态。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android -- 再学android]]></title>
@@ -6362,230 +6488,6 @@ ios： <br/>
 当对不存在的元素赋值时，就会调用<code>__newindex</code>域定义的方法。</p>
 
 <p>像上边这样用new生成的所有新表都共享同一个元表，这就有点像c++中类生成无数实例一样，而访问不存在的元素，就会查找<code>__index</code>域，这就有点像在c++中，访问子类没有的方法，就去父类查找。而lua就是用这种特性来实现面向对象编程的。</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Lua -- Table]]></title>
-    <link href="http://ypengju.github.io/blog/2014/10/03/lua-table/"/>
-    <updated>2014-10-03T20:43:27+08:00</updated>
-    <id>http://ypengju.github.io/blog/2014/10/03/lua-table</id>
-    <content type="html"><![CDATA[<p>lua并不像其他语言一样提供了Array，List，Set，Queue等各种数据结构来完成各种不同数据操作，相比，lua只提供了一种数据结构 &ndash; Table，可谓以不变应万变了。 <br/>
-lua的table可以以整数和字符串为下标，但是我们可以在一个table中存储各种数据，可以存储数据，字符串，函数，甚至表等各种结构，</p>
-
-<h3>整数索引</h3>
-
-<p>lua以整数为下标时，我们就可以像数组一样直接使用，其实lua底层，table是由两部分组成的，一部分是数组，用来存储像整数下标的这些值，一部分用哈希表来实现，用来存储像字符串这样索引的值。lua对table的大小没有限制，也就是说我们可以在使用过程中，在table中添加元素。  <!--more--></p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {10, 30, 50, 70, 90}
-</span><span class='line'>print(table1[0])   -- nil
-</span><span class='line'>print(table1[1])   -- 10</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-可以看到访问table1[0]返回nil，而table1[1]访问表中第一个值。当我们访问表中不存在的值时会返回nil值，默认table下标是从1开始的，而不是我们熟悉的像其他语言中从0开始，table可以使用任意整数为下标。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, 50, 70, 90}
-</span><span class='line'>table3 = {[1] = 10, [2] = 30, [3] = 50, [4] = 70, [5] = 90}</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-上边这两种形式是等价的。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, 50, 70, 90}
-</span><span class='line'>table3 = {[1] = 10, [2] = 30, [3] = 50, [40] = 70, [5] = 90}
-</span><span class='line'>table5 = {[2] = 30, [3] = 50}
-</span><span class='line'>print(#table2)  -- 5
-</span><span class='line'>print(#table3)  -- 3
-</span><span class='line'>print(#table4)  -- 2
-</span><span class='line'>print(#table5)  -- 0</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-可以使用#操作来计算下标从1开始并连续的table的大小，从上边例子可以看到，如果数组从零开始或者中间有下标不连续，计算的talbe的大小就只是从1到连续结束的元素的个数，如果table元素不是以1下标开始的计算结果为0。</p>
-
-<h3>字符串索引</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {one = 0, two = true, three = "hello"}
-</span><span class='line'>table2 = {["one"] = 0, ["two"] = true, ["three"] = "hello"}
-</span><span class='line'>table3 = {}
-</span><span class='line'>table3.one = 0
-</span><span class='line'>table3.two = true
-</span><span class='line'>table3.three = "hello"</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-上边这三种形式创建的表都是一样的。但是有字符串索引的时候，就不能直接采用#操作求table的大小了。如果需要知道table的大小，肯能就需要一个计数器了。</p>
-
-<h3>遍历</h3>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table1 = {10, 30, 50, 70, 90}
-</span><span class='line'>for i=1, #table1 do
-</span><span class='line'>  print(table1[i])
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-像上边这样，当table使用整数索引的时候，我们可以像在其他语言中使用数组一样访问表中的元素。但是当下标不为整数，或者整数下标不连续时，我们就无法求得table的大小，上边这种遍历table的方法就行不通了，为了能够方便的遍历table，lua为我们提供了两个有用的方法pairs和ipairs。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
-</span><span class='line'>for k,v in pairs(table2) do
-</span><span class='line'>  print(k,v)
-</span><span class='line'>end  </span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-使用pairs以key-valued的形式遍历了table2中所有的元素，就像我们在c++中使用迭代器一样。</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>table2 = {10, 30, [4] = 50, [10] = 70, [14] = 90, hello = "world"}
-</span><span class='line'>for i,v in ipairs(table2) do
-</span><span class='line'>  print(i,v)
-</span><span class='line'>end</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-但是当使用ipairs遍历时，只是访问了前两个元素，这是因为ipairs只遍历下标从1开始，连续增长的表。像上边table1这样的表，ipairs可以完全遍历，所以在使用的时候需要注意，当下标不连续，或者索引不是整数时，ipairs就停止遍历接下来的元素。</p>
-
-<h3>库方法</h3>
-
-<p>为了方便操作表，lua提供了几个对表操作的库方法</p>
-
-<h4>table.concat(list [, sep [, i [, j]]]) - 链接表中的元素，返回字符串。</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua"}
-</span><span class='line'>print(table.concat(tab, ":"))  -- hello:world:lua</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-有四个参数，后三个可选，第一个参数是表， 第二个参数分隔符，像上边的冒号，默认为空字符， 第三个参数，开始字符位置，默认下标为1， 第四个参数，结束下标，默认为表的大小。所以默认是链接整个表，我们也可以指定链接表中指定下标区域内的元素。</p>
-
-<h4>table.insert(list, [pos,] value) - 插入元素</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua"}
-</span><span class='line'>table.insert(tab, 100)
-</span><span class='line'>print(table.concat(tab, ": ")) -- hello: world: lua: 100</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-有三个参数，第一个表，第二个参数可选，插入的位置，默认是#table+1，第三个参数要插入的值，所以默认是讲元素插入到表最后的。像上边这样只有两个参数的，其实是省略掉了中间第二个元素，插值在最后。</p>
-
-<h4>table.pack(···) - 将所有参数打包到一个表中</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = table.pack("hello", "world", "lua", 1, 4)
-</span><span class='line'>for k,v in pairs(tab) do
-</span><span class='line'>  print(k,v)
-</span><span class='line'>end
-</span><span class='line'>print(table.concat(tab, ": "))</span></code></pre></td></tr></table></div></figure>
-
-
-<p>  <br/>
-接收任意多个参数，将所有参数打包到一个下标从1开始的表中，像上边，打包完后<code>tab1 = {"hello", "world", "lua", 1, 4}</code>但是不一定所有参数都是顺序打包的。</p>
-
-<h4>table.unpack (list [, i [, j]]) - 跟table.pack相反</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua", 1, 4}
-</span><span class='line'>a, b, c, d, e = table.unpack(tab)
-</span><span class='line'>print(a) -- hello
-</span><span class='line'>print(b) -- world
-</span><span class='line'>print(c) -- lua
-</span><span class='line'>print(d) -- 1
-</span><span class='line'>print(e) -- 4</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-返回多个参数，也可以指定需要的坐标范围，比如只返回第二到第四个元素，那么就返回3个元素。</p>
-
-<h4>table.remove(list [, pos]) - 移除表中元素</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {"hello", "world", "lua", 1, 4}
-</span><span class='line'>table.remove(tab, 2)
-</span><span class='line'>print(table.concat(tab, ": ")) -- hello: lua: 1: 4
-</span><span class='line'>print(tab[2]) -- lua</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-移除表中指定位置元素，有两个参数，第一个表，第二个移除元素的下标，可选，默认值是表中最后一个元素位置。第二个参数要在表的大小范围内，移除后指定位置元素后，下标后边元素向前移动。</p>
-
-<h4>table.sort (list [, comp]) - 排序</h4>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {4, 10, 2, 1, 40, 6}
-</span><span class='line'>table.sort(tab)
-</span><span class='line'>print(table.concat(tab, " "))</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-对表中元素进行排序，默认从小到大，在第二个参数中也可以实现自己的排序条件</p>
-
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>tab = {4, 10, 2, 1, 40, 6}
-</span><span class='line'>table.sort(tab, function(a, b)
-</span><span class='line'>  return a &gt; b
-</span><span class='line'>end)
-</span><span class='line'>print(table.concat(tab, " "))</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-talbe除了像数组这种操作外，还可以用来实现其他数据结构，但是在lua中像List，Set这种数据结构，不一定比table方便，除了数据结构的操作外，lua还可以用表实现类的封装，继承等面向对象特性，而这一切都是基于元表的，感觉Lua的table无所不能啊。</p>
-
-<p>List，Set实现看见<a href="http://www.lua.org/pil/11.3.html">《Programming in lua》</a></p>
 ]]></content>
   </entry>
   

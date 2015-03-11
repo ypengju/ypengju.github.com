@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="新的征程，再学Android。 原来在学校的时候学习过一段时间Android开发，毕业找工作的时候也一直想找个Android的工作，可是后来阴差阳错的却做了cocos2d-x开发，虽然交叉编译有用到Android，但是毕竟不多，比起原来，现在Android已经变化很多，新的编辑器，新的版本， &hellip;">
+  <meta name="description" content="Activity是应用程序的一个组件，它提供一个屏幕使用户可以与程序进行交互，像打电话，看微博，发邮件，浏览地图等其实都是在Activity中完成的，我们平时看到Android应用程序的界面，其实就是一个Activity。通常一个应用程序会含有多个Activity，像左右滑动切换界面， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,42 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-08T23:07:17+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:07 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Activity是应用程序的一个组件，它提供一个屏幕使用户可以与程序进行交互，像打电话，看微博，发邮件，浏览地图等其实都是在Activity中完成的，我们平时看到Android应用程序的界面，其实就是一个Activity。通常一个应用程序会含有多个Activity，像左右滑动切换界面，不同的功能界面等。其实就是从一个Activity切换的另一个Activity，新的Activity显示了，那么旧的Activity呢，它被压入了手机后台的一个栈中，栈具有后进先出的特性，所以当我们点击Back键的时候，程序就会从后台栈中取出上次压入的Activity。Activity在前台与后台之间切换的时候，会调用不同的回调函数，这就是Activity的生命周期了，我们可以在这些对应的函数中完成我们想要的操作。</p>
+
+<h3>创建Activity</h3>
+
+<p>当我们创建Activity的时候，必须继承自Activity或者它的子类。同时必须实现父类中的<code>onCreate()</code>方法。因为系统会调用改方法来创建Activity，在该方法中，我们应该对页面进行显示处理。还有其他一些生命周期方法，比如<code>onStart()</code>， <code>onStop()</code>， <code>onResume()</code>等可根据需要来自己实现。创建好Activity后，我们就需要对页面添加空间，使程序可以和用户进行交互。Android提供了大量的控件供程序使用，比如按钮，复选框，图片等。我们可以通过程序对这些控件进行布局管理，通常每个Activity我们都会配置一个对应的XML文件进行布局管理，然后通过程序进行调用响应事件处理。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/08/android-activity-lifttime/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -551,38 +587,6 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-11T21:32:01+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:32 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：<a href="http://4gamers.cn/blog/2014/06/28/embeded-lua-tutorial-one/">Lua教程: C++嵌入Lua脚本(1)</a>，我也是按照这篇博文进行配置，使用的lua版本为5.2.3。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/11/lua-stack/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -596,6 +600,10 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
@@ -633,10 +641,6 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
         <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -645,7 +649,7 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>android (1)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (2)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   
