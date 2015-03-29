@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Android | 左轮]]></title>
   <link href="http://ypengju.github.io/blog/categories/android/atom.xml" rel="self"/>
   <link href="http://ypengju.github.io/"/>
-  <updated>2015-03-12T00:04:02+08:00</updated>
+  <updated>2015-03-29T20:21:44+08:00</updated>
   <id>http://ypengju.github.io/</id>
   <author>
     <name><![CDATA[左轮]]></name>
@@ -12,6 +12,478 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Android -- ActionBar]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/29/android-actionbar/"/>
+    <updated>2015-03-29T11:14:43+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/29/android-actionbar</id>
+    <content type="html"><![CDATA[<p>ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar <br/>
+<code>
+import android.app.ActionBar
+</code>
+如果是在API7及以上版本，就需要引入支持库中的ActionBar
+<code>
+import android.support.v7.app.ActionBar
+</code>
+在API11以上的版本，当我们创建Activity的时候是默认自带ActionBar的，如果要在API7以上使用ActionBar的时候，Activity需要继承自ActionBarActivity，在代码中我们可以通过<code>getSupportActionBar()</code>获取ActionBar,如果需要隐藏ActionBar可以调用它的hide()方法。如果需要再次显示可以调用show()方法
+<code>
+ActionBar ab = getSupportActionBar();
+ab.hide();
+//ab.show();
+</code>
+当调用hide()方法的时候，系统会对界面布局进行调整，填充原来ActionBar的位置。   <!--more-->
+当我们启动一个Activity的时候，在显示ActionBar的时候，系统是调用<code>onCreateOptionsMenu()</code>方法来布局ActionBar的。如下
+<code>java
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+    return true;
+}
+</code>
+其中menu_main就是ActionBar中的item布局，对这个布局进行修改，就可以看到效果。
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;menu</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:app=</span><span class="s">&quot;http://schemas.android.com/apk/res-auto&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:tools=</span><span class="s">&quot;http://schemas.android.com/tools&quot;</span> <span class="na">tools:context=</span><span class="s">&quot;.MainActivity&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/group_chat&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;GroupChat&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/menu_group_chat_icon&quot;</span>
+</span><span class='line'>        <span class="nt">/&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>item
+</span><span class='line'>    android:id=&quot;@+id/feedback&quot;
+</span><span class='line'>    android:title=&quot;FeedBack&quot;
+</span><span class='line'>    android:icon=&quot;@drawable/menu_feedback_icon&quot;
+</span><span class='line'>    /<span class="ni">&amp;gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="ni">&amp;lt;</span>item
+</span><span class='line'>    android:id=&quot;@+id/scan&quot;
+</span><span class='line'>    android:title=&quot;Scan&quot;
+</span><span class='line'>    android:icon=&quot;@drawable/menu_scan_icon&quot;
+</span><span class='line'>    /<span class="ni">&amp;gt;</span>
+</span><span class='line'><span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;&lt;/menu&gt;</span>
+</span><span class='line'><span class="nt">&lt;code&gt;</span>``
+</span><span class='line'>效果如下
+</span><span class='line'><img src="/images/android/actionbar/1.png">
+</span><span class='line'>默认都是在overflow按钮中的，如果想将其显示在ActionBar中，可以为item添加属性<span class="nt">&lt;/code&gt;</span>app:showAsAction=<span class="ni">&amp;ldquo;</span>ifRoom<span class="ni">&amp;rdquo;</span><span class="nt">&lt;code&gt;</span>，这个属性表示如果ActionBar的空间够用个话就显示在ActionBar中，如果空间不够就显示overflow按钮中，默认这个只显示了一个图片，如果需要显示文本的话，指定withText就行，<span class="nt">&lt;/code&gt;</span>app:showAsAction=<span class="ni">&amp;ldquo;</span>ifRoom|withText<span class="ni">&amp;rdquo;</span>`,两种效果如下
+</span><span class='line'><img src="/images/android/actionbar/2.png">
+</span><span class='line'><img src="/images/android/actionbar/3.png"><span class="nt">&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;h3&gt;</span>点击事件<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;p&gt;</span>当用户点击ActionBar上的按钮时，系统会调用Activity的<span class="nt">&lt;code&gt;</span>onOptionsItemSelected(MenuItem item)<span class="nt">&lt;/code&gt;</span>方法，该方法返回一个MenuItem，我们可以通过它来来判断点击的是哪个Action。
+</span></code></pre></td></tr></table></div></figure>java
+@Override
+public boolean onOptionsItemSelected(MenuItem item) {
+    int id = item.getItemId();</p>
+
+<pre><code>switch (item.getItemId()) {
+    case R.id.group_chat:
+        System.out.println("-----touch group chat");
+        break;
+    case R.id.feedback:
+        System.out.println("-----touch feed back");
+        break;
+    case R.id.scan:
+        System.out.println("-----touch scan");
+        break;
+    default:
+        break;
+}
+return super.onOptionsItemSelected(item);
+</code></pre>
+
+<p>}
+&#8220;`</p>
+
+<h3>使用应用图标向上导航</h3>
+
+<p>在ActionBar作为导航栏用的时候，当我们需要返回上一个调用界面的时候，就可以使用ActionBar的这个特性。首先我们需要在代码中设置ActionBar具有向上导航的功能。</p>
+
+<pre><code>ActionBar ab = getSupportActionBar();
+ab.setDisplayHomeAsUpEnabled(true);
+</code></pre>
+
+<p>这样在ActionBar的左边就会出现一个向左的箭头，这时点击还没反应，此时需要指定点击后跳转的Activity。
+<code>
+&lt;application &gt;
+    &lt;activity
+        android:name="com.example.myfirstapp.MainActivity"&gt;
+    &lt;/activity&gt;
+    &lt;activity
+        android:name="com.example.myfirstapp.DisplayMessageActivity"
+        android:label="@string/title_activity_display_message"
+        android:parentActivityName="com.example.myfirstapp.MainActivity" &gt;
+        &lt;meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="com.example.myfirstapp.MainActivity" /&gt;
+    &lt;/activity&gt;
+&lt;/application&gt;
+</code> <br/>
+通过在Application或者Activity指定属性<code>android:parentActivityName</code>，将其指向向上跳转的父类。在Android4.1(API16)级以上版本中只需在Activity中指定<code>parentActivityName</code>就可以，如果为了支持低版本，需要添加<code>&lt;meta-data&gt;</code>部分。
+或者重写activity中的 getSupportParentActivityIntent() 和 onCreateSupportNavigateUpTaskStack()。
+取决于用户如何到达当前界面的，父级activity也可能不同，那么这么做就很合适了。也就是说，如果用户有许多可以到达当前界面的路径，那么向上按钮应该按照用户实际到达的路劲回退导航。</p>
+
+<p>当用户按下向上按钮时系统会调用 getSupportParentActivityIntent() 去导航你的应用（在你应用自己的任务栈内）。取决于用户如何到达当前位置的，向上导航上应该打开的activity也会不同，所以你应该重写这个方法以返回可以打开合适父级activity的 Intent。</p>
+
+<p>当用户按下向上按钮并且你的activity也运行在不属于你应用的任务栈中时，系统会为你的activity调用 onCreateSupportNavigateUpTaskStack()。因此，当用户向上导航时你必须使用 TaskStackBuilder 传递到这个方法去建立那个应该合并的合适的回退栈。</p>
+
+<p>虽然你重写了 getSupportParentActivityIntent() 来具体指定用户在应用中的具体导航，但是你不想实现 onCreateSupportNavigateUpTaskStack()，那么你可以像上面所示在清单文件中声明“默认”父级activity达到同样的效果。然后 onCreateSupportNavigateUpTaskStack() 的默认实现会基于清单中声明的父级activity去合并回退栈。 <br/>
+注解：如果你是使用大量的fragment而不是activity去构建你应用层级结构，那么上面的选项都不会生效。要在fragment里向上导航，你应该改为重写 onSupportNavigateUp()，通常通过调用 popBackStack() 方法把当前fragment从回退栈里出栈去来执行合适的fragment事务。</p>
+
+<h3>操作视图</h3>
+
+<p>在app中经常见到一种情况就是在ActionBar中点击搜索按钮，弹出搜索条，这个功能就可以通过只需要在Item中指定<code>app:actionViewClass</code>属性，同时在<code>app:showAsAction</code>添加collapseActionView值就可完成。collapseActionView是用来声明操作视图应该被收缩到一个按钮中的可选操作。
+<code>xml
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:yourapp="http://schemas.android.com/apk/res-auto" &gt;
+    &lt;item android:id="@+id/action_search"
+          android:title="@string/action_search"
+          android:icon="@drawable/ic_action_search"
+          app:showAsAction="ifRoom|collapseActionView"
+          app:actionViewClass="android.support.v7.widget.SearchView" /&gt;
+&lt;/menu&gt;   
+</code>  <br/>
+如果需要配置操作视图，比如添加监听，可以在<code>onCreateOptionsMenu()</code>回调方法中，传递相应的 MenuItem 给静态方法 MenuItemCompat.getActionView() 去获取操作视图的对象。可以下边这样获取上面例子的搜索控件  <br/>
+<code>java
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+    MenuItem searchItem = menu.findItem(R.id.action_search);
+    SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+    // Configure the search info and add any event listeners
+    //...
+    return super.onCreateOptionsMenu(menu);
+}
+</code></p>
+
+<h3>伸缩操作视图</h3>
+
+<p>像上边这样，当我们点击按钮,搜索视图展现，当我们点击向上或者返回按钮的时候，搜索视图又收缩回去了，如果我们想在展开或者收缩的这个过程中同时对Activity中的视图进行一些变动操作的时候，可以使用下边的监听方法去完成这个工作</p>
+
+<pre><code class="java">@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+
+    MenuItem item = menu.findItem(R.id.group_chat);
+
+    MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
+        @Override
+        public boolean onMenuItemActionExpand(MenuItem menuItem) {
+            System.out.println("---展开的时候");
+            return true; //true 表示可展开， 否则不可展开
+        }
+
+        @Override
+        public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+            System.out.println("---收缩的时候");
+            return true;//true 表示可收缩，否则不可收缩
+        }
+    });
+    return super.onCreateOptionsMenu(menu);
+}
+</code></pre>
+
+<h3>ActionProvider</h3>
+
+<p>和操作视图一样，ActionProvider也是在ActionBar的一个按钮上。不同的是，ActionProvider完全控制操作行为变现和并在按下时显示下拉菜单。我们可以继承ActionProvider类来实现自己的ActionProvider,不过安卓已经提供了一些预构建的类来方便我们调用，比如ShareActionProvider,可以用来显示分享类表。在使用ShareActionProvider的时候，首先需要在item中进行<code>app:actionProviderClass</code>属性指定，如下 <br/>
+<code>
+&lt;item
+android:id="@+id/group_chat"
+android:title="GroupChat"
+android:icon="@drawable/menu_group_chat_icon"
+app:showAsAction="ifRoom"
+app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
+/&gt;
+</code></p>
+
+<p>此时运行程序，会在右上角出现一个分享按钮，但是点击后无效果，接着指定分享操作</p>
+
+<pre><code>private ShareActionProvider actionProvider;
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+
+    MenuItem item = menu.findItem(R.id.group_chat); //获取Action
+    actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item); //获取ShareActionProvider
+    actionProvider.setShareIntent(getDefaultIntent()); //设置Intent
+    return super.onCreateOptionsMenu(menu);
+}
+
+private Intent getDefaultIntent() {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType("image/*");
+    return intent;
+}
+</code></pre>
+
+<p>这样在点击share按钮后，就是如图效果  <br/>
+<img src="/images/android/actionbar/4.png"></p>
+
+<h3>添加导航栏选项卡</h3>
+
+<p>首先需要实现一个类，实现ActionBar.TabListener接口</p>
+
+<pre><code class="java">import android.app.Activity;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+
+/**
+ * Created by ypengju on 2015/3/29.
+ */
+public class MyActionBarTab&lt;T extends Fragment&gt; implements ActionBar.TabListener {
+
+    private Fragment fragment;
+    private final Activity mActivity;
+    private final String mTag;
+    private final Class&lt;T&gt; mClass;
+
+    public MyActionBarTab(Activity mActivity, String mTag, Class&lt;T&gt; mClass) {
+        this.mActivity = mActivity;
+        this.mTag = mTag;
+        this.mClass = mClass;
+    }
+
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+        if (fragment == null) {
+            fragment = Fragment.instantiate(mActivity, mClass.getName());
+            fragmentTransaction.add(android.R.id.content,fragment,mTag);
+        } else {
+            fragmentTransaction.attach(fragment);
+        }
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+        if (fragment != null) {
+            fragmentTransaction.detach(fragment);
+        }
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction fragmentTransaction) {
+
+    }
+}
+</code></pre>
+
+<p>接着实现Fragmenty用来显示选项卡视图</p>
+
+<pre><code>public class OneFragment extends Fragment {
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+}
+</code></pre>
+
+<p>最后将其添加到ActionBar中</p>
+
+<pre><code>@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    ActionBar ab = getSupportActionBar();
+    ab.setDisplayHomeAsUpEnabled(true);
+    ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+    ab.setDisplayShowTitleEnabled(false);
+    ab.addTab(ab.newTab().setText("Tab选项卡一").setTabListener(new MyActionBarTab&lt;OneFragment&gt;(this, "one",OneFragment.class)));
+    ab.addTab(ab.newTab().setText("Tab选项卡二").setTabListener(new MyActionBarTab&lt;TwoFragment&gt;(this, "two",TwoFragment.class)));
+}
+</code></pre>
+
+<p>效果如图  <br/>
+<img src="/images/android/actionbar/5.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android -- Layout]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/26/android-layout/"/>
+    <updated>2015-03-26T22:18:31+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/26/android-layout</id>
+    <content type="html"><![CDATA[<h3>LinearLayout</h3>
+
+<p>顾名思义，线性布局，其中的控件要么被竖向排列，要么被横向排列，排列方式是通过android:orientation属性来完成，这是一般应用中最常使用的一种布局文件，比如下边的例子 <br/>
+<code>xml
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical" &gt;
+    &lt;EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/to" /&gt;
+    &lt;EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/subject" /&gt;
+    &lt;EditText
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:hint="@string/message" /&gt;
+    &lt;Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/send" /&gt;
+&lt;/LinearLayout&gt;
+</code>
+从上到下，一次排列了三个EditText和一个Button，具体使用可参考<a href="http://developer.android.com/reference/android/widget/LinearLayout.html">LinearLayout</a>和参数<a href="http://developer.android.com/reference/android/widget/LinearLayout.LayoutParams.html">LinearLayout.LayoutParams</a>    <!--more--></p>
+
+<h3>RelativeLayout</h3>
+
+<p>RelativeLayout是采用相对布局的，每个控件的位置都可指定依赖于其他控件或者父控件的相对位置。比如一个Button在一个EditText控件的下边，又在另一个Button的左边，这样设定后，我们就可确定此Button的位置了。有事后当我们在一个界面布局，有列也有行的时候，如果LinearLayout布局时，就需要好几个LinearLayout嵌套来完成工作，整个结构就比较复杂，但是我们可以只用一个RelativeLayout就可以替代上边所有的LinearLayout。使得整个结构变得简单。RelativeLayout定义了很多属性来完成相对布局的任务，比如<code>android:layout_below</code>，<code>android:layout_toRightOf</code>等属性，这些属性的值我们指定另一个空间的ID，这样就可完成相对于另一个控件的布局，比如下边的例子:
+<code>
+&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" &gt;
+    &lt;EditText
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/reminder" /&gt;
+    &lt;Spinner
+        android:id="@+id/dates"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/times" /&gt;
+    &lt;Spinner
+        android:id="@id/times"
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/name"
+        android:layout_alignParentRight="true" /&gt;
+    &lt;Button
+        android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/times"
+        android:layout_alignParentRight="true"
+        android:text="@string/done" /&gt;
+&lt;/RelativeLayout&gt;
+</code>
+比如第一个Spinner在父控件RelativeLayout的左边，在第一个name控件的下边，在times控件的左边，效果就是下边这个样了。 <br/>
+<img src="/images/android/layout/RelativeLayout.png"> <br/>
+RelativeLayout还有其他的一些参数可参考<a href="http://developer.android.com/reference/android/widget/RelativeLayout.LayoutParams.html">RelativeLayout.LayoutParams</a>，<a href="http://developer.android.com/reference/android/widget/RelativeLayout.html">RelativeLayout</a></p>
+
+<h3>ListLayout</h3>
+
+<p>ListLayout是一个列表布局，列表中的每个item都是通过Adapter将其插入列表中的，这些数据我们通过代码中的数组或数据库查询将其结果展现在视图中。
+《暂未完全理解》</p>
+
+<h3>GridLayout</h3>
+
+<p>GridLayout有点像ListLayout，只不过ListLayout是单列的，GridLayout是多列的而已。《暂未完全理解》</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Android IOS 推送]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/23/android-ios-tuisong/"/>
+    <updated>2015-03-23T21:29:11+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/23/android-ios-tuisong</id>
+    <content type="html"><![CDATA[<p>之前简单实现IOS本地消息推送的功能，但是这种方式太过死板，不能灵活应用，像游戏这种不定时开启活动，需要推送告知玩家的活动消息，这个变化性就比较大，一般游戏推送服务都需要和服务器端来配合完成，但是自己实现一套推送系统还是比较麻烦的，所以为了快速完成开发功能，好多游戏都是采用第三方推送系统。现在有好多优秀的第三方推送平台，有极光，个推，百度，小米的，每个平台都有自己的一些优势，可根据自己需求进行选择，这篇文章就学习总结接入极光推送平台到Android和IOS应用。</p>
+
+<p>首先需要在<a href="https://www.jpush.cn/">&ldquo;极光官网&rdquo;</a>注册帐号，下载SDK，这些都不用多说。下边开始动手</p>
+
+<h3>Android平台接入</h3>
+
+<p>极光的SDK还是做的很不错的，配置很简单，只需要简单的操作就可以完成，之前我也想试试个推来着，然后我看了下SDK接入文档后，毫不犹豫的选择了极光，哈哈，主要是简单啊。 <br/>
+这里我使用的SDK版本是：Jpush_Android_SDK_1.7.3  <br/>
+解压后有几个目录，doc下是文档，example是一个eclipse工程，可以直接跑，直接进行测试，libs下就是我们真正需要的库文件了，除此之外还有一个AndroidManifest.xml文件。因为比较简单，可以按照官方文档迅速进行配置，这里主要说下我在Android Studio中遇到的问题。   <!--more-->
+第一个问题，当将jar文件添加到工程中之后，调用极光API的时候，找不到类，
+<code>
+JPushInterface.setDebugMode(true);
+JPushInterface.init(this);
+</code>
+这是由于没有配置build，右键项目->Open Module Settings->Dependencies，然后将添加的jar文件添加进来。然后引入文件就可解决这个问题。 <br/>
+第二个问题，当我按照官方配置然后跑起来的时候，在Android Studio中是直接报错了，报错内容如下： <br/>
+<code>
+03-25 15:48:50.629    1738-1738/com.ypengju.jpushapplication E/AndroidRuntime﹕ FATAL EXCEPTION: main
+    java.lang.ExceptionInInitializerError
+            at cn.jpush.android.service.ServiceInterface.a(Unknown Source)
+            at cn.jpush.android.api.JPushInterface.init(Unknown Source)
+            at com.ypengju.jpushapplication.MainActivity.onCreate(MainActivity.java:19)
+            at android.app.Activity.performCreate(Activity.java:5008)
+            at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1079)
+            at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2023)
+            at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2084)
+            at android.app.ActivityThread.access$600(ActivityThread.java:130)
+            at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1195)
+            at android.os.Handler.dispatchMessage(Handler.java:99)
+            at android.os.Looper.loop(Looper.java:137)
+            at android.app.ActivityThread.main(ActivityThread.java:4745)
+            at java.lang.reflect.Method.invokeNative(Native Method)
+            at java.lang.reflect.Method.invoke(Method.java:511)
+            at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:786)
+            at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:553)
+            at dalvik.system.NativeStart.main(Native Method)
+</code>
+然后在官方问答中搜寻下，找到解决方法，JPush SDK 迁移到 Android Studio 需要添加.SO文件打包到APK的lib文件夹中,可以编辑 build.gradle 脚本，自定义 *.so 目录：
+<code>
+android {
+    // .. android settings ..
+    sourceSets.main {
+      jniLibs.srcDirs = ['libs']  // &lt;-- Set your folder here!
+    }
+ }
+</code>
+所以将中间sourceSets.main部分代码，添加到Build.gradle中就可以了。至此Android Studio配置Jpush成功，运行程序，然后推送，成功收到。  <br/>
+Jpush在安卓设备上，不管应用处于打开或者关闭状态，应用都可接受到推送消息，这是由于当我们第一次运行程序后，Jpush以Android Service的形式长期运行在后台。  <br/>
+在推送界面我们可以看到，除了通送通知外，极光推送还可推送消息和富媒体，消息通送可以使我们设备在收到消息后，调用的注册功能，比如说到一个消息，跳转到指定页面等。这个可根据需求实现。</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Android -- Activity]]></title>

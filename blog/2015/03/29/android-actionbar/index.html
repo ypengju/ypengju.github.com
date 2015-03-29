@@ -1,0 +1,715 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Android &#8211; ActionBar - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar 1 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2015/03/29/android-actionbar">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Android &#8211; ActionBar</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-29T11:14:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:14 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import android.app.ActionBar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果是在API7及以上版本，就需要引入支持库中的ActionBar</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import android.support.v7.app.ActionBar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在API11以上的版本，当我们创建Activity的时候是默认自带ActionBar的，如果要在API7以上使用ActionBar的时候，Activity需要继承自ActionBarActivity，在代码中我们可以通过<code>getSupportActionBar()</code>获取ActionBar,如果需要隐藏ActionBar可以调用它的hide()方法。如果需要再次显示可以调用show()方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ActionBar ab = getSupportActionBar();
+</span><span class='line'>ab.hide();
+</span><span class='line'>//ab.show();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当调用hide()方法的时候，系统会对界面布局进行调整，填充原来ActionBar的位置。   <!--more-->
+当我们启动一个Activity的时候，在显示ActionBar的时候，系统是调用<code>onCreateOptionsMenu()</code>方法来布局ActionBar的。如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">getMenuInflater</span><span class="o">().</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">menu</span><span class="o">.</span><span class="na">menu_main</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>其中menu_main就是ActionBar中的item布局，对这个布局进行修改，就可以看到效果。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;menu</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:app=</span><span class="s">&quot;http://schemas.android.com/apk/res-auto&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:tools=</span><span class="s">&quot;http://schemas.android.com/tools&quot;</span> <span class="na">tools:context=</span><span class="s">&quot;.MainActivity&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/group_chat&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;GroupChat&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/menu_group_chat_icon&quot;</span>
+</span><span class='line'>        <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/feedback&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;FeedBack&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/menu_feedback_icon&quot;</span>
+</span><span class='line'>        <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;item</span>
+</span><span class='line'>        <span class="na">android:id=</span><span class="s">&quot;@+id/scan&quot;</span>
+</span><span class='line'>        <span class="na">android:title=</span><span class="s">&quot;Scan&quot;</span>
+</span><span class='line'>        <span class="na">android:icon=</span><span class="s">&quot;@drawable/menu_scan_icon&quot;</span>
+</span><span class='line'>        <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/menu&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>效果如下 <br/>
+<img src="/images/android/actionbar/1.png">
+默认都是在overflow按钮中的，如果想将其显示在ActionBar中，可以为item添加属性<code>app:showAsAction="ifRoom"</code>，这个属性表示如果ActionBar的空间够用个话就显示在ActionBar中，如果空间不够就显示overflow按钮中，默认这个只显示了一个图片，如果需要显示文本的话，指定withText就行，<code>app:showAsAction="ifRoom|withText"</code>,两种效果如下
+<img src="/images/android/actionbar/2.png">
+<img src="/images/android/actionbar/3.png"></p>
+
+<h3>点击事件</h3>
+
+<p>当用户点击ActionBar上的按钮时，系统会调用Activity的<code>onOptionsItemSelected(MenuItem item)</code>方法，该方法返回一个MenuItem，我们可以通过它来来判断点击的是哪个Action。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onOptionsItemSelected</span><span class="o">(</span><span class="n">MenuItem</span> <span class="n">item</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="na">getItemId</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">switch</span> <span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">getItemId</span><span class="o">())</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">group_chat</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;-----touch group chat&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">feedback</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;-----touch feed back&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">scan</span><span class="o">:</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;-----touch scan&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>            <span class="k">break</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">onOptionsItemSelected</span><span class="o">(</span><span class="n">item</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>使用应用图标向上导航</h3>
+
+<p>在ActionBar作为导航栏用的时候，当我们需要返回上一个调用界面的时候，就可以使用ActionBar的这个特性。首先我们需要在代码中设置ActionBar具有向上导航的功能。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">ActionBar</span> <span class="n">ab</span> <span class="o">=</span> <span class="n">getSupportActionBar</span><span class="o">();</span>
+</span><span class='line'><span class="n">ab</span><span class="o">.</span><span class="na">setDisplayHomeAsUpEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>这样在ActionBar的左边就会出现一个向左的箭头，这时点击还没反应，此时需要指定点击后跳转的Activity。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">application</span> <span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">activity</span>
+</span><span class='line'>        <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;/</span><span class="n">activity</span><span class="o">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="n">activity</span>
+</span><span class='line'>        <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.DisplayMessageActivity&quot;</span>
+</span><span class='line'>        <span class="nl">android:</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;@string/title_activity_display_message&quot;</span>
+</span><span class='line'>        <span class="nl">android:</span><span class="n">parentActivityName</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="o">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="n">meta</span><span class="o">-</span><span class="n">data</span>
+</span><span class='line'>            <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.support.PARENT_ACTIVITY&quot;</span>
+</span><span class='line'>            <span class="nl">android:</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="o">/&gt;</span>
+</span><span class='line'>    <span class="o">&lt;/</span><span class="n">activity</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">application</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+通过在Application或者Activity指定属性<code>android:parentActivityName</code>，将其指向向上跳转的父类。在Android4.1(API16)级以上版本中只需在Activity中指定<code>parentActivityName</code>就可以，如果为了支持低版本，需要添加<code>&lt;meta-data&gt;</code>部分。
+或者重写activity中的 getSupportParentActivityIntent() 和 onCreateSupportNavigateUpTaskStack()。
+取决于用户如何到达当前界面的，父级activity也可能不同，那么这么做就很合适了。也就是说，如果用户有许多可以到达当前界面的路径，那么向上按钮应该按照用户实际到达的路劲回退导航。</p>
+
+<p>当用户按下向上按钮时系统会调用 getSupportParentActivityIntent() 去导航你的应用（在你应用自己的任务栈内）。取决于用户如何到达当前位置的，向上导航上应该打开的activity也会不同，所以你应该重写这个方法以返回可以打开合适父级activity的 Intent。</p>
+
+<p>当用户按下向上按钮并且你的activity也运行在不属于你应用的任务栈中时，系统会为你的activity调用 onCreateSupportNavigateUpTaskStack()。因此，当用户向上导航时你必须使用 TaskStackBuilder 传递到这个方法去建立那个应该合并的合适的回退栈。</p>
+
+<p>虽然你重写了 getSupportParentActivityIntent() 来具体指定用户在应用中的具体导航，但是你不想实现 onCreateSupportNavigateUpTaskStack()，那么你可以像上面所示在清单文件中声明“默认”父级activity达到同样的效果。然后 onCreateSupportNavigateUpTaskStack() 的默认实现会基于清单中声明的父级activity去合并回退栈。 <br/>
+注解：如果你是使用大量的fragment而不是activity去构建你应用层级结构，那么上面的选项都不会生效。要在fragment里向上导航，你应该改为重写 onSupportNavigateUp()，通常通过调用 popBackStack() 方法把当前fragment从回退栈里出栈去来执行合适的fragment事务。</p>
+
+<h3>操作视图</h3>
+
+<p>在app中经常见到一种情况就是在ActionBar中点击搜索按钮，弹出搜索条，这个功能就可以通过只需要在Item中指定<code>app:actionViewClass</code>属性，同时在<code>app:showAsAction</code>添加collapseActionView值就可完成。collapseActionView是用来声明操作视图应该被收缩到一个按钮中的可选操作。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;menu</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+</span><span class='line'>      <span class="na">xmlns:yourapp=</span><span class="s">&quot;http://schemas.android.com/apk/res-auto&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;item</span> <span class="na">android:id=</span><span class="s">&quot;@+id/action_search&quot;</span>
+</span><span class='line'>          <span class="na">android:title=</span><span class="s">&quot;@string/action_search&quot;</span>
+</span><span class='line'>          <span class="na">android:icon=</span><span class="s">&quot;@drawable/ic_action_search&quot;</span>
+</span><span class='line'>          <span class="na">app:showAsAction=</span><span class="s">&quot;ifRoom|collapseActionView&quot;</span>
+</span><span class='line'>          <span class="na">app:actionViewClass=</span><span class="s">&quot;android.support.v7.widget.SearchView&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/menu&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>  <br/>
+如果需要配置操作视图，比如添加监听，可以在<code>onCreateOptionsMenu()</code>回调方法中，传递相应的 MenuItem 给静态方法 MenuItemCompat.getActionView() 去获取操作视图的对象。可以下边这样获取上面例子的搜索控件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">getMenuInflater</span><span class="o">().</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">menu</span><span class="o">.</span><span class="na">main_activity_actions</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">MenuItem</span> <span class="n">searchItem</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">action_search</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">SearchView</span> <span class="n">searchView</span> <span class="o">=</span> <span class="o">(</span><span class="n">SearchView</span><span class="o">)</span> <span class="n">MenuItemCompat</span><span class="o">.</span><span class="na">getActionView</span><span class="o">(</span><span class="n">searchItem</span><span class="o">);</span>
+</span><span class='line'>    <span class="c1">// Configure the search info and add any event listeners</span>
+</span><span class='line'>    <span class="c1">//...</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">onCreateOptionsMenu</span><span class="o">(</span><span class="n">menu</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>伸缩操作视图</h3>
+
+<p>像上边这样，当我们点击按钮,搜索视图展现，当我们点击向上或者返回按钮的时候，搜索视图又收缩回去了，如果我们想在展开或者收缩的这个过程中同时对Activity中的视图进行一些变动操作的时候，可以使用下边的监听方法去完成这个工作</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">getMenuInflater</span><span class="o">().</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">menu</span><span class="o">.</span><span class="na">menu_main</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">MenuItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">group_chat</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">MenuItemCompat</span><span class="o">.</span><span class="na">setOnActionExpandListener</span><span class="o">(</span><span class="n">item</span><span class="o">,</span> <span class="k">new</span> <span class="n">MenuItemCompat</span><span class="o">.</span><span class="na">OnActionExpandListener</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onMenuItemActionExpand</span><span class="o">(</span><span class="n">MenuItem</span> <span class="n">menuItem</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;---展开的时候&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span> <span class="c1">//true 表示可展开， 否则不可展开</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="nd">@Override</span>
+</span><span class='line'>        <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onMenuItemActionCollapse</span><span class="o">(</span><span class="n">MenuItem</span> <span class="n">menuItem</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;---收缩的时候&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span><span class="c1">//true 表示可收缩，否则不可收缩</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">});</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">onCreateOptionsMenu</span><span class="o">(</span><span class="n">menu</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>ActionProvider</h3>
+
+<p>和操作视图一样，ActionProvider也是在ActionBar的一个按钮上。不同的是，ActionProvider完全控制操作行为变现和并在按下时显示下拉菜单。我们可以继承ActionProvider类来实现自己的ActionProvider,不过安卓已经提供了一些预构建的类来方便我们调用，比如ShareActionProvider,可以用来显示分享类表。在使用ShareActionProvider的时候，首先需要在item中进行<code>app:actionProviderClass</code>属性指定，如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">&lt;</span><span class="n">item</span>
+</span><span class='line'><span class="nl">android:</span><span class="n">id</span><span class="o">=</span><span class="s">&quot;@+id/group_chat&quot;</span>
+</span><span class='line'><span class="nl">android:</span><span class="n">title</span><span class="o">=</span><span class="s">&quot;GroupChat&quot;</span>
+</span><span class='line'><span class="nl">android:</span><span class="n">icon</span><span class="o">=</span><span class="s">&quot;@drawable/menu_group_chat_icon&quot;</span>
+</span><span class='line'><span class="nl">app:</span><span class="n">showAsAction</span><span class="o">=</span><span class="s">&quot;ifRoom&quot;</span>
+</span><span class='line'><span class="nl">app:</span><span class="n">actionProviderClass</span><span class="o">=</span><span class="s">&quot;android.support.v7.widget.ShareActionProvider&quot;</span>
+</span><span class='line'><span class="o">/&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>此时运行程序，会在右上角出现一个分享按钮，但是点击后无效果，接着指定分享操作</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">private</span> <span class="n">ShareActionProvider</span> <span class="n">actionProvider</span><span class="o">;</span>
+</span><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreateOptionsMenu</span><span class="o">(</span><span class="n">Menu</span> <span class="n">menu</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="c1">// Inflate the menu; this adds items to the action bar if it is present.</span>
+</span><span class='line'>    <span class="n">getMenuInflater</span><span class="o">().</span><span class="na">inflate</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">menu</span><span class="o">.</span><span class="na">menu_main</span><span class="o">,</span> <span class="n">menu</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">MenuItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="na">findItem</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">group_chat</span><span class="o">);</span> <span class="c1">//获取Action</span>
+</span><span class='line'>    <span class="n">actionProvider</span> <span class="o">=</span> <span class="o">(</span><span class="n">ShareActionProvider</span><span class="o">)</span> <span class="n">MenuItemCompat</span><span class="o">.</span><span class="na">getActionProvider</span><span class="o">(</span><span class="n">item</span><span class="o">);</span> <span class="c1">//获取ShareActionProvider</span>
+</span><span class='line'>    <span class="n">actionProvider</span><span class="o">.</span><span class="na">setShareIntent</span><span class="o">(</span><span class="n">getDefaultIntent</span><span class="o">());</span> <span class="c1">//设置Intent</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">onCreateOptionsMenu</span><span class="o">(</span><span class="n">menu</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">private</span> <span class="n">Intent</span> <span class="nf">getDefaultIntent</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Intent</span> <span class="n">intent</span> <span class="o">=</span> <span class="k">new</span> <span class="nf">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_SEND</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">intent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;image/*&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">intent</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>这样在点击share按钮后，就是如图效果  <br/>
+<img src="/images/android/actionbar/4.png"></p>
+
+<h3>添加导航栏选项卡</h3>
+
+<p>首先需要实现一个类，实现ActionBar.TabListener接口</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.support.v4.app.Fragment</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">android.support.v7.app.ActionBar</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cm">/**</span>
+</span><span class='line'><span class="cm"> * Created by ypengju on 2015/3/29.</span>
+</span><span class='line'><span class="cm"> */</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActionBarTab</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">Fragment</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">ActionBar</span><span class="o">.</span><span class="na">TabListener</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">private</span> <span class="n">Fragment</span> <span class="n">fragment</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Activity</span> <span class="n">mActivity</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">mTag</span><span class="o">;</span>
+</span><span class='line'>    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mClass</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="nf">MyActionBarTab</span><span class="o">(</span><span class="n">Activity</span> <span class="n">mActivity</span><span class="o">,</span> <span class="n">String</span> <span class="n">mTag</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mClass</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">mActivity</span> <span class="o">=</span> <span class="n">mActivity</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">mTag</span> <span class="o">=</span> <span class="n">mTag</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">mClass</span> <span class="o">=</span> <span class="n">mClass</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabSelected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">fragment</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">fragment</span> <span class="o">=</span> <span class="n">Fragment</span><span class="o">.</span><span class="na">instantiate</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">mClass</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">content</span><span class="o">,</span><span class="n">fragment</span><span class="o">,</span><span class="n">mTag</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="n">fragment</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabUnselected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="o">(</span><span class="n">fragment</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">detach</span><span class="o">(</span><span class="n">fragment</span><span class="o">);</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabReselected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>接着实现Fragmenty用来显示选项卡视图</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">OneFragment</span> <span class="kd">extends</span> <span class="n">Fragment</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Nullable</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">View</span> <span class="nf">onCreateView</span><span class="o">(</span><span class="n">LayoutInflater</span> <span class="n">inflater</span><span class="o">,</span> <span class="n">ViewGroup</span> <span class="n">container</span><span class="o">,</span> <span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">onCreateView</span><span class="o">(</span><span class="n">inflater</span><span class="o">,</span> <span class="n">container</span><span class="o">,</span> <span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>最后将其添加到ActionBar中</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Override</span>
+</span><span class='line'><span class="kd">protected</span> <span class="kt">void</span> <span class="nf">onCreate</span><span class="o">(</span><span class="n">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+</span><span class='line'>    <span class="kd">super</span><span class="o">.</span><span class="na">onCreate</span><span class="o">(</span><span class="n">savedInstanceState</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">setContentView</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">activity_main</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">ActionBar</span> <span class="n">ab</span> <span class="o">=</span> <span class="n">getSupportActionBar</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">ab</span><span class="o">.</span><span class="na">setDisplayHomeAsUpEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ab</span><span class="o">.</span><span class="na">setNavigationMode</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">NAVIGATION_MODE_TABS</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ab</span><span class="o">.</span><span class="na">setDisplayShowTitleEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>    <span class="n">ab</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span><span class="n">ab</span><span class="o">.</span><span class="na">newTab</span><span class="o">().</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Tab选项卡一&quot;</span><span class="o">).</span><span class="na">setTabListener</span><span class="o">(</span><span class="k">new</span> <span class="n">MyActionBarTab</span><span class="o">&lt;</span><span class="n">OneFragment</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;one&quot;</span><span class="o">,</span><span class="n">OneFragment</span><span class="o">.</span><span class="na">class</span><span class="o">)));</span>
+</span><span class='line'>    <span class="n">ab</span><span class="o">.</span><span class="na">addTab</span><span class="o">(</span><span class="n">ab</span><span class="o">.</span><span class="na">newTab</span><span class="o">().</span><span class="na">setText</span><span class="o">(</span><span class="s">&quot;Tab选项卡二&quot;</span><span class="o">).</span><span class="na">setTabListener</span><span class="o">(</span><span class="k">new</span> <span class="n">MyActionBarTab</span><span class="o">&lt;</span><span class="n">TwoFragment</span><span class="o">&gt;(</span><span class="k">this</span><span class="o">,</span> <span class="s">&quot;two&quot;</span><span class="o">,</span><span class="n">TwoFragment</span><span class="o">.</span><span class="na">class</span><span class="o">)));</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>效果如图  <br/>
+<img src="/images/android/actionbar/5.png"></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-03-29T11:14:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:14 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/android/'>android</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2015/03/26/android-layout/" title="Previous Post: Android -- Layout">&laquo; Android &#8211; Layout</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
