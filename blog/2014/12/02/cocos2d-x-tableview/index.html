@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; TableView - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 TableView位于extensions扩展包中， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/12/02/cocos2d-x-tableview">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; TableView</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-12-02T15:15:21+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>3:15 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 <br/>
+TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#include &quot;cocos-ext.h&quot;</span>
+</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">cocos2d</span><span class="o">::</span><span class="n">extension</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。  <!--more--></p>
+
+<figure class='code'><figcaption><span>TableViewDelegate</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">class</span> <span class="nc">TableViewDelegate</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ScrollViewDelegate</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="c1">//点击时调用</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">tableCellTouched</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//cell点下时调用</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellHighlight</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//cell点下释放时调用</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellUnhighlight</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//cell回收，在当前cell移除屏幕时调用，或者在reloadData()调用时，调用</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellWillRecycle</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+TableViewDelegate继承自ScrollViewDelegate，除了上边的这些方法外，还可实现ScrollViewDelegate中的<code>scrollViewDidScroll</code>和<code>scrollViewDidZoom</code>代理方法。</p>
+
+<figure class='code'><figcaption><span>TableViewDataSource</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">class</span> <span class="nc">TableViewDataSource</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">virtual</span> <span class="o">~</span><span class="n">TableViewDataSource</span><span class="p">()</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//每个cell的大小，用于指定tableView中每个Cell的大小</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="n">Size</span> <span class="n">tableCellSizeForIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">cellSizeForTable</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//默认cell的大小</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="n">Size</span> <span class="nf">cellSizeForTable</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Size</span><span class="o">::</span><span class="n">ZERO</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//索引index处的TableViewCell内容</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">tableCellAtIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//TableView中cell的个数</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="kt">ssize_t</span> <span class="n">numberOfCellsInTableView</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+在使用时，必须实现上边两个类中的纯虚函数，这是布局时必须的一些数据。在TableView中每个cell我们会用到<code>TableViewCell</code>这个类，这个只有一个简单的成员变量_idx用来标记cell的索引，但是它继承子Node，每个cell中用到的控件元素都会添加到这个类实例中进行管理。 <br/>
+下边一个简单例子说明TableView的使用</p>
+
+<figure class='code'><figcaption><span>TableViewDataSource</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">bool</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">init</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">Layer</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Size</span> <span class="n">winSize</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getWinSize</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">auto</span> <span class="n">colorLayer</span> <span class="o">=</span> <span class="n">LayerColor</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">Color4B</span><span class="p">(</span><span class="mi">125</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">255</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">addChild</span><span class="p">(</span><span class="n">colorLayer</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">_tableView</span> <span class="o">=</span> <span class="n">TableView</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Size</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">));</span> <span class="c1">//指明此TableView的数据代理和可视区域大小</span>
+</span><span class='line'>    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">winSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setDelegate</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="c1">//指定代理为当前类，调用时调用我们申明的函数</span>
+</span><span class='line'>    <span class="c1">//设置滑动方向，只有两个方向，垂直滑动和水平滑动，默认垂直滑动，设置方向必须在调用reloadData()函数之前。</span>
+</span><span class='line'>    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setDirection</span><span class="p">(</span><span class="n">ScrollView</span><span class="o">::</span><span class="n">Direction</span><span class="o">::</span><span class="n">HORIZONTAL</span><span class="p">);</span>
+</span><span class='line'>    <span class="c1">//设置TableView中元素的排序方式，更具索引有从大到小，或者从小到大的顺序,这里值得关注下，在此方法中会调用reloadData()进行加载数据</span>
+</span><span class='line'>    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setVerticalFillOrder</span><span class="p">(</span><span class="n">TableView</span><span class="o">::</span><span class="n">VerticalFillOrder</span><span class="o">::</span><span class="n">TOP_DOWN</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setBounceable</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span> <span class="c1">//设置滑动是否有惯性</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">_tableView</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//设置每个cell的内容</span>
+</span><span class='line'><span class="n">TableViewCell</span><span class="o">*</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellAtIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;-----------%ld&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">TableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">dequeueCell</span><span class="p">();</span> <span class="c1">//对移除屏幕的cell进行重复利用，避免额外开销</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cell</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">cell</span> <span class="o">=</span> <span class="n">TableViewCell</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setAnchorPoint</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">cell</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">sp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">label</span> <span class="o">=</span> <span class="n">LabelTTF</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">StringUtils</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">idx</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span> <span class="s">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">sp</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sp</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">));</span>
+</span><span class='line'>        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">cell</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">label</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">label</span> <span class="o">=</span> <span class="p">(</span><span class="n">LabelTTF</span> <span class="o">*</span><span class="p">)</span><span class="n">cell</span><span class="o">-&gt;</span><span class="n">getChildByTag</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setString</span><span class="p">(</span><span class="n">StringUtils</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">idx</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">cell</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//TableView中的数量</span>
+</span><span class='line'><span class="kt">ssize_t</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">numberOfCellsInTableView</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="mi">100</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//每个cell的大小</span>
+</span><span class='line'><span class="n">cocos2d</span><span class="o">::</span><span class="n">Size</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellSizeForIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Size</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//cell点击调用</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellTouched</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;--------you touch me!!! %ld&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="o">-&gt;</span><span class="n">getIdx</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+实现这以上几个函数，既可以构建一个简单TableView，在调用过程中数据发生改变，我们只需调用TableView的reloadData()函数就可对数据进行刷新。还有其他几个函数可对TableView中指定索引元素进行更新，插入和删除操作。具体可见CCTableView.h中定义的接口。</p>
+
+<p>在lua中使用时，在定义相应函数后，我们需要对其进行注册，具体如下</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">numberOfCellsInTableView</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">NUMBER_OF_CELLS_IN_TABLEVIEW</span><span class="p">)</span>
+</span><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">scrollViewDidScroll</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">SCROLLVIEW_SCRIPT_SCROLL</span><span class="p">)</span>
+</span><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">scrollViewDidZoom</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">SCROLLVIEW_SCRIPT_ZOOM</span><span class="p">)</span>
+</span><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">tableCellTouched</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">TABLECELL_TOUCHED</span><span class="p">)</span>
+</span><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">cellSizeForTable</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">TABLECELL_SIZE_FOR_INDEX</span><span class="p">)</span>
+</span><span class='line'><span class="n">tableView</span><span class="p">:</span><span class="n">registerScriptHandler</span><span class="p">(</span><span class="n">TableViewTestLayer</span><span class="p">.</span><span class="n">tableCellAtIndex</span><span class="p">,</span><span class="n">cc</span><span class="p">.</span><span class="n">TABLECELL_SIZE_AT_INDEX</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+这些具体函数必须在reloadData()函数之前注册，因为在reloadData()需要对数据进行处理。具体使用可参考官方的例子程序。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-12-02T15:15:21+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>3:15 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/12/cocos2d-x-luaengine/" title="Previous Post: cocos2d-x -- LuaEngine调用Lua代码">&laquo; cocos2d-x &#8211; LuaEngine调用Lua代码</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2015/01/04/c-plus-plus-11-xin-te-xing/" title="Next Post: c++11 -- 新特性">c++11 &#8211; 新特性 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

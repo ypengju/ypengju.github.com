@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; LuaEngine调用Lua代码 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="cocos2d-x 3.2中，在命令行生成新项目时，我们需要使用-l参数指明使用的语言，如果使用c++语言，则默认不包含脚本库，如果使用lua语言，则项目默认生成lua环境，我们直接可以开始编写lua逻辑，无需关心引擎到lua的调用工作。为了了解引擎如何从c++调用到lua，z这篇文章以c++ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/11/12/cocos2d-x-luaengine">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; LuaEngine调用Lua代码</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-11-12T21:39:06+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>cocos2d-x 3.2中，在命令行生成新项目时，我们需要使用<code>-l</code>参数指明使用的语言，如果使用c++语言，则默认不包含脚本库，如果使用lua语言，则项目默认生成lua环境，我们直接可以开始编写lua逻辑，无需关心引擎到lua的调用工作。为了了解引擎如何从c++调用到lua，z这篇文章以c++项目为例。    <!-- more -->
+对新生成的c++项目，首先需要添加脚本库， 将引擎cocos目录下的scripting目录拷贝到新项目的cocos目录下与引擎原始目录结构保持一致即可。除了scripting还需要将external目录下的lua文件夹也一并考过来放在对应目录，需要的文件拷贝好之后，需要在项目中进行配置，右击项目->&ldquo;Add File to &hellip;&rdquo;,然后如下图添加脚本库 <br/>
+<img src="/images/lua/1.png">  <br/>
+<img src="/images/lua/2.png">  <br/>
+添加成功后，如下将库文件添加到工程
+<img src="/images/lua/3.png">
+分别在&#8221;Target Dependence&#8221;和&#8221;Link Binary With Library&#8221;下，这里需要添加另外一个&#8221;MediaPlayer.framework&#8221;,否则会编译出错。 <br/>
+添加好库之后，还需指明搜索路径
+<img src="/images/lua/4.png">
+这样在项目中就可以直接调用<code>#include "CCLuaEngine.h"</code>包含头文件，通过LuaEngine调用lua文件了。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>auto engine = LuaEngine::getInstance();
+</span><span class='line'>ScriptEngineManager::getInstance()-&gt;setScriptEngine(engine);
+</span><span class='line'>if (engine-&gt;executeScriptFile("hello.lua")) {
+</span><span class='line'>    return false;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+cocos2d-x支持JS脚本和lua脚本，使用ScriptEngineManager来管理脚本引擎，如上边这个例子，我们获得lua引擎，然后将其设置到脚本管理类中，先来看看这个管理到底是干什么用的。</p>
+
+<figure class='code'><figcaption><span>ScriptEngineManager</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">ScriptEngineManager</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">ScriptEngineManager</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">ScriptEngineProtocol</span><span class="o">*</span> <span class="nf">getScriptEngine</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">_scriptEngine</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">setScriptEngine</span><span class="p">(</span><span class="n">ScriptEngineProtocol</span> <span class="o">*</span><span class="n">scriptEngine</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">removeScriptEngine</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">ScriptEngineManager</span><span class="o">*</span> <span class="nf">getInstance</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">void</span> <span class="nf">destroyInstance</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">sendNodeEventToJS</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">sendNodeEventToJSExtended</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">void</span> <span class="nf">sendNodeEventToLua</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">ScriptEngineManager</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'>    <span class="o">:</span> <span class="n">_scriptEngine</span><span class="p">(</span><span class="k">nullptr</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">ScriptEngineProtocol</span> <span class="o">*</span><span class="n">_scriptEngine</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+ScriptEngineManager就是一个单例，帮助引擎保存ScriptEngineProtocol对象，ScriptEngineProtocol是LuaEngine的父类，类中声明一些纯虚方法。具体操作都由LuaEngine实现。其实LuaEngine也只是外层的一个包装，其中管理者一个LuaStack对象，所有栈操作都是在LuaStack中完成的。</p>
+
+<figure class='code'><figcaption><span>ScriptEngineManager</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">codes</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeString</span><span class="p">(</span><span class="n">codes</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">functionName</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="n">functionName</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以看到LuaEngine都是通调用LuaStack方法来实现的</p>
+
+<figure class='code'><figcaption><span>ScriptEngineManager</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">codes</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">luaL_loadstring</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">codes</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">executeFunction</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">code</span><span class="p">(</span><span class="s">&quot;require </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">code</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">code</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="nf">executeString</span><span class="p">(</span><span class="n">code</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">functionName</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">lua_getglobal</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionName</span><span class="p">);</span>       <span class="cm">/* query function by name, stack: function */</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;[LUA ERROR] name &#39;%s&#39; does not represent a Lua function&quot;</span><span class="p">,</span> <span class="n">functionName</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">executeFunction</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+<code>executeString</code>和<code>executeScriptFile</code>加载代码到栈顶，然后调用<code>executeFunction</code>函数，<code>executeGlobalFunction</code>将函数名压入栈顶，然后检查是否是是函数，如果是也执行<code>executeFunction</code>函数记者来看这个重要的函数：</p>
+
+<figure class='code'><figcaption><span>ScriptEngineManager</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeFunction</span><span class="p">(</span><span class="kt">int</span> <span class="n">numArgs</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">functionIndex</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">numArgs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionIndex</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;value at stack [%d] is not function&quot;</span><span class="p">,</span> <span class="n">functionIndex</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">numArgs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove function and arguments</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">traceback</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">lua_getglobal</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="s">&quot;__G__TRACKBACK__&quot;</span><span class="p">);</span>                         <span class="cm">/* L: ... func arg1 arg2 ... G */</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>                                            <span class="cm">/* L: ... func arg1 arg2 ... */</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">lua_insert</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>                         <span class="cm">/* L: ... G func arg1 arg2 ... */</span>
+</span><span class='line'>        <span class="n">traceback</span> <span class="o">=</span> <span class="n">functionIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">error</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="o">++</span><span class="n">_callFromLua</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">error</span> <span class="o">=</span> <span class="n">lua_pcall</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">numArgs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">traceback</span><span class="p">);</span>                  <span class="cm">/* L: ... [G] ret */</span>
+</span><span class='line'>    <span class="o">--</span><span class="n">_callFromLua</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">traceback</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;[LUA ERROR] %s&quot;</span><span class="p">,</span> <span class="n">lua_tostring</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span> <span class="mi">1</span><span class="p">));</span>        <span class="cm">/* L: ... error */</span>
+</span><span class='line'>            <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove error message from stack</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span>                                                            <span class="cm">/* L: ... G error */</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// remove __G__TRACKBACK__ and error message from stack</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// get return value</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">lua_isnumber</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">lua_tointeger</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lua_isboolean</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">lua_toboolean</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// remove return value from stack</span>
+</span><span class='line'>    <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>                                                <span class="cm">/* L: ... [G] */</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">traceback</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove __G__TRACKBACK__ from stack      /* L: ... */</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ol>
+<li>先判断栈顶元素是不是函数</li>
+<li>先将<code>__G__TRACKBACK__</code>入栈，检查lua是否定义了此函数，如果没有定义，将<code>__G__TRACKBACK__</code>出战，如果定义了，将此函数插入调用函数之前，来跟踪调用顺序。</li>
+<li>调用<code>lua_pcall</code>函数调用lua代码，如果调用函数出栈，将结果压入栈中，如果调用错误，将错误信息压入栈中。</li>
+<li>对调用结果进行处理</li>
+</ol>
+
+
+<p>这样就完成了cocos2d-x的c++到lua代码的调用。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-11-12T21:39:06+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:39 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/11/lua-stack/" title="Previous Post: Lua -- stack">&laquo; Lua &#8211; stack</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/12/02/cocos2d-x-tableview/" title="Next Post: cocos2d-x -- TableView">cocos2d-x &#8211; TableView &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
