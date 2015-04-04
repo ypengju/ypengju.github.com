@@ -9,28 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="ClippingNode是一个用于剪切的类，例如在游戏新手引导中会指定特定点击区域就可以使用此类来做，或者在游戏滚动公告中，也可以使用此类来完成。 如下边这个例子： 1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11
-12
-13
-14
-15
-16
-17
-18
-19
-20
-21
-Size &hellip;">
+  <meta name="description" content="ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar 1 &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +58,266 @@ Size &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-29T11:14:43+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>29</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:14 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import android.app.ActionBar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>如果是在API7及以上版本，就需要引入支持库中的ActionBar</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>import android.support.v7.app.ActionBar</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在API11以上的版本，当我们创建Activity的时候是默认自带ActionBar的，如果要在API7以上使用ActionBar的时候，Activity需要继承自ActionBarActivity，在代码中我们可以通过<code>getSupportActionBar()</code>获取ActionBar,如果需要隐藏ActionBar可以调用它的hide()方法。如果需要再次显示可以调用show()方法</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>ActionBar ab = getSupportActionBar();
+</span><span class='line'>ab.hide();
+</span><span class='line'>//ab.show();</span></code></pre></td></tr></table></div></figure>
+
+
+<p>当调用hide()方法的时候，系统会对界面布局进行调整，填充原来ActionBar的位置。   </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/29/android-actionbar/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-26T22:18:31+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>26</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>10:18 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>LinearLayout</h3>
+
+<p>顾名思义，线性布局，其中的控件要么被竖向排列，要么被横向排列，排列方式是通过android:orientation属性来完成，这是一般应用中最常使用的一种布局文件，比如下边的例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;LinearLayout</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+</span><span class='line'>    <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+</span><span class='line'>    <span class="na">android:layout_height=</span><span class="s">&quot;match_parent&quot;</span>
+</span><span class='line'>    <span class="na">android:paddingLeft=</span><span class="s">&quot;16dp&quot;</span>
+</span><span class='line'>    <span class="na">android:paddingRight=</span><span class="s">&quot;16dp&quot;</span>
+</span><span class='line'>    <span class="na">android:orientation=</span><span class="s">&quot;vertical&quot;</span> <span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;EditText</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:hint=</span><span class="s">&quot;@string/to&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;EditText</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:hint=</span><span class="s">&quot;@string/subject&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;EditText</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;0dp&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_weight=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>        <span class="na">android:gravity=</span><span class="s">&quot;top&quot;</span>
+</span><span class='line'>        <span class="na">android:hint=</span><span class="s">&quot;@string/message&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Button</span>
+</span><span class='line'>        <span class="na">android:layout_width=</span><span class="s">&quot;100dp&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+</span><span class='line'>        <span class="na">android:layout_gravity=</span><span class="s">&quot;right&quot;</span>
+</span><span class='line'>        <span class="na">android:text=</span><span class="s">&quot;@string/send&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/LinearLayout&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>从上到下，一次排列了三个EditText和一个Button，具体使用可参考<a href="http://developer.android.com/reference/android/widget/LinearLayout.html">LinearLayout</a>和参数<a href="http://developer.android.com/reference/android/widget/LinearLayout.LayoutParams.html">LinearLayout.LayoutParams</a>    </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/26/android-layout/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-23T21:29:11+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>23</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>9:29 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>之前简单实现IOS本地消息推送的功能，但是这种方式太过死板，不能灵活应用，像游戏这种不定时开启活动，需要推送告知玩家的活动消息，这个变化性就比较大，一般游戏推送服务都需要和服务器端来配合完成，但是自己实现一套推送系统还是比较麻烦的，所以为了快速完成开发功能，好多游戏都是采用第三方推送系统。现在有好多优秀的第三方推送平台，有极光，个推，百度，小米的，每个平台都有自己的一些优势，可根据自己需求进行选择，这篇文章就学习总结接入极光推送平台到Android和IOS应用。</p>
+
+<p>首先需要在<a href="https://www.jpush.cn/">&ldquo;极光官网&rdquo;</a>注册帐号，下载SDK，这些都不用多说。下边开始动手</p>
+
+<h3>Android平台接入</h3>
+
+<p>极光的SDK还是做的很不错的，配置很简单，只需要简单的操作就可以完成，之前我也想试试个推来着，然后我看了下SDK接入文档后，毫不犹豫的选择了极光，哈哈，主要是简单啊。 <br/>
+这里我使用的SDK版本是：Jpush_Android_SDK_1.7.3  <br/>
+解压后有几个目录，doc下是文档，example是一个eclipse工程，可以直接跑，直接进行测试，libs下就是我们真正需要的库文件了，除此之外还有一个AndroidManifest.xml文件。因为比较简单，可以按照官方文档迅速进行配置，这里主要说下我在Android Studio中遇到的问题。   </div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/23/android-ios-tuisong/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-08T23:07:17+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:07 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Activity是应用程序的一个组件，它提供一个屏幕使用户可以与程序进行交互，像打电话，看微博，发邮件，浏览地图等其实都是在Activity中完成的，我们平时看到Android应用程序的界面，其实就是一个Activity。通常一个应用程序会含有多个Activity，像左右滑动切换界面，不同的功能界面等。其实就是从一个Activity切换的另一个Activity，新的Activity显示了，那么旧的Activity呢，它被压入了手机后台的一个栈中，栈具有后进先出的特性，所以当我们点击Back键的时候，程序就会从后台栈中取出上次压入的Activity。Activity在前台与后台之间切换的时候，会调用不同的回调函数，这就是Activity的生命周期了，我们可以在这些对应的函数中完成我们想要的操作。</p>
+
+<h3>创建Activity</h3>
+
+<p>当我们创建Activity的时候，必须继承自Activity或者它的子类。同时必须实现父类中的<code>onCreate()</code>方法。因为系统会调用改方法来创建Activity，在该方法中，我们应该对页面进行显示处理。还有其他一些生命周期方法，比如<code>onStart()</code>， <code>onStop()</code>， <code>onResume()</code>等可根据需要来自己实现。创建好Activity后，我们就需要对页面添加空间，使程序可以和用户进行交互。Android提供了大量的控件供程序使用，比如按钮，复选框，图片等。我们可以通过程序对这些控件进行布局管理，通常每个Activity我们都会配置一个对应的XML文件进行布局管理，然后通过程序进行调用响应事件处理。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/03/08/android-activity-lifttime/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-08T21:39:13+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>8</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:39 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>新的征程，再学Android。</p>
+
+<p>原来在学校的时候学习过一段时间Android开发，毕业找工作的时候也一直想找个Android的工作，可是后来阴差阳错的却做了cocos2d-x开发，虽然交叉编译有用到Android，但是毕竟不多，比起原来，现在Android已经变化很多，新的编辑器，新的版本，快速的Genymotion模拟器，再也不用一跑一下午了。所以想利用闲暇时间了重新学一下Android，在以后cocos2d-x开发中也能更得心应手。</p>
+
+<p>这里会记录一下学习的笔记，也好做个备忘录，也方便以后查找。虽然现在大部分开发Android，以及cocos2d-x使用都是在eclipse进行的，但是学习还是会用Android Studio编辑器，毕竟这是以后的趋势。</p>
+
+<p>今天下午同时配置了eclipse和Android Studio开发环境，同时也在window下同步了我的octopress博客方便记录，以前没在windows下搭建octopress,以为不行，因为看到官方文档都是在命令行下操作的，后来找到这篇文章<a href="http://www.cnblogs.com/javac/archive/2012/07/31/2617432.html">（Windows7下，用Octopress在Github上搭建博客）</a>轻松搞定，因为之前有在mac上搭建，所以直接从github上clone下来就好，稍微配置就可使用。其中ruby使用的是ruby1.9.3。<a href="http://rubyinstaller.org/downloads/">下载地址</a>。此文章就是在windows下写的。最后下载传说中的超快模拟器Genymotion，自己也安装后跑了一下，确实速度很快，再也不用提起模拟器就头疼了。</p>
+
+<p>谨以此文记录Andorid的开始！</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -410,195 +649,6 @@ Size &hellip;">
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/04/c-plus-plus-11-xin-te-xing/">C++11 &#8211; 新特性</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-01-04T09:41:02+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>9:41 am</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>在cocos2d-x 3.X之后的版本中，可以看到很多关于c++11新特性的使用，这篇文章学习记录下c++11的新特性及使用方法。</p>
-
-<h3>auto</h3>
-
-<h4>变量初始化</h4>
-
-<p>在c++11中，我们可以想其他动态语言一样，不需要指明一个变量的具体类型，直接对变量进行声明初始化。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
-</span><span class='line'><span class="k">auto</span> <span class="n">str</span> <span class="o">=</span> <span class="s">&quot;hello world&quot;</span><span class="p">;</span>
-</span><span class='line'><span class="k">auto</span> <span class="n">p</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-这样在声明变量时，我们不需要指明变量的具体类型，但是在使用auto时，我们必须对变量赋值。同时我们还可以使用在STL的迭代器中，使得代码更加简单易读。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/01/04/c-plus-plus-11-xin-te-xing/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-12-02T15:15:21+08:00'><span class='date'><span class='date-month'>Dec</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2014</span></span> <span class='time'>3:15 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>TableView是在游戏开发中最常使用的之一，它是ScrollView的子类，采用委托代理，只将数据交给用户处理，具体布局，内存处理都有引擎包装完成，对于加载大量列表数据非常方便，使得我们只需考虑，每个条目数据处理。 <br/>
-TableView位于extensions扩展包中，所以在使用的时候需要引入头文件。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#include &quot;cocos-ext.h&quot;</span>
-</span><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">cocos2d</span><span class="o">::</span><span class="n">extension</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p> <br/>
-在使用TableView的类中，需要继承<code>TableViewDataSource</code>，<code>TableViewDelegate</code>两个类。这两个类中定义了一些纯虚代理方法，需要在类中继承实现，还有其他的几个方法，可以选择实现。  </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/12/02/cocos2d-x-tableview/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-12T21:39:06+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>12</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:39 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>cocos2d-x 3.2中，在命令行生成新项目时，我们需要使用<code>-l</code>参数指明使用的语言，如果使用c++语言，则默认不包含脚本库，如果使用lua语言，则项目默认生成lua环境，我们直接可以开始编写lua逻辑，无需关心引擎到lua的调用工作。为了了解引擎如何从c++调用到lua，z这篇文章以c++项目为例。    </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/12/cocos2d-x-luaengine/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-11T21:32:01+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:32 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：<a href="http://4gamers.cn/blog/2014/06/28/embeded-lua-tutorial-one/">Lua教程: C++嵌入Lua脚本(1)</a>，我也是按照这篇博文进行配置，使用的lua版本为5.2.3。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/11/lua-stack/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2014-11-07T22:27:16+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:27 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>tinyxml2是一个简单，高效的xml语言的库，它是一个开源项目，项目代码托管在github上，这个是它的github地址： <a href="https://github.com/leethomason/tinyxml2">tinyxml2</a>，在cocos2d-x中，已经集成了tinyxml2库，所以在使用的时候我们只要引入相应的类就可开始处理xml文件。在cocos2d-x中我们经常会用到的CCUserDefault操作者本地的一个xml文件，其实内部实现就有封装tinyxml2来实现的。</div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -612,6 +662,26 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
@@ -633,26 +703,6 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
         <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/01/04/c-plus-plus-11-xin-te-xing/">C++11 &#8211; 新特性</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/12/02/cocos2d-x-tableview/">Cocos2d-x &#8211; TableView</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/12/cocos2d-x-luaengine/">Cocos2d-x &#8211; LuaEngine调用Lua代码</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/11/lua-stack/">Lua &#8211; Stack</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/11/07/cocos2d-x-tinyxml2/">Cocos2d-x &#8211; Tinyxml2</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -661,7 +711,7 @@ TableView位于extensions扩展包中，所以在使用的时候需要引入头�
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (3)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   
