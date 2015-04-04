@@ -1,0 +1,21 @@
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">codes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeString</span><span class="p">(</span><span class="n">codes</span><span class="p">);</span>
+    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">LuaEngine</span><span class="o">::</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">functionName</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="n">functionName</span><span class="p">);</span>
+    <span class="n">_stack</span><span class="o">-&gt;</span><span class="n">clean</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,20 @@
+<div class="highlight"><pre><span class="cp">#ifdef __cplusplus</span>
+<span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+<span class="cp">#endif</span>
+    <span class="n">jint</span> <span class="n">Java_org_cocos2dx_cpp_AppActivity_nativeMethod</span><span class="p">(</span><span class="n">JNIEnv</span> <span class="o">*</span><span class="n">env</span><span class="p">,</span> <span class="n">jobject</span> <span class="n">thiz</span><span class="p">,</span> <span class="n">jint</span> <span class="n">a</span><span class="p">,</span> <span class="n">jint</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">#ifdef __cplusplus</span>
+<span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="c1">//......</span>
+<span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+<span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;staticMethod2&quot;</span><span class="p">,</span> <span class="s">&quot;()V&quot;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method if&quot;</span><span class="p">);</span>
+    <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallStaticVoidMethod</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method else&quot;</span><span class="p">);</span>
+<span class="p">}</span>  
+</pre></div>

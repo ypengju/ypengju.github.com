@@ -1,0 +1,424 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | 左轮]]></title>
+  <link href="http://ypengju.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://ypengju.github.io/"/>
+  <updated>2015-03-29T20:21:44+08:00</updated>
+  <id>http://ypengju.github.io/</id>
+  <author>
+    <name><![CDATA[左轮]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Android IOS 推送]]></title>
+    <link href="http://ypengju.github.io/blog/2015/03/23/android-ios-tuisong/"/>
+    <updated>2015-03-23T21:29:11+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/03/23/android-ios-tuisong</id>
+    <content type="html"><![CDATA[<p>之前简单实现IOS本地消息推送的功能，但是这种方式太过死板，不能灵活应用，像游戏这种不定时开启活动，需要推送告知玩家的活动消息，这个变化性就比较大，一般游戏推送服务都需要和服务器端来配合完成，但是自己实现一套推送系统还是比较麻烦的，所以为了快速完成开发功能，好多游戏都是采用第三方推送系统。现在有好多优秀的第三方推送平台，有极光，个推，百度，小米的，每个平台都有自己的一些优势，可根据自己需求进行选择，这篇文章就学习总结接入极光推送平台到Android和IOS应用。</p>
+
+<p>首先需要在<a href="https://www.jpush.cn/">&ldquo;极光官网&rdquo;</a>注册帐号，下载SDK，这些都不用多说。下边开始动手</p>
+
+<h3>Android平台接入</h3>
+
+<p>极光的SDK还是做的很不错的，配置很简单，只需要简单的操作就可以完成，之前我也想试试个推来着，然后我看了下SDK接入文档后，毫不犹豫的选择了极光，哈哈，主要是简单啊。 <br/>
+这里我使用的SDK版本是：Jpush_Android_SDK_1.7.3  <br/>
+解压后有几个目录，doc下是文档，example是一个eclipse工程，可以直接跑，直接进行测试，libs下就是我们真正需要的库文件了，除此之外还有一个AndroidManifest.xml文件。因为比较简单，可以按照官方文档迅速进行配置，这里主要说下我在Android Studio中遇到的问题。   <!--more-->
+第一个问题，当将jar文件添加到工程中之后，调用极光API的时候，找不到类，
+<code>
+JPushInterface.setDebugMode(true);
+JPushInterface.init(this);
+</code>
+这是由于没有配置build，右键项目->Open Module Settings->Dependencies，然后将添加的jar文件添加进来。然后引入文件就可解决这个问题。 <br/>
+第二个问题，当我按照官方配置然后跑起来的时候，在Android Studio中是直接报错了，报错内容如下： <br/>
+<code>
+03-25 15:48:50.629    1738-1738/com.ypengju.jpushapplication E/AndroidRuntime﹕ FATAL EXCEPTION: main
+    java.lang.ExceptionInInitializerError
+            at cn.jpush.android.service.ServiceInterface.a(Unknown Source)
+            at cn.jpush.android.api.JPushInterface.init(Unknown Source)
+            at com.ypengju.jpushapplication.MainActivity.onCreate(MainActivity.java:19)
+            at android.app.Activity.performCreate(Activity.java:5008)
+            at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1079)
+            at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2023)
+            at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2084)
+            at android.app.ActivityThread.access$600(ActivityThread.java:130)
+            at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1195)
+            at android.os.Handler.dispatchMessage(Handler.java:99)
+            at android.os.Looper.loop(Looper.java:137)
+            at android.app.ActivityThread.main(ActivityThread.java:4745)
+            at java.lang.reflect.Method.invokeNative(Native Method)
+            at java.lang.reflect.Method.invoke(Method.java:511)
+            at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:786)
+            at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:553)
+            at dalvik.system.NativeStart.main(Native Method)
+</code>
+然后在官方问答中搜寻下，找到解决方法，JPush SDK 迁移到 Android Studio 需要添加.SO文件打包到APK的lib文件夹中,可以编辑 build.gradle 脚本，自定义 *.so 目录：
+<code>
+android {
+    // .. android settings ..
+    sourceSets.main {
+      jniLibs.srcDirs = ['libs']  // &lt;-- Set your folder here!
+    }
+ }
+</code>
+所以将中间sourceSets.main部分代码，添加到Build.gradle中就可以了。至此Android Studio配置Jpush成功，运行程序，然后推送，成功收到。  <br/>
+Jpush在安卓设备上，不管应用处于打开或者关闭状态，应用都可接受到推送消息，这是由于当我们第一次运行程序后，Jpush以Android Service的形式长期运行在后台。  <br/>
+在推送界面我们可以看到，除了通送通知外，极光推送还可推送消息和富媒体，消息通送可以使我们设备在收到消息后，调用的注册功能，比如说到一个消息，跳转到指定页面等。这个可根据需求实现。</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IOS -- 编译静态库]]></title>
+    <link href="http://ypengju.github.io/blog/2015/01/27/ios-bian-yi-jing-tai-ku/"/>
+    <updated>2015-01-27T16:47:25+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/01/27/ios-bian-yi-jing-tai-ku</id>
+    <content type="html"><![CDATA[<p>今天项目接第三方静态库被坑了一下，模拟器编译错误，真机编译通过，原来不懂，以为项目路径等问题，查了半天，没发现问题，后来才发现是第三方静态库的问题，被坑也叫坑，有坑赶紧填，填了就是路，上！  <br/>
+原来ios静态库分为两种，模拟器和真机的，两个静态是不一样的，原因在于模拟器用的是i386框架的，真机使用的arm6,arm7框架的，上边的坑就是这样埋下的。下边来从一个新的静态库工程开始，看看静态库的创建过程。</p>
+
+<h4>创建静态库工程</h4>
+
+<p>如下图开始创建静态库工程
+<img src="/images/libstatic/1.png"></p>
+
+<!--more-->
+
+
+<p>为了方便，只定义了两个方法<code>printHelloWorld</code>和<code>printABCD</code>
+<img src="/images/libstatic/2.png"><br/>
+编译之前，我们需要选择是真机库还是模拟器库，如下图，IOS Device就是真机，模拟器编译出来的就是模拟器的，但需要注意的是模拟器用4S编译的库在使用的时候，如果用5以上的模拟器，会报错，所以编译模拟器库的时候最好选择5以上版本进行编译。
+<img src="/images/libstatic/3.png"> <br/>
+此时直接编译会出错
+<img src="/images/libstatic/4.png">
+我测的是debug静态库，需要进行如下签名设置，release版本也需要进行相关签名设置
+<img src="/images/libstatic/5.png">
+编译通过后，在Products文件夹下回出现.a文件，右键->Show in Finder，Debug-iphoneos文件夹下的就是真机库，Debug-iphonesimulator文件夹下的就是模拟器库。
+<img src="/images/libstatic/6.png"> <br/>
+如果你将真机的库在模拟器上使用就会报找不到i386,找不到文件，这就是我在项目中遇到的坑了，其实我们可以使用<code>lipo</code>命令来查看.a文件的信息
+<code>
+Debug-iphoneos$ lipo -info libHelloStatic.a
+Architectures in the fat file: libHelloStatic.a are: armv7 arm64
+Debug-iphonesimulator$ lipo -info libHelloStatic.a
+input file libHelloStatic.a is not a fat file
+Non-fat file: libHelloStatic.a is architecture: i386
+</code> <br/>
+这样可以可以看出模拟器的是i386的，真机是arm的。但是分两个总是很麻烦，我们可以用lipo命令将两个包合并成一个包，这样两个都就可以使用了。 <br/>
+<code>
+$ lipo -create ./os/libHelloStatic.a ./similator/libHelloStatic.a -output ./libHelloStatic.a
+</code>
+前两个是文件路径，最后一个是输出路径，合并后查看信息
+<code>
+$ lipo -info libHelloStatic.a
+Architectures in the fat file: libHelloStatic.a are: armv7 i386 arm64
+</code>
+填坑结束！</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IOS -- 本地通知]]></title>
+    <link href="http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song/"/>
+    <updated>2015-01-08T11:33:25+08:00</updated>
+    <id>http://ypengju.github.io/blog/2015/01/08/ios-ben-di-tui-song</id>
+    <content type="html"><![CDATA[<p>为了提高用户的关注度，我们经常会推送一些新的内容给用户。ios中主要有两种推送，一种是远程通知，一种是本地通知，远程通知是和服务器端配合完成的，这里暂不说明，这篇文章主要说下本地通知。 <br/>
+本地通知是在ios4.0之后添加的，但是在ios8之后，在设置通知之前，需要先对通知进行注册，注册需要的通知类型，否则收不到响应类型的通知消息。
+<code>objective-c
+//ios8需要注册推送
+if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+    //通知类型
+    UIUserNotificationType types = UIUserNotificationTypeBadge |
+    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    //设置通知类型和动画
+    UIUserNotificationSettings *mySettings =
+    [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    //注册
+    [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+}
+</code></p>
+
+<!--more-->
+
+
+<p>上边注册了Icon角标，声音，和警告通知，当程序第一次调用<code>registerUserNotificationSettings</code>的时候，程序会询问用户是否允许程序发送通知，在用户选择之后(不管是同意与否)，程序会异步调用<code>- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)</code>函数。所有的注册类型都会可通过<code>currentUserNotificationSettings</code>变量获得。
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>UILocalNotification &lt;em&gt;notification = [[UILocalNotification alloc] init];
+</span><span class='line'>if (notification) {
+</span><span class='line'>    //设置时区
+</span><span class='line'>    notification.timeZone=[NSTimeZone defaultTimeZone];
+</span><span class='line'>    //设置推送的时间点
+</span><span class='line'>    NSDateFormatter &lt;/em&gt;formatter = [[NSDateFormatter alloc] init];
+</span><span class='line'>    [formatter setDateFormat:@&ldquo;HH:mm:ss&rdquo;];
+</span><span class='line'>    NSDate &lt;em&gt;date = [formatter dateFromString:@&ldquo;09:00:00&rdquo;];
+</span><span class='line'>    notification.fireDate=date;
+</span><span class='line'>    //通知重复提示的单位，可以是天、周、月
+</span><span class='line'>    notification.repeatInterval = kCFCalendarUnitDay;
+</span><span class='line'>    //推送的内容
+</span><span class='line'>    notification.alertBody = @&ldquo;this is a notificaiton&rdquo;;
+</span><span class='line'>    //推送声音
+</span><span class='line'>    notification.soundName = UILocalNotificationDefaultSoundName;
+</span><span class='line'>    //应用右上角红色图标数字
+</span><span class='line'>    notification.applicationIconBadgeNumber = 1;
+</span><span class='line'>    //自定义信息
+</span><span class='line'>    NSDictionary &lt;/em&gt;infoDict = [NSDictionary dictionaryWithObject:@&ldquo;two&rdquo; forKey:@&ldquo;one&rdquo;];
+</span><span class='line'>    notification.userInfo = infoDict;
+</span><span class='line'>}&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;UIApplication *app = [UIApplication sharedApplication];
+</span><span class='line'>[app scheduleLocalNotification:notification];
+</span><span class='line'>&lt;code&gt;``
+</span><span class='line'>本地通知是通过&lt;/code&gt;UILocalNotification&lt;code&gt;类来完成的，首先需要通过&lt;/code&gt;fireDate&lt;code&gt;设置通知的时间点，还可设置通知的内容，声音，角标数等。除此之外，用户还可通过&lt;/code&gt;userInfo`设置自定义数据。具体可参考&lt;a href="https://developer.apple.com/library/ios/documentation/iPhone/Reference/UILocalNotification_Class/index.html#//apple_ref/occ/cl/UILocalNotification"&gt;UILocalNotification官方文档&lt;/a&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;当程序正在运行时，收到通知时，会调用&lt;code&gt;application:didReceiveLocalNotification&lt;/code&gt;方法。&lt;br/&gt;
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+</span><span class='line'>{
+</span><span class='line'>    NSDictionary *infoDict = notification.userInfo;
+</span><span class='line'>    NSString *str = [infoDict objectForKey:@"one"];
+</span><span class='line'>    if ([str isEqualToString:@"two"]) {
+</span><span class='line'>        NSLog(@"--------yes  equal");
+</span><span class='line'>    } else {
+</span><span class='line'>        NSLog(@"--------no ");
+</span><span class='line'>    }
+</span><span class='line'>}
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;取消通知时，可以使用&lt;code&gt;cancelLocalNotification&lt;/code&gt;取消具体某个通知或者通过&lt;code&gt;cancelAllLocalNotifications&lt;/code&gt;取消全部通知。
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>[[UIApplication sharedApplication] cancelAllLocalNotifications];
+</span><span class='line'>&lt;/code&gt;
+</span><span class='line'>如果我们添加了角标，在通知之后，角标会一直存在，当需要取消角标时，可利用下边语句
+</span><span class='line'>&lt;code&gt;
+</span><span class='line'>[[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+</span><span class='line'>&lt;/code&gt;&lt;/p&gt;
+</span><span class='line'>
+</span><span class='line'>&lt;p&gt;从ios8开始，通知添加了通知动作事件，如果有注意到，我们上边的进行注册的时候categories赋值为nil，此变量就是用来添加动作事件的。  &lt;br/&gt;</span></code></pre></td></tr></table></div></figure>objective-c
+    //ios8需要注册推送
+    if ([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]){
+        UIMutableUserNotificationAction *acceptAction =
+        [[UIMutableUserNotificationAction alloc] init];
+        acceptAction.identifier = @&ldquo;accept_action&rdquo;; //ID
+        acceptAction.title = @&ldquo;Accept&rdquo;;             //按钮内容
+        acceptAction.activationMode = UIUserNotificationActivationModeBackground;
+        acceptAction.destructive = NO;
+        acceptAction.authenticationRequired = NO;</p>
+
+<pre><code>    UIMutableUserNotificationAction *cancelAction =
+    [[UIMutableUserNotificationAction alloc] init];
+    cancelAction.identifier = @"cancel_action";
+    cancelAction.title=@"Cancel";
+    cancelAction.activationMode = UIUserNotificationActivationModeBackground;
+    cancelAction.destructive = NO;
+    cancelAction.authenticationRequired = NO;
+
+    // First create the category
+    UIMutableUserNotificationCategory *inviteCategory =
+    [[UIMutableUserNotificationCategory alloc] init];
+    inviteCategory.identifier = @"INVITE_CATEGORY";
+    [inviteCategory setActions:@[acceptAction, cancelAction]
+                    forContext:UIUserNotificationActionContextDefault];
+    NSSet *categories = [NSSet setWithObject:inviteCategory];
+
+    //通知类型
+    UIUserNotificationType types = UIUserNotificationTypeBadge |
+    UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *mySettings =
+    [UIUserNotificationSettings settingsForTypes:types categories:categories];
+    //注册
+    [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+}
+
+UILocalNotification *notification = [[UILocalNotification alloc] init];
+if (notification) {
+    //时区
+    notification.timeZone=[NSTimeZone defaultTimeZone];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"ss"];
+    NSDate *date = [formatter dateFromString:@"10"];
+    notification.alertBody = @"haha";
+    notification.fireDate=date;
+    //通知重复提示的单位，可以是天、周、月
+    notification.repeatInterval = kCFCalendarUnitMinute;
+    //推送声音
+    notification.soundName = UILocalNotificationDefaultSoundName;
+    //应用右上角红色图标数字
+    notification.applicationIconBadgeNumber = 1;
+    notification.category = @"INVITE_CATEGORY";
+
+    NSDictionary *infoDict = [NSDictionary dictionaryWithObject:@"two" forKey:@"one"];
+    notification.userInfo = infoDict;
+
+}
+
+UIApplication *app = [UIApplication sharedApplication];
+[app scheduleLocalNotification:notification];
+</code></pre>
+
+<pre><code>以上就是一个动作的事件的注册过程，其中用到了`UIMutableUserNotificationAction`和`UIMutableUserNotificationCategory`具体用法可参考官方文档   
+[UIMutableUserNotificationAction](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationAction_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationAction)   
+[UIMutableUserNotificationCategory](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIMutableUserNotificationCategory_class/index.html#//apple_ref/occ/cl/UIMutableUserNotificationCategory)   
+这两个类，注册完之后，特别需要主意，要在本地通知中进行设置，否则没有效果。值为注册时category指定的ID   
+</code></pre>
+
+<p>notification.category = @&ldquo;INVITE_CATEGORY&rdquo;;
+<code>
+这样当我们收到通知，下拉一下就可看到动作事件，有事件，就有事件的回调函数
+</code>objective-c
+- (void)application:(UIApplication <em>)application handleActionWithIdentifier:(NSString </em>)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler
+{
+    if ([identifier isEqualToString:@&ldquo;accept_action&rdquo;]) {
+        NSLog(@&ldquo;&mdash;&ndash;accept action&rdquo;);
+    } else if ([identifier isEqualToString:@&ldquo;cancel_action&rdquo;]) {
+        NSLog(@&ldquo;&mdash;&ndash;cancel action&rdquo;);
+    }</p>
+
+<pre><code>if (completionHandler) {
+    completionHandler();
+}
+</code></pre>
+
+<p>}
+<code>``
+通过id我们就可以区分不同的动作，然后对其进行相应处理，最后调用</code>completionHandler();`。</p>
+
+<h3>参考</h3>
+
+<p><a href="https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW26">官方文档:Local and Remote Notification Programming Guide</a> <br/>
+<a href="http://www.cocoachina.com/ios/20141009/9857.html">iOS 8创建交互式通知</a></p>
+
+<h3>源码</h3>
+
+<p><a href="https://github.com/ypengju/IOSTest/tree/master/LocalNotification">https://github.com/ypengju/IOSTest/tree/master/LocalNotification</a></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IOS--生命周期]]></title>
+    <link href="http://ypengju.github.io/blog/2014/09/26/ios-sheng-ming-zhou-qi/"/>
+    <updated>2014-09-26T14:23:43+08:00</updated>
+    <id>http://ypengju.github.io/blog/2014/09/26/ios-sheng-ming-zhou-qi</id>
+    <content type="html"><![CDATA[<p>这篇主要总结一下学习整个应用的生命周期和视图的生命周期过程</p>
+
+<h2>应用的生命周期：</h2>
+
+<p>应用的生命周期处理方法都是在AppDelegate类中，在不同的状态转换时，回调不同的方法。</p>
+
+<h3>首先看下应用的5个状态   <!-- more --></h3>
+
+<ul>
+<li>Not Running&ensp;&ensp;&ensp;(非运行状态)&ensp;&ensp;&ensp;应用没有启动或者被系统干掉时</li>
+<li>Inactive&ensp;&ensp;&ensp;(前台非活动状态)&ensp;&ensp;&ensp;应用正在进入前台状态，但是不能接受事件处理</li>
+<li>Active&ensp;&ensp;&ensp;(前台活动状态)&ensp;&ensp;&ensp;应用进入前台状态，可以接受事件处理</li>
+<li>Background&ensp;&ensp;&ensp;(后台状态)&ensp;&ensp;&ensp;应用进入后台</li>
+<li>Suspended&ensp;&ensp;&ensp;(挂起状态)&ensp;&ensp;&ensp;不能执行代码，如果系统内存不够，此应用会被系统干掉</li>
+</ul>
+
+
+<p>在上边5个不同状态切换过程中，应用程序会调用不同的回调函数，这些函数都定义UIApplicationDelegate中，比如一些will和did函数来分别处理过程前和过程后调用。 <br/>
+为了方便看到整个调用过程，我在系统默认生成的AppDelegate中的每个方法中加入了一条打印语句，方便清楚的看到整个调用过程。</p>
+
+<h4>应用从启动到显示（Not Running &ndash;> Active）</h4>
+
+<p>这个过程中会从NotRunning->Inactive，再从Inactive->Active。两个过程中分别会调用两个不同的回调函数，didFinishLaunchingWithOptions和applicationDidBecomeActive函数。 <br/>
+didFinishLaunchingWithOptions   应用启动并进行初始化时会调用此函数，实例化根视图控制器 <br/>
+applicationDidBecomeActive 应用进入前台并处于激活状态时会调用此函数，这个阶段可恢复UI状态，对UI进行刷新 <br/>
+两个方法都会发出Notification通知。</p>
+
+<h4>点击Home键或被中断</h4>
+
+<p>当点击Home键或着由于电话等被中断，应用程序会进入后台，这个过程中分为两种情况，一种是在后台还可继续运行或挂起，一种是在后台不能运行或挂起，这两个过程中会调用不同的方法。这个是由XXXInfo.plist文件中的Application does not run in background属性进行控制的，默认是没有这个设置的，如果需要，可添加进来。</p>
+
+<h5>可运行挂起（Active &ndash;> Suspended）</h5>
+
+<p>这个过程是从Active->Inactive->Background->Suspended,此时Application does not run in background属性值为NO。 <br/>
+Active->Inactive 调用applicationWillResignActive函数，在这个阶段可以暂停任务，暂停游戏等。 <br/>
+Inactive->Background<br/>
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等</p>
+
+<h5>不可运行状态（Active &ndash;> Not Running）</h5>
+
+<p>这个过程是从Active->Inactive->Background->Suspended->Not Running,此时Application does not run in background属性值为YES。 <br/>
+Active->Inactive   <br/>
+Inactive->Background<br/>
+Background->Suspended 调用applicationDidEnterBackground函数，用与释放资源，保存状态等
+Suspended->Not Running 调用applicationWillTerminate函数，用于保存数据等。</p>
+
+<p>如果双击Home键，系统进入多任务栏(Activie &ndash;> Inactive)，此时不管Application does not run in background设置YES或者NO，都会调用applicationWillResignActive函数。<br/>
+如果点击当前应用，调用applicationDidBecomeActive函数，进入Active激活状态 <br/>
+若果手动删除应用，会依次调用applicationDidEnterBackground和applicationWillTerminate函数，不同的是当Application does not run in background属性值为YES时，applicationDidEnterBackground调用<code>一次</code>，当属性值为NO时，applicationDidEnterBackground调用<code>两次</code>。</p>
+
+<h4>挂起重新运行场景(Suspende &ndash;> Active)</h4>
+
+<p>这个过程是从Suspended->Background->Inactive->Active
+Suspended->Background
+Background->Inactive 调用applicationWillEnterForeground函数。
+Inactive->Active 调用applicationDidBecomeActive函数。
+此时Application does not run in background属性设置为NO，如果设置为YES，这些方法不会调用。</p>
+
+<p>以上就是整个应用的运行状态切换及在不同阶段调用的不同回调函数。</p>
+
+<h2>视图生命周期</h2>
+
+<p>在视图的不同生命周期中，视图控制器会回调不同的方法。 <br/>
+首先视图被创建时，会调用viewDidLoad函数，这个时候视图并未出现，在该方法中通常用来初始化。此方法在整个视图生命周期中只调用一次。 <br/>
+viewWillAppear 在视图可见之前调用 <br/>
+viewDidAppear  在视图可见之后调用 <br/>
+viewWillDisappear  在视图不可见之前调用 <br/>
+viewDidDisAppear   在视图不可见之后调用 <br/>
+这4个方法在整个视图生命周期中可能会被多次调用，比如可见前加载，不可见后释放等，可以有效控制内存使用 <br/>
+didReceiveMemoryWarning  内存警告时用于释放内存</p>
+]]></content>
+  </entry>
+  
+</feed>

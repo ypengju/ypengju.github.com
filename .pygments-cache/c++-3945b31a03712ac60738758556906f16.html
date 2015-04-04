@@ -1,0 +1,20 @@
+<div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &quot;lua.hpp&quot;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    
+    <span class="c1">//1. 初始化Lua虚拟机，初始话新lua栈</span>
+    <span class="n">lua_State</span> <span class="o">*</span><span class="n">lua_state</span><span class="p">;</span>
+    <span class="n">lua_state</span> <span class="o">=</span> <span class="n">luaL_newstate</span><span class="p">();</span>
+    
+    <span class="c1">//2. 打开所有的标准库</span>
+    <span class="n">luaL_openlibs</span><span class="p">(</span><span class="n">lua_state</span><span class="p">);</span>
+    
+    <span class="c1">//3、运行hello.lua脚本</span>
+    <span class="n">luaL_dofile</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="s">&quot;hello.lua&quot;</span><span class="p">);</span>
+    
+    <span class="c1">//4. 关闭Lua虚拟机</span>
+    <span class="n">lua_close</span><span class="p">(</span><span class="n">lua_state</span><span class="p">);</span>
+    
+<span class="p">}</span>
+</pre></div>

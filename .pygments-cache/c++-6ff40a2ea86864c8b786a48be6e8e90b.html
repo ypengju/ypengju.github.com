@@ -1,0 +1,43 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">GLViewProtocol</span><span class="o">::</span><span class="n">updateDesignResolutionSize</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">_screenSize</span><span class="p">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="mi">0</span>
+        <span class="o">&amp;&amp;</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">width</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">height</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_scaleX</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">width</span> <span class="o">/</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+        <span class="n">_scaleY</span> <span class="o">=</span> <span class="p">(</span><span class="kt">float</span><span class="p">)</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">height</span> <span class="o">/</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">_resolutionPolicy</span> <span class="o">==</span> <span class="n">ResolutionPolicy</span><span class="o">::</span><span class="n">NO_BORDER</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">_scaleX</span> <span class="o">=</span> <span class="n">_scaleY</span> <span class="o">=</span> <span class="n">MAX</span><span class="p">(</span><span class="n">_scaleX</span><span class="p">,</span> <span class="n">_scaleY</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">_resolutionPolicy</span> <span class="o">==</span> <span class="n">ResolutionPolicy</span><span class="o">::</span><span class="n">SHOW_ALL</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">_scaleX</span> <span class="o">=</span> <span class="n">_scaleY</span> <span class="o">=</span> <span class="n">MIN</span><span class="p">(</span><span class="n">_scaleX</span><span class="p">,</span> <span class="n">_scaleY</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">_resolutionPolicy</span> <span class="o">==</span> <span class="n">ResolutionPolicy</span><span class="o">::</span><span class="n">FIXED_HEIGHT</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_scaleX</span> <span class="o">=</span> <span class="n">_scaleY</span><span class="p">;</span>
+            <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">width</span> <span class="o">=</span> <span class="n">ceilf</span><span class="p">(</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="n">_scaleX</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span> <span class="n">_resolutionPolicy</span> <span class="o">==</span> <span class="n">ResolutionPolicy</span><span class="o">::</span><span class="n">FIXED_WIDTH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_scaleY</span> <span class="o">=</span> <span class="n">_scaleX</span><span class="p">;</span>
+            <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">ceilf</span><span class="p">(</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="n">_scaleY</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// calculate the rect of viewport</span>
+        <span class="kt">float</span> <span class="n">viewPortW</span> <span class="o">=</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">_scaleX</span><span class="p">;</span>
+        <span class="kt">float</span> <span class="n">viewPortH</span> <span class="o">=</span> <span class="n">_designResolutionSize</span><span class="p">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">_scaleY</span><span class="p">;</span>
+        
+        <span class="c1">//将显示区域在屏幕中居中显示</span>
+        <span class="n">_viewPortRect</span><span class="p">.</span><span class="n">setRect</span><span class="p">((</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">width</span> <span class="o">-</span> <span class="n">viewPortW</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">_screenSize</span><span class="p">.</span><span class="n">height</span> <span class="o">-</span> <span class="n">viewPortH</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">viewPortW</span><span class="p">,</span> <span class="n">viewPortH</span><span class="p">);</span>
+        
+        <span class="c1">// reset director&#39;s member variables to fit visible rect</span>
+        <span class="k">auto</span> <span class="n">director</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">();</span>
+        <span class="n">director</span><span class="o">-&gt;</span><span class="n">_winSizeInPoints</span> <span class="o">=</span> <span class="n">getDesignResolutionSize</span><span class="p">();</span>
+        <span class="n">director</span><span class="o">-&gt;</span><span class="n">createStatsLabel</span><span class="p">();</span>
+        <span class="n">director</span><span class="o">-&gt;</span><span class="n">setGLDefaultValues</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

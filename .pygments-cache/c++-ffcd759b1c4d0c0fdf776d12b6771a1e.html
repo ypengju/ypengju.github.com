@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">setDirty</span><span class="p">(</span><span class="k">const</span> <span class="n">EventListener</span><span class="o">::</span><span class="n">ListenerID</span><span class="o">&amp;</span> <span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span> <span class="n">flag</span><span class="p">)</span>
+<span class="p">{</span>    
+    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">==</span> <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">_priorityDirtyFlagMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">flag</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">flag</span> <span class="o">|</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+        <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span> <span class="o">=</span> <span class="p">(</span><span class="n">DirtyFlag</span><span class="p">)</span> <span class="n">ret</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

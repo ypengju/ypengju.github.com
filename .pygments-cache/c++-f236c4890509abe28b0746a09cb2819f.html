@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListenerWithFixedPriority</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fixedPriority</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="s">&quot;Invalid parameters.&quot;</span><span class="p">);</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(),</span> <span class="s">&quot;The listener has been registered.&quot;</span><span class="p">);</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">fixedPriority</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;0 priority is forbidden for fixed priority since it&#39;s used for scene graph based priority.&quot;</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">checkAvailable</span><span class="p">())</span>
+        <span class="k">return</span><span class="p">;</span>
+    
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setAssociatedNode</span><span class="p">(</span><span class="k">nullptr</span><span class="p">);</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setFixedPriority</span><span class="p">(</span><span class="n">fixedPriority</span><span class="p">);</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setRegistered</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setPaused</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span>
+
+    <span class="n">addEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

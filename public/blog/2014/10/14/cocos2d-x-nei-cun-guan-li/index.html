@@ -1,0 +1,843 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Cocos2d-x &#8211; 内存管理 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="cocos2d-x采用引用计数来对内存进行管理。在2.X版本中，所有类都继承CCObject类来完成内存的管理，而在3.X版本中，cocos2d-x将管理引用计数的内单独了处理命名为Ref，在这个类中对引用计数进行操作。 Ref.h1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/10/14/cocos2d-x-nei-cun-guan-li">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Cocos2d-x &#8211; 内存管理</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-14T22:13:24+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:13 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>cocos2d-x采用引用计数来对内存进行管理。在2.X版本中，所有类都继承CCObject类来完成内存的管理，而在3.X版本中，cocos2d-x将管理引用计数的内单独了处理命名为Ref，在这个类中对引用计数进行操作。<!-- more --></p>
+
+<figure class='code'><figcaption><span>Ref.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">Ref</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">retain</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">release</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">Ref</span><span class="o">*</span> <span class="nf">autorelease</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">getReferenceCount</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">protected</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">Ref</span><span class="p">();</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">virtual</span> <span class="o">~</span><span class="n">Ref</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">protected</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">_referenceCount</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">friend</span> <span class="k">class</span> <span class="nc">AutoreleasePool</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>去掉跟脚本有关的东西，其实就定义了一个引用计数变量<code>_referenceCount</code>，以及操作引用计数的retain()和release()方法和自动管理内存的autorelease()方法。所有引擎的提供的控件都提供了一个静态的create()方法，在内部实现了autorelease()调用，所以我们在调用Sprite::create()方法生成精灵时，并不需要对其内存释放进行过多考虑。引擎内部实现了引用计数加减操作，来完成对内存的释放工作。看着几个方法的内部实现</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">Ref</span><span class="o">::</span><span class="n">Ref</span><span class="p">()</span>
+</span><span class='line'><span class="o">:</span> <span class="n">_referenceCount</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// when the Ref is created, the reference count of it is 1</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="cp">#if CC_ENABLE_SCRIPT_BINDING</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uObjectCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">_luaID</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">_ID</span> <span class="o">=</span> <span class="o">++</span><span class="n">uObjectCount</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">_scriptObject</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+</span><span class='line'>    <span class="n">trackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Ref</span><span class="o">::~</span><span class="n">Ref</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="cp">#if CC_ENABLE_SCRIPT_BINDING</span>
+</span><span class='line'>    <span class="c1">// if the object is referenced by Lua engine, remove it</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_luaID</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ScriptEngineManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getScriptEngine</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">removeScriptObjectByObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ScriptEngineProtocol</span><span class="o">*</span> <span class="n">pEngine</span> <span class="o">=</span> <span class="n">ScriptEngineManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getScriptEngine</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">pEngine</span> <span class="o">!=</span> <span class="k">nullptr</span> <span class="o">&amp;&amp;</span> <span class="n">pEngine</span><span class="o">-&gt;</span><span class="n">getScriptType</span><span class="p">()</span> <span class="o">==</span> <span class="n">kScriptTypeJavascript</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">pEngine</span><span class="o">-&gt;</span><span class="n">removeScriptObjectByObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_referenceCount</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">untrackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">Ref</span><span class="o">::</span><span class="n">retain</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">_referenceCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;reference count should greater than 0&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="o">++</span><span class="n">_referenceCount</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">Ref</span><span class="o">::</span><span class="n">release</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">_referenceCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;reference count should greater than 0&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="o">--</span><span class="n">_referenceCount</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_referenceCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'>        <span class="k">auto</span> <span class="n">poolManager</span> <span class="o">=</span> <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">();</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">poolManager</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isClearing</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">poolManager</span><span class="o">-&gt;</span><span class="n">isObjectInPools</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">CCASSERT</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;The reference shouldn&#39;t be 0 because it is still in autorelease pool.&quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+</span><span class='line'>        <span class="n">untrackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>        <span class="k">delete</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Ref</span><span class="o">*</span> <span class="n">Ref</span><span class="o">::</span><span class="n">autorelease</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>特别注意构造函数中，对引用计数赋值为1，所以当我们new一个对象的时候，默认引用计数就是1了。</li>
+<li>retain()方法对引用计数加一</li>
+<li>release()方法对引用计数减一，当引用计数为0时，delete掉</li>
+<li>autorelease()将引用添加到了管理池中，用引擎进行管理</li>
+</ul>
+
+
+<p>前两个方法比较简单直接，只是对引用计数的加减运算，现在来看下引擎是怎么进行自动管理的</p>
+
+<figure class='code'><figcaption><span>PoolManager.h</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">PoolManager</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">PoolManager</span><span class="o">*</span> <span class="n">getInstance</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="kt">void</span> <span class="nf">destroyInstance</span><span class="p">();</span>
+</span><span class='line'>    <span class="n">AutoreleasePool</span> <span class="o">*</span><span class="n">getCurrentPool</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">isObjectInPools</span><span class="p">(</span><span class="n">Ref</span><span class="o">*</span> <span class="n">obj</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">friend</span> <span class="k">class</span> <span class="nc">AutoreleasePool</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">PoolManager</span><span class="p">();</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">PoolManager</span><span class="p">();</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">push</span><span class="p">(</span><span class="n">AutoreleasePool</span> <span class="o">*</span><span class="n">pool</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">pop</span><span class="p">();</span>
+</span><span class='line'>    <span class="k">static</span> <span class="n">PoolManager</span><span class="o">*</span> <span class="n">s_singleInstance</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AutoreleasePool</span><span class="o">*&gt;</span> <span class="n">_releasePoolStack</span><span class="p">;</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>PoolManager是一个单例，其内部定义了一个保存<code>AutoreleasePool *</code>类型的栈，继续看AutoreleasePool</p>
+
+<figure class='code'><figcaption><span>AutoreleasePool</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">AutoreleasePool</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * @warn Don&#39;t create an auto release pool in heap, create it in stack.</span>
+</span><span class='line'><span class="cm">     * @js NA</span>
+</span><span class='line'><span class="cm">     * @lua NA</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="n">AutoreleasePool</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Create an autorelease pool with specific name. This name is useful for debugging.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="n">AutoreleasePool</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * @js NA</span>
+</span><span class='line'><span class="cm">     * @lua NA</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="o">~</span><span class="n">AutoreleasePool</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Add a given object to this pool.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * The same object may be added several times to the same pool; When the</span>
+</span><span class='line'><span class="cm">     * pool is destructed, the object&#39;s Ref::release() method will be called</span>
+</span><span class='line'><span class="cm">     * for each time it was added.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * @param object    The object to add to the pool.</span>
+</span><span class='line'><span class="cm">     * @js NA</span>
+</span><span class='line'><span class="cm">     * @lua NA</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">addObject</span><span class="p">(</span><span class="n">Ref</span> <span class="o">*</span><span class="n">object</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Clear the autorelease pool.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * Ref::release() will be called for each time the managed object is</span>
+</span><span class='line'><span class="cm">     * added to the pool.</span>
+</span><span class='line'><span class="cm">     * @js NA</span>
+</span><span class='line'><span class="cm">     * @lua NA</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">clear</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Whether the pool is doing `clear` operation.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">isClearing</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_isClearing</span><span class="p">;</span> <span class="p">};</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Checks whether the pool contains the specified object.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">contains</span><span class="p">(</span><span class="n">Ref</span><span class="o">*</span> <span class="n">object</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * Dump the objects that are put into autorelease pool. It is used for debugging.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * The result will look like:</span>
+</span><span class='line'><span class="cm">     * Object pointer address     object id     reference count</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="nf">dump</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span><span class="o">:</span>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     * The underlying array of object managed by the pool.</span>
+</span><span class='line'><span class="cm">     *</span>
+</span><span class='line'><span class="cm">     * Although Array retains the object once when an object is added, proper</span>
+</span><span class='line'><span class="cm">     * Ref::release() is called outside the array to make sure that the pool</span>
+</span><span class='line'><span class="cm">     * does not affect the managed object&#39;s reference count. So an object can</span>
+</span><span class='line'><span class="cm">     * be destructed properly by calling Ref::release() even if the object</span>
+</span><span class='line'><span class="cm">     * is in the pool.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Ref</span><span class="o">*&gt;</span> <span class="n">_managedObjectArray</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_name</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'>    <span class="cm">/**</span>
+</span><span class='line'><span class="cm">     *  The flag for checking whether the pool is doing `clear` operation.</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>    <span class="kt">bool</span> <span class="n">_isClearing</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>也很简单清晰，内部管理着一个存储<code>Ref *</code>类型的容器，所以当调用autorelease()方法时，引擎是将调用对象添加到PoolManager中的<em>releasePoolStack栈最后一个AutoreleasePool的</em>managedObjectArray容器中。其他几个方法就是对这个容器的操作了。</p>
+
+<p>这里引用官方文档的一段说明，更清晰的说明这个工作过程。  <a href="http://cn.cocos2d-x.org/article/index?type=cocos2d-x&amp;url=/doc/cocos-docs-master/manual/framework/native/v2/memory/refcount-autoreleasepool/zh.md">《官方文档》</a><br/>
+CCAutoreleasePool不能被用在多线程中，所以假如你游戏需要网络线程，请仅仅在网络线程中接收数据，改变状态标志，不要这个线程里面调用cocos2d接口</p>
+
+<p>CCAutoreleasePool的逻辑是，当你调用object->autorelease()，object就被放到自动释放池中。自动释放池能够帮助你保持这个object的生命周期，直到当前消息循环的结束。在这个消息循环的最后，假如这个object没有被其他类或容器retain过，那么它将自动释放掉。例如，layer->addChild(sprite)，这个sprite增加到这个layer的子节点列表中，他的声明周期就会持续到这个layer释放的时候，而不会在当前消息循环的最后被释放掉。 <br/>
+这就是为什么你不能在网络线层中管理CCObject生命周期，因为在每一个UI线程的最后 ，自动释放对象将会被删除，所以当你调用这些被删掉的对象的时候，你就会遇到crash。 <br/>
+简而言之，这只有两种情况你需要调用release（）方法</p>
+
+<ol>
+<li>你new一个cocos2d::CCObject子类的对象，例如CCSprite，CCLayer等。</li>
+<li>你得到cocos2d::CCObject子类对象的指针，然后在你的代码中调用过retain方法。</li>
+</ol>
+
+
+<p>上边可以看到如何讲一个对象添加到自动释放池中，下边来看看引擎何时进行释放。
+在CCDirector.cpp文件中，可以找到下边方法</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">DisplayLinkDirector</span><span class="o">::</span><span class="n">mainLoop</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">_purgeDirectorInNextLoop</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_purgeDirectorInNextLoop</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">purgeDirector</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">_invalid</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">drawScene</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// release the objects</span>
+</span><span class='line'>        <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以看到，在绘制后调用了clear()方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="kt">void</span> <span class="n">AutoreleasePool</span><span class="o">::</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'>    <span class="n">_isClearing</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'>    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="nl">obj</span> <span class="p">:</span> <span class="n">_managedObjectArray</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">release</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="n">_managedObjectArray</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'>    <span class="n">_isClearing</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+在clear()方法中会调用release()方法对容器中所有引用对象的引用计数减一，然后清空容器。 <br/>
+以一个简单的例子来说明下我自己的理解，在HelloWorld::init()方法中生成一个精灵。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">bool</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">init</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="c1">//////////////////////////////</span>
+</span><span class='line'>    <span class="c1">// 1. super init first</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">Layer</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">Sprite</span><span class="o">*</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">s</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">addChild</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;---- count before %d&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">getReferenceCount</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">this</span><span class="o">-&gt;</span><span class="n">scheduleUpdate</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">void</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">update</span><span class="p">(</span><span class="kt">float</span> <span class="n">dt</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">Ref</span> <span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">getChildByTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">log</span><span class="p">(</span><span class="s">&quot;-- after count %d&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">getReferenceCount</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li>使用create方法创建精灵，此时s引用计数为1，并被添加到<code>AutoreleasePool</code>中</li>
+<li>addChild(s)将s添加到HelloWorld层，此时引用计数加一，为2</li>
+<li>然后调到mainLoop()函数，调用drawScene()进行绘制，此时会调到HelloWorld::update()函数，打印引用计数为2</li>
+<li>绘制之后，对<code>AutoreleasePool</code>中对象的引用计数减一，并清空<code>AutoreleasePool</code></li>
+<li>当下一帧调用到update()函数，打印的引用计数就为1了，当HelloWorld层从内从中移除时，s也会被移除。  <br/>
+可以看到，在操作<code>AutoreleasePool</code>时，都是从<code>PoolManager</code>进行调用的，那什么时候在<code>PoolManager</code>的<code>_releasePoolStack</code>队列中添加<code>AutoreleasePool *</code>的？</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="n">AutoreleasePool</span><span class="o">::</span><span class="n">AutoreleasePool</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'><span class="o">:</span> <span class="n">_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+</span><span class='line'><span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+</span><span class='line'><span class="p">,</span> <span class="n">_isClearing</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+</span><span class='line'><span class="cp">#endif</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_managedObjectArray</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">AutoreleasePool</span><span class="o">::~</span><span class="n">AutoreleasePool</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">CCLOGINFO</span><span class="p">(</span><span class="s">&quot;deallocing AutoreleasePool: %p&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">clear</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">pop</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+这个可以在<code>AutoreleasePool</code>的构造函数中看到，将自身添加到<code>PoolManager</code>的队列中，在析构的时候pop掉。</p>
+
+<h3>参考</h3>
+
+<ol>
+<li><a href="http://cn.cocos2d-x.org/tutorial/show?id=1669">总结Cocos2d-x内存管理机制</a></li>
+<li><a href="http://cn.cocos2d-x.org/article/index?type=cocos2d-x&amp;url=/doc/cocos-docs-master/manual/framework/native/v2/memory/refcount-autoreleasepool/zh.md">Cocos2d-x中的引用计数（Reference Count）和自动释放池（AutoReleasePool）</a></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-14T22:13:24+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:13 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/cocos2d-x/'>cocos2d-x</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng/" title="Previous Post: Lua -- 面向对象编程">&laquo; Lua &#8211; 面向对象编程</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/19/cocos2d-x-xuan-ran-liu-cheng/" title="Next Post: cocos2d-x -- 渲染流程">cocos2d-x &#8211; 渲染流程 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

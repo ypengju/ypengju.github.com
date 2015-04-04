@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListenerWithSceneGraphPriority</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">,</span> <span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">listener</span> <span class="o">&amp;&amp;</span> <span class="n">node</span><span class="p">,</span> <span class="s">&quot;Invalid parameters.&quot;</span><span class="p">);</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">isRegistered</span><span class="p">(),</span> <span class="s">&quot;The listener has been registered.&quot;</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">checkAvailable</span><span class="p">())</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setAssociatedNode</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setFixedPriority</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">setRegistered</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+    <span class="n">addEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

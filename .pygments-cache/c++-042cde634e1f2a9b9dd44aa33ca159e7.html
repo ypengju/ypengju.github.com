@@ -1,0 +1,69 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">()</span>
+<span class="p">{</span>    
+    <span class="n">HttpRequest</span> <span class="o">*</span><span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    
+    <span class="k">auto</span> <span class="n">scheduler</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getScheduler</span><span class="p">();</span>
+    
+    <span class="k">while</span> <span class="p">(</span><span class="nb">true</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">s_need_quit</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// step 1: send http request if the requestQueue isn&#39;t empty</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        
+        <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+        
+        <span class="c1">//Get request task from queue</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">s_requestQueue</span><span class="o">-&gt;</span><span class="n">empty</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="n">request</span> <span class="o">=</span> <span class="n">s_requestQueue</span><span class="o">-&gt;</span><span class="n">at</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+            <span class="n">s_requestQueue</span><span class="o">-&gt;</span><span class="n">erase</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+        <span class="p">}</span>
+        
+        <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">request</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">// Wait for http request tasks from main thread</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">unique_lock</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span> <span class="n">lk</span><span class="p">(</span><span class="n">s_SleepMutex</span><span class="p">);</span> 
+            <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lk</span><span class="p">);</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="c1">// step 2: libcurl sync access</span>
+        
+        <span class="c1">// Create a HttpResponse object, the default setting is http access failed</span>
+        <span class="n">HttpResponse</span> <span class="o">*</span><span class="n">response</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HttpResponse</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+        
+        <span class="n">processResponse</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">s_errorBuffer</span><span class="p">);</span>
+        
+
+        <span class="c1">// add response packet into queue</span>
+        <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+        <span class="n">s_responseQueue</span><span class="o">-&gt;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">response</span><span class="p">);</span>
+        <span class="n">s_responseQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_pHttpClient</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">scheduler</span><span class="o">-&gt;</span><span class="n">performFunctionInCocosThread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">dispatchResponseCallbacks</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// cleanup: if worker thread received quit signal, clean up un-completed request queue</span>
+    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+    <span class="n">s_requestQueue</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+    <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+    
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">delete</span> <span class="n">s_requestQueue</span><span class="p">;</span>
+        <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="k">delete</span> <span class="n">s_responseQueue</span><span class="p">;</span>
+        <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+<span class="p">}</span>
+</pre></div>

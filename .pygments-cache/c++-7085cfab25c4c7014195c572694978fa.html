@@ -1,0 +1,25 @@
+<div class="highlight"><pre><span class="kt">bool</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">init</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">//////////////////////////////</span>
+    <span class="c1">// 1. super init first</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">Layer</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+ 
+    <span class="n">Sprite</span><span class="o">*</span> <span class="n">s</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
+    <span class="n">s</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">addChild</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;---- count before %d&quot;</span><span class="p">,</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">getReferenceCount</span><span class="p">());</span>
+    
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">scheduleUpdate</span><span class="p">();</span>
+    
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">update</span><span class="p">(</span><span class="kt">float</span> <span class="n">dt</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">Ref</span> <span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="k">this</span><span class="o">-&gt;</span><span class="n">getChildByTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;-- after count %d&quot;</span><span class="p">,</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">getReferenceCount</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,22 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">ScriptEngineManager</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="o">~</span><span class="n">ScriptEngineManager</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="n">ScriptEngineProtocol</span><span class="o">*</span> <span class="nf">getScriptEngine</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_scriptEngine</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">void</span> <span class="nf">setScriptEngine</span><span class="p">(</span><span class="n">ScriptEngineProtocol</span> <span class="o">*</span><span class="n">scriptEngine</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">removeScriptEngine</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+    <span class="k">static</span> <span class="n">ScriptEngineManager</span><span class="o">*</span> <span class="nf">getInstance</span><span class="p">();</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">destroyInstance</span><span class="p">();</span>
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">sendNodeEventToJS</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">sendNodeEventToJSExtended</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">sendNodeEventToLua</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="kt">int</span> <span class="n">action</span><span class="p">);</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">ScriptEngineManager</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+    <span class="o">:</span> <span class="n">_scriptEngine</span><span class="p">(</span><span class="k">nullptr</span><span class="p">)</span>
+    <span class="p">{</span>
+    <span class="p">}</span>
+    <span class="n">ScriptEngineProtocol</span> <span class="o">*</span><span class="n">_scriptEngine</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

@@ -1,0 +1,42 @@
+<div class="highlight"><pre><span class="kd">local</span> <span class="n">A</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">function</span> <span class="nf">A</span><span class="p">:</span><span class="n">hello</span><span class="p">(</span>  <span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">A hello method &quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="n">B</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">function</span> <span class="nf">B</span><span class="p">:</span><span class="n">world</span><span class="p">(</span>  <span class="p">)</span>
+	<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">B world method &quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="k">function</span> <span class="nf">createClass</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span>
+	<span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="kd">local</span> <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+
+	<span class="kd">local</span> <span class="k">function</span> <span class="nf">search</span><span class="p">(</span> <span class="n">k</span><span class="p">,</span> <span class="n">parents</span> <span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">parents</span> <span class="k">do</span>
+			<span class="kd">local</span> <span class="n">func</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">func</span> <span class="k">then</span>
+				<span class="k">return</span> <span class="n">func</span>
+			<span class="k">end</span>
+		<span class="k">end</span>
+	<span class="k">end</span>
+
+	<span class="nb">setmetatable</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="p">{</span><span class="n">__index</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">search</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
+	<span class="k">end</span><span class="p">})</span>
+
+	<span class="n">c</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">c</span>
+
+	<span class="k">function</span> <span class="nf">c</span><span class="p">:</span><span class="n">new</span><span class="p">(</span> <span class="n">o</span> <span class="p">)</span>
+		<span class="n">o</span> <span class="o">=</span> <span class="n">o</span> <span class="ow">or</span> <span class="p">{}</span>
+		<span class="nb">setmetatable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">o</span>
+	<span class="k">end</span>
+	<span class="k">return</span> <span class="n">c</span>
+<span class="k">end</span>
+
+<span class="n">C</span> <span class="o">=</span> <span class="n">createClass</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">c1</span> <span class="o">=</span> <span class="n">C</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+<span class="n">c1</span><span class="p">:</span><span class="n">hello</span><span class="p">()</span> <span class="c1">-- A hello method </span>
+<span class="n">c1</span><span class="p">:</span><span class="n">world</span><span class="p">()</span> <span class="c1">-- B world method </span>
+</pre></div>

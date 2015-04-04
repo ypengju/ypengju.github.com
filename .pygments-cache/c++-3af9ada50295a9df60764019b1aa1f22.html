@@ -1,0 +1,18 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">Ref</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">retain</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">release</span><span class="p">();</span>
+    <span class="n">Ref</span><span class="o">*</span> <span class="nf">autorelease</span><span class="p">();</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">getReferenceCount</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="k">protected</span><span class="o">:</span>
+    <span class="n">Ref</span><span class="p">();</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">Ref</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">_referenceCount</span><span class="p">;</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">AutoreleasePool</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="n">Document</span> <span class="n">docWriteStr</span><span class="p">;</span>
+<span class="n">docWriteStr</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+<span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">author</span><span class="p">;</span>
+<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">sprintf</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="s">&quot;%s %s&quot;</span><span class="p">,</span> <span class="s">&quot;Milo&quot;</span><span class="p">,</span> <span class="s">&quot;Yip&quot;</span><span class="p">);</span> <span class="c1">// dynamically created string.</span>
+<span class="n">author</span><span class="p">.</span><span class="n">SetString</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">docWriteStr</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+<span class="n">memset</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">buffer</span><span class="p">));</span>
+<span class="n">docWriteStr</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;author&quot;</span><span class="p">,</span> <span class="n">author</span><span class="p">,</span> <span class="n">docWriteStr</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+<span class="n">FileStream</span> <span class="nf">fs</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+<span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writerStr</span><span class="p">(</span><span class="n">fs</span><span class="p">);</span>
+<span class="n">docWriteStr</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writerStr</span><span class="p">);</span>  
+</pre></div>

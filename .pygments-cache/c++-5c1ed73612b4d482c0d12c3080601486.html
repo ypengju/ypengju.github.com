@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addEventListener</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_inDispatch</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">forceAddEventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">_toAddedListeners</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">listener</span><span class="o">-&gt;</span><span class="n">retain</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>

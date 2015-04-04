@@ -1,0 +1,462 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lua &#8211; Stack - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：Lua教程: C++嵌入Lua脚本(1)，我也是按照这篇博文进行配置， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/11/11/lua-stack">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lua &#8211; Stack</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-11-11T21:32:01+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:32 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>c++调用lua中一个很重要的概念就是栈，它是c++与lua交互的基础，所有的调用都是在这个栈上来完成的，所以我想在这片文章中记录下我对栈调用的一些理解。之前有读过子龙山人的关于lua文章，这里使用他的配置，具体见这片博文：<a href="http://4gamers.cn/blog/2014/06/28/embeded-lua-tutorial-one/">Lua教程: C++嵌入Lua脚本(1)</a>，我也是按照这篇博文进行配置，使用的lua版本为5.2.3。<!-- more --> <br/>
+看lua的api可以知道，lua库提供的方法主要分为三个类：</p>
+
+<ul>
+<li>Lua functions     &ndash;lua代码中使用的函数库</li>
+<li>C API             &ndash;c中使用的函数库</li>
+<li>auxiliary library &ndash;辅助库，是对c函数的包装</li>
+</ul>
+
+
+<p>先来看一个简单的例子，看c++如何调用lua文件</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="cp">#include &lt;iostream&gt;</span>
+</span><span class='line'><span class="cp">#include &quot;lua.hpp&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//1. 初始化Lua虚拟机，初始话新lua栈</span>
+</span><span class='line'>    <span class="n">lua_State</span> <span class="o">*</span><span class="n">lua_state</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">lua_state</span> <span class="o">=</span> <span class="n">luaL_newstate</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//2. 打开所有的标准库</span>
+</span><span class='line'>    <span class="n">luaL_openlibs</span><span class="p">(</span><span class="n">lua_state</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//3、运行hello.lua脚本</span>
+</span><span class='line'>    <span class="n">luaL_dofile</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="s">&quot;hello.lua&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//4. 关闭Lua虚拟机</span>
+</span><span class='line'>    <span class="n">lua_close</span><span class="p">(</span><span class="n">lua_state</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+首先在使用之前需要导入头文件，这里导入lua.hpp，同时导入如下三个类库：</p>
+
+<figure class='code'><figcaption><span>lua.hpp</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">extern</span> <span class="s">&quot;C&quot;</span> <span class="p">{</span>
+</span><span class='line'><span class="cp">#include &quot;lua.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;lualib.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;lauxlib.h&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+lua.h和lualib.h包含以lua<em>为前缀的C API库，lauxlib.h包含以luaL</em>为前缀的辅助类库。</p>
+
+<ol>
+<li>首先初始化lua虚拟机，也是就初始化一个新的调用栈</li>
+<li>打开所有的标准库，也可以根据需要只导入需要的库</li>
+<li>加载和运行lua文件</li>
+<li>当调用完成后，需要关掉栈</li>
+</ol>
+
+
+<figure class='code'><figcaption><span>hello.lua</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">hello world&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>此时运行程序便可以看到调用lua文件打印的hello world。 <br/>
+像上边程序一样，我们在进行c++调用lua之前都会创建一个新的栈，然后所有的操作都是通过栈来进行的，为什么需要这样做？ <br/>
+因为lua是动态语言，c++是静态语言，lua的变量可能是任意一种类型，无法直接与c变量对应起来，而且lua是一种嵌入式语言，它不仅可以嵌套在c++中使用，也可能会嵌套在其他语言中使用，那这种对应关系就更复杂了。所以就采用了这种虚拟栈的交互方式，当c++和lua相互调用的时候，先将变量压入栈中，然后由另一端从栈中取出，然后转换成对应类型进行处理，所以lua提供了如下这些将不同类型压入栈的操作：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">void</span> <span class="nf">lua_pushnil</span><span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">)</span>
+</span><span class='line'><span class="kt">void</span> <span class="n">lua_pushboolean</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="kt">bool</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_pushnumber</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="n">lua_Number</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_pushinteger</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="n">lua_Integer</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_pushunsigned</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="n">lua_Unsigned</span> <span class="n">n</span><span class="p">);</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">lua_pushstring</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">);</span>
+</span><span class='line'><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">lua_pushstring</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+另一个原因就是内存的管理，c++中是手动进行内存释放的，而在lua中是采用自动垃圾回收处理的，如果你保存一个lua的table在c++变量中，lua无法知道这个table在c++中是否使用，在lua中可能由于不使用而被标记为垃圾而回收。 <br/>
+对于不同类型操作，lua不仅定义了上边的<code>lua_pushXXX</code>函数，还定义了<code>void lua_isXXXX(lua_State *L, int index)</code>等c函数库用来辨别栈中具体位置的变量是哪种类型。和<code>lua_toXXXX(lua_State *L, int index)</code>函数，将栈中对应位置的元素转换为具体类型返回。除了上边这些，lua还提供了一些对栈顶操作，替换栈内元素，删除等操作：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="kt">int</span> <span class="nf">lua_gettop</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_settop</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_pushvalue</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_remove</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_insert</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_replace</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+</span><span class='line'><span class="kt">void</span> <span class="nf">lua_copy</span> <span class="p">(</span><span class="n">lua_State</span> <span class="o">*</span><span class="n">L</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fromidx</span><span class="p">,</span> <span class="kt">int</span> <span class="n">toidx</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+下边具体看个例子，对栈的操作：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="n">lua_State</span> <span class="o">*</span><span class="n">lua_state</span> <span class="o">=</span> <span class="n">luaL_newstate</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">lua_pushboolean</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+</span><span class='line'><span class="n">lua_pushnumber</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
+</span><span class='line'><span class="n">lua_pushstring</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="s">&quot;hello world&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">top</span> <span class="o">=</span> <span class="n">lua_gettop</span><span class="p">(</span><span class="n">lua_state</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">printf</span><span class="p">(</span><span class="s">&quot;------first------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">top</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">lua_type</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TSTRING</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">lua_tostring</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TNUMBER</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%g  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">lua_tonumber</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TBOOLEAN</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="n">lua_toboolean</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">?</span> <span class="s">&quot;true  </span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">:</span> <span class="s">&quot;false  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">printf</span><span class="p">(</span><span class="s">&quot;-------second--------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=-</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="o">-</span><span class="n">top</span><span class="p">;</span> <span class="n">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">t</span> <span class="o">=</span> <span class="n">lua_type</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">switch</span> <span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TSTRING</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%s  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">lua_tostring</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TNUMBER</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="s">&quot;%g  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">lua_tonumber</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">case</span> <span class="nl">LUA_TBOOLEAN</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">printf</span><span class="p">(</span><span class="n">lua_toboolean</span><span class="p">(</span><span class="n">lua_state</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">?</span> <span class="s">&quot;true  </span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">:</span> <span class="s">&quot;false  </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">default</span><span class="o">:</span>
+</span><span class='line'>            <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+运行打印结果为：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="o">------</span><span class="n">first</span><span class="o">------</span>
+</span><span class='line'><span class="nb">true</span>
+</span><span class='line'><span class="mi">100</span>
+</span><span class='line'><span class="n">hello</span> <span class="n">world</span>
+</span><span class='line'><span class="o">-------</span><span class="n">second</span><span class="o">--------</span>
+</span><span class='line'><span class="n">hello</span> <span class="n">world</span>
+</span><span class='line'><span class="mi">100</span>
+</span><span class='line'><span class="nb">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+首先生成新的栈，然后依次向其中压入true，100，&#8221;hello world&#8221;，采用<code>lua_gettop(luaState *L)</code>获取栈中元素个数，第一次遍历从栈底到栈顶，第二次遍历从栈顶到栈底。   <br/>
+默认情况下，lua栈的大小为20个存储空间，大多数情况下足够程序使用，但有些情况下我们可能需要更多的栈空间，这时就可以采用<code>lua_checkstack(lua_State *L, int sz)</code>检查栈空间是否够用。由上边打印的结果可以看到，第一个push进去的值的索引为1，接着第二个位2，换句话说，从栈底到栈顶的顺序为1到n。同时栈顶也可以用-1索引访问，所以栈顶到栈底也可以用-1到-n遍历访问。在好多操作中，会经常看到用索引-1，访问栈顶元素。除了用-1索引操作外，我们还可以直接用<code>lua_settop</code>和<code>lua_gettop</code>函数操作栈顶。<br/>
+以上就是对栈的一个简单操作，对于更加复杂的如对lua函数，Table操作等，也都是基于栈来操作的。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-11-11T21:32:01+08:00'><span class='date'><span class='date-month'>Nov</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>9:32 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lua/'>lua</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/07/cocos2d-x-tinyxml2/" title="Previous Post: cocos2d-x -- tinyxml2">&laquo; cocos2d-x &#8211; tinyxml2</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/12/cocos2d-x-luaengine/" title="Next Post: cocos2d-x -- LuaEngine调用Lua代码">cocos2d-x &#8211; LuaEngine调用Lua代码 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

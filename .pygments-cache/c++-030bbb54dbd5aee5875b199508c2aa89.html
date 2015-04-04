@@ -1,0 +1,38 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">forceAddEventListener</span><span class="p">(</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">EventListenerVector</span><span class="o">*</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="n">EventListener</span><span class="o">::</span><span class="n">ListenerID</span> <span class="n">listenerID</span> <span class="o">=</span> <span class="n">listener</span><span class="o">-&gt;</span><span class="n">getListenerID</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">itr</span> <span class="o">==</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="p">{</span>
+        
+        <span class="n">listeners</span> <span class="o">=</span> <span class="k">new</span> <span class="n">EventListenerVector</span><span class="p">();</span>
+        <span class="n">_listenerMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">listeners</span><span class="p">));</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">listeners</span> <span class="o">=</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="n">listeners</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">getFixedPriority</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">setDirty</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span><span class="o">::</span><span class="n">SCENE_GRAPH_PRIORITY</span><span class="p">);</span>
+        
+        <span class="k">auto</span> <span class="n">node</span> <span class="o">=</span> <span class="n">listener</span><span class="o">-&gt;</span><span class="n">getAssociatedNode</span><span class="p">();</span>
+        <span class="n">CCASSERT</span><span class="p">(</span><span class="n">node</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">,</span> <span class="s">&quot;Invalid scene graph priority!&quot;</span><span class="p">);</span>
+        
+        <span class="n">associateNodeAndEventListener</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">listener</span><span class="p">);</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">isRunning</span><span class="p">())</span>
+        <span class="p">{</span>
+            <span class="n">resumeEventListenersForTarget</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">setDirty</span><span class="p">(</span><span class="n">listenerID</span><span class="p">,</span> <span class="n">DirtyFlag</span><span class="o">::</span><span class="n">FIXED_PRIORITY</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

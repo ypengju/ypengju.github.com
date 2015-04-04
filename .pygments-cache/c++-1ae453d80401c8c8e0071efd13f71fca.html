@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">TableViewDelegate</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ScrollViewDelegate</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="c1">//点击时调用</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">tableCellTouched</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="c1">//cell点下时调用</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellHighlight</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+
+    <span class="c1">//cell点下释放时调用</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellUnhighlight</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+
+    <span class="c1">//cell回收，在当前cell移除屏幕时调用，或者在reloadData()调用时，调用</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">tableCellWillRecycle</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">){};</span>
+
+<span class="p">};</span>
+</pre></div>

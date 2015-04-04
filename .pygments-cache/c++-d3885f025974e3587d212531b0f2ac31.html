@@ -1,0 +1,5 @@
+<div class="highlight"><pre><span class="k">for</span> <span class="p">(</span><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span><span class="o">::</span><span class="n">ConstMemberIterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">document</span><span class="p">.</span><span class="n">MemberonBegin</span><span class="p">();</span> <span class="n">itr</span> <span class="o">!=</span> 				<span class="n">document</span><span class="p">.</span><span class="n">MemberonEnd</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&quot;-----type of member %s </span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">.</span><span class="n">GetString</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>

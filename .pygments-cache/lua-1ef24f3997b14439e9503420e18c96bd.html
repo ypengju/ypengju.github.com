@@ -1,0 +1,24 @@
+<div class="highlight"><pre><span class="k">function</span> <span class="nf">newAccount</span><span class="p">(</span> <span class="n">initValue</span> <span class="p">)</span>
+	<span class="kd">local</span> <span class="n">self</span> <span class="o">=</span> <span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">initValue</span> <span class="p">}</span>
+	<span class="kd">local</span> <span class="n">hello</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">hello method&quot;</span><span class="p">)</span>
+	<span class="k">end</span>
+
+	<span class="kd">local</span> <span class="n">world</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+		<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">world method&quot;</span><span class="p">)</span>
+	<span class="k">end</span>
+
+	<span class="kd">local</span> <span class="n">getBalance</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+		<span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span>
+	<span class="k">end</span>
+
+	<span class="k">return</span> <span class="p">{</span>
+		<span class="n">hello</span> <span class="o">=</span> <span class="n">hello</span><span class="p">,</span>
+		<span class="n">getBalanceValue</span> <span class="o">=</span> <span class="n">getBalance</span>
+	<span class="p">}</span>
+<span class="k">end</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="n">newAccount</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">n</span><span class="p">.</span><span class="n">hello</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">getBalanceValue</span><span class="p">())</span>
+</pre></div>

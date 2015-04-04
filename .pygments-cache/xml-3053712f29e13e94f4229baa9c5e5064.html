@@ -1,0 +1,32 @@
+<div class="highlight"><pre><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+<span class="nt">&lt;RelativeLayout</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+    <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+    <span class="na">android:layout_height=</span><span class="s">&quot;match_parent&quot;</span>
+    <span class="na">android:paddingLeft=</span><span class="s">&quot;16dp&quot;</span>
+    <span class="na">android:paddingRight=</span><span class="s">&quot;16dp&quot;</span> <span class="nt">&gt;</span>
+    <span class="nt">&lt;EditText</span>
+        <span class="na">android:id=</span><span class="s">&quot;@+id/name&quot;</span>
+        <span class="na">android:layout_width=</span><span class="s">&quot;match_parent&quot;</span>
+        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+        <span class="na">android:hint=</span><span class="s">&quot;@string/reminder&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Spinner</span>
+        <span class="na">android:id=</span><span class="s">&quot;@+id/dates&quot;</span>
+        <span class="na">android:layout_width=</span><span class="s">&quot;0dp&quot;</span>
+        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+        <span class="na">android:layout_below=</span><span class="s">&quot;@id/name&quot;</span>
+        <span class="na">android:layout_alignParentLeft=</span><span class="s">&quot;true&quot;</span>
+        <span class="na">android:layout_toLeftOf=</span><span class="s">&quot;@+id/times&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Spinner</span>
+        <span class="na">android:id=</span><span class="s">&quot;@id/times&quot;</span>
+        <span class="na">android:layout_width=</span><span class="s">&quot;96dp&quot;</span>
+        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+        <span class="na">android:layout_below=</span><span class="s">&quot;@id/name&quot;</span>
+        <span class="na">android:layout_alignParentRight=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;Button</span>
+        <span class="na">android:layout_width=</span><span class="s">&quot;96dp&quot;</span>
+        <span class="na">android:layout_height=</span><span class="s">&quot;wrap_content&quot;</span>
+        <span class="na">android:layout_below=</span><span class="s">&quot;@id/times&quot;</span>
+        <span class="na">android:layout_alignParentRight=</span><span class="s">&quot;true&quot;</span>
+        <span class="na">android:text=</span><span class="s">&quot;@string/done&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/RelativeLayout&gt;</span>
+</pre></div>

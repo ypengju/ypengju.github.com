@@ -1,0 +1,63 @@
+<div class="highlight"><pre><span class="kt">bool</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">init</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="o">!</span><span class="n">Layer</span><span class="o">::</span><span class="n">init</span><span class="p">()</span> <span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="n">Size</span> <span class="n">winSize</span> <span class="o">=</span> <span class="n">Director</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getWinSize</span><span class="p">();</span>
+    <span class="k">auto</span> <span class="n">colorLayer</span> <span class="o">=</span> <span class="n">LayerColor</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">Color4B</span><span class="p">(</span><span class="mi">125</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">125</span><span class="p">,</span> <span class="mi">255</span><span class="p">));</span>
+    <span class="n">addChild</span><span class="p">(</span><span class="n">colorLayer</span><span class="p">);</span>
+    
+    <span class="n">_tableView</span> <span class="o">=</span> <span class="n">TableView</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Size</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">));</span> <span class="c1">//指明此TableView的数据代理和可视区域大小</span>
+    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">winSize</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setDelegate</span><span class="p">(</span><span class="k">this</span><span class="p">);</span> <span class="c1">//指定代理为当前类，调用时调用我们申明的函数</span>
+    <span class="c1">//设置滑动方向，只有两个方向，垂直滑动和水平滑动，默认垂直滑动，设置方向必须在调用reloadData()函数之前。</span>
+    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setDirection</span><span class="p">(</span><span class="n">ScrollView</span><span class="o">::</span><span class="n">Direction</span><span class="o">::</span><span class="n">HORIZONTAL</span><span class="p">);</span> 
+    <span class="c1">//设置TableView中元素的排序方式，更具索引有从大到小，或者从小到大的顺序,这里值得关注下，在此方法中会调用reloadData()进行加载数据</span>
+    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setVerticalFillOrder</span><span class="p">(</span><span class="n">TableView</span><span class="o">::</span><span class="n">VerticalFillOrder</span><span class="o">::</span><span class="n">TOP_DOWN</span><span class="p">);</span> 
+    <span class="n">_tableView</span><span class="o">-&gt;</span><span class="n">setBounceable</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span> <span class="c1">//设置滑动是否有惯性</span>
+    <span class="k">this</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">_tableView</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//设置每个cell的内容</span>
+<span class="n">TableViewCell</span><span class="o">*</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellAtIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;-----------%ld&quot;</span><span class="p">,</span> <span class="n">idx</span><span class="p">);</span>
+    <span class="n">TableViewCell</span> <span class="o">*</span><span class="n">cell</span> <span class="o">=</span> <span class="n">table</span><span class="o">-&gt;</span><span class="n">dequeueCell</span><span class="p">();</span> <span class="c1">//对移除屏幕的cell进行重复利用，避免额外开销</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">cell</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">cell</span> <span class="o">=</span> <span class="n">TableViewCell</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>
+        <span class="k">auto</span> <span class="n">sp</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="s">&quot;CloseNormal.png&quot;</span><span class="p">);</span>
+        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setAnchorPoint</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+        <span class="n">sp</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+        <span class="n">cell</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">sp</span><span class="p">);</span>
+        
+        <span class="k">auto</span> <span class="n">label</span> <span class="o">=</span> <span class="n">LabelTTF</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">StringUtils</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">idx</span><span class="p">).</span><span class="n">c_str</span><span class="p">(),</span> <span class="s">&quot;Arial&quot;</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setPosition</span><span class="p">(</span><span class="n">Point</span><span class="p">(</span><span class="n">sp</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">sp</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">));</span>
+        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setTag</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+        <span class="n">cell</span><span class="o">-&gt;</span><span class="n">addChild</span><span class="p">(</span><span class="n">label</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">label</span> <span class="o">=</span> <span class="p">(</span><span class="n">LabelTTF</span> <span class="o">*</span><span class="p">)</span><span class="n">cell</span><span class="o">-&gt;</span><span class="n">getChildByTag</span><span class="p">(</span><span class="mi">200</span><span class="p">);</span>
+        <span class="n">label</span><span class="o">-&gt;</span><span class="n">setString</span><span class="p">(</span><span class="n">StringUtils</span><span class="o">::</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">idx</span><span class="p">).</span><span class="n">c_str</span><span class="p">());</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">cell</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">//TableView中的数量</span>
+<span class="kt">ssize_t</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">numberOfCellsInTableView</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="mi">100</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">//每个cell的大小</span>
+<span class="n">cocos2d</span><span class="o">::</span><span class="n">Size</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellSizeForIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">Size</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">//cell点击调用</span>
+<span class="kt">void</span> <span class="n">HelloWorld</span><span class="o">::</span><span class="n">tableCellTouched</span><span class="p">(</span><span class="n">TableView</span><span class="o">*</span> <span class="n">table</span><span class="p">,</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">cell</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;--------you touch me!!! %ld&quot;</span><span class="p">,</span> <span class="n">cell</span><span class="o">-&gt;</span><span class="n">getIdx</span><span class="p">());</span>
+<span class="p">}</span>
+</pre></div>

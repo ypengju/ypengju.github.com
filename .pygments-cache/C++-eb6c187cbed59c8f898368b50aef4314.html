@@ -1,0 +1,86 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">AutoreleasePool</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="cm">/**</span>
+<span class="cm">     * @warn Don&#39;t create an auto release pool in heap, create it in stack.</span>
+<span class="cm">     * @js NA</span>
+<span class="cm">     * @lua NA</span>
+<span class="cm">     */</span>
+    <span class="n">AutoreleasePool</span><span class="p">();</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     * Create an autorelease pool with specific name. This name is useful for debugging.</span>
+<span class="cm">     */</span>
+    <span class="n">AutoreleasePool</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     * @js NA</span>
+<span class="cm">     * @lua NA</span>
+<span class="cm">     */</span>
+    <span class="o">~</span><span class="n">AutoreleasePool</span><span class="p">();</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Add a given object to this pool.</span>
+<span class="cm">     *</span>
+<span class="cm">     * The same object may be added several times to the same pool; When the</span>
+<span class="cm">     * pool is destructed, the object&#39;s Ref::release() method will be called</span>
+<span class="cm">     * for each time it was added.</span>
+<span class="cm">     *</span>
+<span class="cm">     * @param object    The object to add to the pool.</span>
+<span class="cm">     * @js NA</span>
+<span class="cm">     * @lua NA</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">addObject</span><span class="p">(</span><span class="n">Ref</span> <span class="o">*</span><span class="n">object</span><span class="p">);</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Clear the autorelease pool.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Ref::release() will be called for each time the managed object is</span>
+<span class="cm">     * added to the pool.</span>
+<span class="cm">     * @js NA</span>
+<span class="cm">     * @lua NA</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">clear</span><span class="p">();</span>
+    
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+    <span class="cm">/**</span>
+<span class="cm">     * Whether the pool is doing `clear` operation.</span>
+<span class="cm">     */</span>
+    <span class="kt">bool</span> <span class="n">isClearing</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_isClearing</span><span class="p">;</span> <span class="p">};</span>
+<span class="cp">#endif</span>
+    
+    <span class="cm">/**</span>
+<span class="cm">     * Checks whether the pool contains the specified object.</span>
+<span class="cm">     */</span>
+    <span class="kt">bool</span> <span class="n">contains</span><span class="p">(</span><span class="n">Ref</span><span class="o">*</span> <span class="n">object</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="cm">/**</span>
+<span class="cm">     * Dump the objects that are put into autorelease pool. It is used for debugging.</span>
+<span class="cm">     *</span>
+<span class="cm">     * The result will look like:</span>
+<span class="cm">     * Object pointer address     object id     reference count</span>
+<span class="cm">     *</span>
+<span class="cm">     */</span>
+    <span class="kt">void</span> <span class="nf">dump</span><span class="p">();</span>
+    
+<span class="k">private</span><span class="o">:</span>
+    <span class="cm">/**</span>
+<span class="cm">     * The underlying array of object managed by the pool.</span>
+<span class="cm">     *</span>
+<span class="cm">     * Although Array retains the object once when an object is added, proper</span>
+<span class="cm">     * Ref::release() is called outside the array to make sure that the pool</span>
+<span class="cm">     * does not affect the managed object&#39;s reference count. So an object can</span>
+<span class="cm">     * be destructed properly by calling Ref::release() even if the object</span>
+<span class="cm">     * is in the pool.</span>
+<span class="cm">     */</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Ref</span><span class="o">*&gt;</span> <span class="n">_managedObjectArray</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_name</span><span class="p">;</span>
+    
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+    <span class="cm">/**</span>
+<span class="cm">     *  The flag for checking whether the pool is doing `clear` operation.</span>
+<span class="cm">     */</span>
+    <span class="kt">bool</span> <span class="n">_isClearing</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="p">};</span>
+</pre></div>

@@ -1,0 +1,11 @@
+<div class="highlight"><pre><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">application:</span><span class="p">(</span><span class="bp">UIApplication</span> <span class="o">*</span><span class="p">)</span><span class="nv">application</span> <span class="nf">didReceiveLocalNotification:</span><span class="p">(</span><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="p">)</span><span class="nv">notification</span>
+<span class="p">{</span>
+    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span><span class="p">;</span>
+    <span class="bp">NSString</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="p">[</span><span class="n">infoDict</span> <span class="nl">objectForKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="n">str</span> <span class="nl">isEqualToString</span><span class="p">:</span><span class="s">@&quot;two&quot;</span><span class="p">])</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;--------yes  equal&quot;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;--------no &quot;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

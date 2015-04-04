@@ -1,0 +1,12 @@
+<div class="highlight"><pre><span class="c1">//ios8需要注册推送</span>
+<span class="k">if</span> <span class="p">([</span><span class="bp">UIApplication</span> <span class="nl">instancesRespondToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">registerUserNotificationSettings</span><span class="p">:)]){</span>
+    <span class="c1">//通知类型</span>
+    <span class="n">UIUserNotificationType</span> <span class="n">types</span> <span class="o">=</span> <span class="n">UIUserNotificationTypeBadge</span> <span class="o">|</span>
+    <span class="n">UIUserNotificationTypeSound</span> <span class="o">|</span> <span class="n">UIUserNotificationTypeAlert</span><span class="p">;</span>
+    <span class="c1">//设置通知类型和动画</span>
+    <span class="n">UIUserNotificationSettings</span> <span class="o">*</span><span class="n">mySettings</span> <span class="o">=</span>
+    <span class="p">[</span><span class="n">UIUserNotificationSettings</span> <span class="nl">settingsForTypes</span><span class="p">:</span><span class="n">types</span> <span class="nl">categories</span><span class="p">:</span><span class="nb">nil</span><span class="p">];</span>
+    <span class="c1">//注册</span>
+    <span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">registerUserNotificationSettings</span><span class="p">:</span><span class="n">mySettings</span><span class="p">];</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,26 @@
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">codes</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">luaL_loadstring</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">codes</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">executeFunction</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeScriptFile</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">filename</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">code</span><span class="p">(</span><span class="s">&quot;require </span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="n">code</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span>
+    <span class="n">code</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">executeString</span><span class="p">(</span><span class="n">code</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeGlobalFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">functionName</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">lua_getglobal</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionName</span><span class="p">);</span>       <span class="cm">/* query function by name, stack: function */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;[LUA ERROR] name &#39;%s&#39; does not represent a Lua function&quot;</span><span class="p">,</span> <span class="n">functionName</span><span class="p">);</span>
+        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">executeFunction</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

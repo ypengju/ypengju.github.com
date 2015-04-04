@@ -1,0 +1,20 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_GUI_DLL</span> <span class="nl">RichElement</span> <span class="p">:</span> <span class="k">public</span> <span class="n">Ref</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+    <span class="p">{</span>
+        <span class="n">TEXT</span><span class="p">,</span>
+        <span class="n">IMAGE</span><span class="p">,</span>
+        <span class="n">CUSTOM</span>
+    <span class="p">};</span>
+    <span class="n">RichElement</span><span class="p">(){};</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">RichElement</span><span class="p">(){};</span>
+    <span class="kt">bool</span> <span class="nf">init</span><span class="p">(</span><span class="kt">int</span> <span class="n">tag</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="n">Type</span> <span class="n">_type</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">_tag</span><span class="p">;</span>
+    <span class="n">Color3B</span> <span class="n">_color</span><span class="p">;</span>
+    <span class="n">GLubyte</span> <span class="n">_opacity</span><span class="p">;</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">RichText</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

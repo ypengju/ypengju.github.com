@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="n">EventListenerCustom</span><span class="o">*</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">addCustomEventListener</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">eventName</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">EventCustom</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;&amp;</span> <span class="n">callback</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">EventListenerCustom</span> <span class="o">*</span><span class="n">listener</span> <span class="o">=</span> <span class="n">EventListenerCustom</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">eventName</span><span class="p">,</span> <span class="n">callback</span><span class="p">);</span>
+    <span class="n">addEventListenerWithFixedPriority</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">listener</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,52 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_GUI_DLL</span> <span class="nl">RichText</span> <span class="p">:</span> <span class="k">public</span> <span class="n">Widget</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">RichText</span><span class="p">();</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">RichText</span><span class="p">();</span>
+    <span class="k">static</span> <span class="n">RichText</span><span class="o">*</span> <span class="nf">create</span><span class="p">();</span>
+    <span class="c1">//对Vector进行操作</span>
+    <span class="kt">void</span> <span class="nf">insertElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">pushBackElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">removeElement</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">removeElement</span><span class="p">(</span><span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span><span class="p">);</span>
+    <span class="c1">//设置行间距</span>
+    <span class="kt">void</span> <span class="nf">setVerticalSpace</span><span class="p">(</span><span class="kt">float</span> <span class="n">space</span><span class="p">);</span>
+    <span class="c1">//设置锚点</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">setAnchorPoint</span><span class="p">(</span><span class="k">const</span> <span class="n">Vec2</span> <span class="o">&amp;</span><span class="n">pt</span><span class="p">);</span>
+    <span class="c1">//获取content大小</span>
+    <span class="k">virtual</span> <span class="n">Size</span> <span class="n">getVirtualRendererSize</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+    <span class="c1">//格式化文本</span>
+    <span class="kt">void</span> <span class="nf">formatText</span><span class="p">();</span>
+    <span class="c1">//设置为false时，setContentSize才有效</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">ignoreContentAdaptWithSize</span><span class="p">(</span><span class="kt">bool</span> <span class="n">ignore</span><span class="p">);</span>
+    <span class="c1">//获取描述</span>
+    <span class="k">virtual</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">getDescription</span><span class="p">()</span> <span class="k">const</span> <span class="k">override</span><span class="p">;</span>
+    
+<span class="nl">CC_CONSTRUCTOR_ACCESS</span><span class="p">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">init</span><span class="p">()</span> <span class="k">override</span><span class="p">;</span>
+    
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">adaptRenderers</span><span class="p">();</span>
+
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">initRenderer</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">pushToContainer</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">renderer</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">handleTextRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fontName</span><span class="p">,</span> <span class="kt">float</span> <span class="n">fontSize</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">handleImageRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fileParh</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span><span class="o">&amp;</span> <span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">handleCustomRenderer</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">renderer</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">formarRenderers</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">addNewLine</span><span class="p">();</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="c1">//标记是否格式化文本</span>
+    <span class="kt">bool</span> <span class="n">_formatTextDirty</span><span class="p">;</span>
+    <span class="c1">//存储RichElement的容器，所有RichText添加进来的RichElement都存储在该容器中</span>
+    <span class="n">Vector</span><span class="o">&lt;</span><span class="n">RichElement</span><span class="o">*&gt;</span> <span class="n">_richElements</span><span class="p">;</span>
+    <span class="c1">//_elementRenders中的每个Vector&lt;Node*&gt;中的节点，是每行的所有节点</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector</span><span class="o">&lt;</span><span class="n">Node</span><span class="o">*&gt;*&gt;</span> <span class="n">_elementRenders</span><span class="p">;</span>
+    <span class="c1">//每行剩余宽度，在需要换行时使用</span>
+    <span class="kt">float</span> <span class="n">_leftSpaceWidth</span><span class="p">;</span>
+    <span class="c1">//行间距</span>
+    <span class="kt">float</span> <span class="n">_verticalSpace</span><span class="p">;</span>
+    <span class="c1">//代表Rich的节点，所有的RichElement都添加在该节点下</span>
+    <span class="n">Node</span><span class="o">*</span> <span class="n">_elementRenderersContainer</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

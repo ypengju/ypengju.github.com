@@ -1,0 +1,62 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">handleTextRenderer</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">text</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">fontName</span><span class="p">,</span> <span class="kt">float</span> <span class="n">fontSize</span><span class="p">,</span> <span class="k">const</span> <span class="n">Color3B</span> <span class="o">&amp;</span><span class="n">color</span><span class="p">,</span> <span class="n">GLubyte</span> <span class="n">opacity</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">//先判断是否存在字体文件，然后调用不同的Label方法</span>
+    <span class="k">auto</span> <span class="n">fileExist</span> <span class="o">=</span> <span class="n">FileUtils</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isFileExist</span><span class="p">(</span><span class="n">fontName</span><span class="p">);</span>
+    <span class="n">Label</span><span class="o">*</span> <span class="n">textRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">fileExist</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">textRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+    <span class="p">}</span> 
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">textRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">//获取文本宽度</span>
+    <span class="kt">float</span> <span class="n">textRendererWidth</span> <span class="o">=</span> <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">getContentSize</span><span class="p">().</span><span class="n">width</span><span class="p">;</span>
+    <span class="c1">//计算一行剩下的宽度</span>
+    <span class="n">_leftSpaceWidth</span> <span class="o">-=</span> <span class="n">textRendererWidth</span><span class="p">;</span>
+    <span class="c1">//如果剩余宽度小于0，就需要对文本进行换行，创建新的Label</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_leftSpaceWidth</span> <span class="o">&lt;</span> <span class="mf">0.0f</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//计算超出文本的比例</span>
+        <span class="kt">float</span> <span class="n">overstepPercent</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="n">_leftSpaceWidth</span><span class="p">)</span> <span class="o">/</span> <span class="n">textRendererWidth</span><span class="p">;</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">curText</span> <span class="o">=</span> <span class="n">text</span><span class="p">;</span>
+        <span class="c1">//计算原始文本长度</span>
+        <span class="kt">size_t</span> <span class="n">stringLength</span> <span class="o">=</span> <span class="n">StringUtils</span><span class="o">::</span><span class="n">getCharacterCountInUTF8String</span><span class="p">(</span><span class="n">text</span><span class="p">);</span>
+        <span class="c1">//计算未超出长度</span>
+        <span class="kt">int</span> <span class="n">leftLength</span> <span class="o">=</span> <span class="n">stringLength</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0f</span> <span class="o">-</span> <span class="n">overstepPercent</span><span class="p">);</span>
+        <span class="c1">//未超出文本</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">leftWords</span> <span class="o">=</span> <span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">curText</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">leftLength</span><span class="p">);</span>
+        <span class="c1">//超出文本</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">cutWords</span> <span class="o">=</span> <span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">curText</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">,</span> <span class="n">stringLength</span> <span class="o">-</span> <span class="n">leftLength</span><span class="p">);</span>
+        <span class="c1">//对未查出文本生成的Label</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">leftLength</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Label</span><span class="o">*</span> <span class="n">leftRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">fileExist</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">leftRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">leftWords</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">leftRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">Helper</span><span class="o">::</span><span class="n">getSubStringOfUTF8String</span><span class="p">(</span><span class="n">leftWords</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">leftLength</span><span class="p">),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">leftRenderer</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">leftRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">color</span><span class="p">);</span>
+                <span class="n">leftRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">opacity</span><span class="p">);</span>
+                <span class="n">pushToContainer</span><span class="p">(</span><span class="n">leftRenderer</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="c1">//换行，递归调用handleTextRenderer()对超出文本进行计算</span>
+        <span class="n">addNewLine</span><span class="p">();</span>
+        <span class="n">handleTextRenderer</span><span class="p">(</span><span class="n">cutWords</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">fontName</span><span class="p">,</span> <span class="n">fontSize</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">opacity</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">color</span><span class="p">);</span>
+        <span class="n">textRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">opacity</span><span class="p">);</span>
+        <span class="n">pushToContainer</span><span class="p">(</span><span class="n">textRenderer</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
