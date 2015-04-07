@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="k">template</span> <span class="o">&lt;</span><span class="k">typename</span> <span class="n">T1</span><span class="p">,</span> <span class="k">typename</span> <span class="n">T2</span><span class="o">&gt;</span>
+<span class="k">auto</span> <span class="n">compose</span><span class="p">(</span><span class="n">T1</span> <span class="n">t1</span><span class="p">,</span> <span class="n">T2</span> <span class="n">t2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="k">decltype</span><span class="p">(</span><span class="n">t1</span> <span class="o">+</span> <span class="n">t2</span><span class="p">)</span>
+<span class="p">{</span>
+   <span class="k">return</span> <span class="n">t1</span><span class="o">+</span><span class="n">t2</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="k">auto</span> <span class="n">v</span> <span class="o">=</span> <span class="n">compose</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">);</span> <span class="c1">// v&#39;s type is double   </span>
+</pre></div>

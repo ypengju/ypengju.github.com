@@ -1,0 +1,13 @@
+<div class="highlight"><pre> <span class="p">...</span>
+<span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span><span class="p">)</span><span class="o">&gt;</span> <span class="n">_onEvent</span><span class="p">;</span>   <span class="c1">/// Event callback function</span>
+
+<span class="n">Type</span> <span class="n">_type</span><span class="p">;</span>                             <span class="c1">/// Event listener type</span>
+<span class="n">ListenerID</span> <span class="n">_listenerID</span><span class="p">;</span>                 <span class="c1">/// Event listener ID</span>
+<span class="kt">bool</span> <span class="n">_isRegistered</span><span class="p">;</span>                     <span class="c1">/// Whether the listener has been added to dispatcher.</span>
+
+<span class="kt">int</span>   <span class="n">_fixedPriority</span><span class="p">;</span>   <span class="c1">// The higher the number, the higher the priority, 0 is for scene graph base priority.</span>
+<span class="n">Node</span><span class="o">*</span> <span class="n">_node</span><span class="p">;</span>            <span class="c1">// scene graph based priority</span>
+<span class="kt">bool</span> <span class="n">_paused</span><span class="p">;</span>           <span class="c1">// Whether the listener is paused</span>
+<span class="kt">bool</span> <span class="n">_isEnabled</span><span class="p">;</span>        <span class="c1">// Whether the listener is enabled</span>
+<span class="p">...</span>   
+</pre></div>

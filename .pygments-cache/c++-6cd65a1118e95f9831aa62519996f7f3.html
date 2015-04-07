@@ -1,0 +1,4 @@
+<div class="highlight"><pre><span class="k">for</span> <span class="p">(</span><span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span><span class="o">::</span><span class="n">ConstValueIterator</span> <span class="n">itr</span> <span class="o">=</span> <span class="n">a</span><span class="p">.</span><span class="n">onBegin</span><span class="p">();</span> <span class="n">itr</span> <span class="o">!=</span> <span class="n">a</span><span class="p">.</span><span class="n">onEnd</span><span class="p">();</span> <span class="o">++</span><span class="n">itr</span><span class="p">)</span> <span class="p">{</span>
+     <span class="n">printf</span><span class="p">(</span><span class="s">&quot;-------%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">itr</span><span class="o">-&gt;</span><span class="n">GetInt</span><span class="p">());</span>
+<span class="p">}</span>    
+</pre></div>

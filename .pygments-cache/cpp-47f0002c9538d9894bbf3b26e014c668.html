@@ -1,0 +1,91 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">formatText</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">//判断是否需要格式化文本</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_formatTextDirty</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">//清除_elementRenderersContainer节点下的所有子节点</span>
+        <span class="n">_elementRenderersContainer</span><span class="o">-&gt;</span><span class="n">removeAllChildren</span><span class="p">();</span>
+        <span class="n">_elementRenders</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+        <span class="c1">//判断是否忽略content大小</span>
+        <span class="c1">//默认为true，此时调用setContentSize()无效，文本不会换行，否则会根据设置宽度对文本换行</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_ignoreSize</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="c1">//此时不进行距离计算，遍历_richElements，根据类型还原RichElement子类，</span>
+            <span class="c1">//调用pushToContainer()添加到_elementRenders渲染容器中。</span>
+            <span class="n">addNewLine</span><span class="p">();</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_richElements</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span> <span class="o">=</span> <span class="n">_richElements</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="n">Node</span><span class="o">*</span> <span class="n">elementRenderer</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+                <span class="k">switch</span> <span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_type</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">TEXT</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementText</span><span class="o">*</span> <span class="n">elmtText</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementText</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">FileUtils</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isFileExist</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">))</span>
+                        <span class="p">{</span>
+                            <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithTTF</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">);</span>
+                        <span class="p">}</span>
+                        <span class="k">else</span>
+                        <span class="p">{</span>
+                            <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Label</span><span class="o">::</span><span class="n">createWithSystemFont</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">);</span>
+                        <span class="p">}</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">IMAGE</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementImage</span><span class="o">*</span> <span class="n">elmtImage</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementImage</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">create</span><span class="p">(</span><span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_filePath</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">CUSTOM</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementCustomNode</span><span class="o">*</span> <span class="n">elmtCustom</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementCustomNode</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="n">elementRenderer</span> <span class="o">=</span> <span class="n">elmtCustom</span><span class="o">-&gt;</span><span class="n">_customNode</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">elementRenderer</span><span class="o">-&gt;</span><span class="n">setColor</span><span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">);</span>
+                <span class="n">elementRenderer</span><span class="o">-&gt;</span><span class="n">setOpacity</span><span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+                <span class="n">pushToContainer</span><span class="p">(</span><span class="n">elementRenderer</span><span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="c1">//因为要根据contentSize进行换行，所以要根据RichElement内容进行长度计算，调用对应handleXXXRenderer方法进行计算</span>
+            <span class="n">addNewLine</span><span class="p">();</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">_richElements</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">RichElement</span><span class="o">*</span> <span class="n">element</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElement</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">_richElements</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">));</span>
+                <span class="k">switch</span> <span class="p">(</span><span class="n">element</span><span class="o">-&gt;</span><span class="n">_type</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">TEXT</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementText</span><span class="o">*</span> <span class="n">elmtText</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementText</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="n">handleTextRenderer</span><span class="p">(</span><span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_text</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontName</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_fontSize</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">,</span> <span class="n">elmtText</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">IMAGE</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementImage</span><span class="o">*</span> <span class="n">elmtImage</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementImage</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="n">handleImageRenderer</span><span class="p">(</span><span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_filePath</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_color</span><span class="p">,</span> <span class="n">elmtImage</span><span class="o">-&gt;</span><span class="n">_opacity</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">case</span> <span class="n">RichElement</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="nl">CUSTOM</span><span class="p">:</span>
+                    <span class="p">{</span>
+                        <span class="n">RichElementCustomNode</span><span class="o">*</span> <span class="n">elmtCustom</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">RichElementCustomNode</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+                        <span class="n">handleCustomRenderer</span><span class="p">(</span><span class="n">elmtCustom</span><span class="o">-&gt;</span><span class="n">_customNode</span><span class="p">);</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="k">default</span><span class="o">:</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">formarRenderers</span><span class="p">();</span>
+        <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,10 @@
+<div class="highlight"><pre>@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.main_activity_actions, menu);
+    MenuItem searchItem = menu.findItem(R.id.action_search);
+    SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+    // Configure the search info and add any event listeners
+    ...
+    return super.onCreateOptionsMenu(menu);
+}
+</pre></div>

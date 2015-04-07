@@ -1,0 +1,34 @@
+<div class="highlight"><pre><span class="nt">&lt;menu</span> <span class="na">xmlns:android=</span><span class="s">&quot;http://schemas.android.com/apk/res/android&quot;</span>
+    <span class="na">xmlns:app=</span><span class="s">&quot;http://schemas.android.com/apk/res-auto&quot;</span>
+    <span class="na">xmlns:tools=</span><span class="s">&quot;http://schemas.android.com/tools&quot;</span> <span class="na">tools:context=</span><span class="s">&quot;.MainActivity&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;item</span>
+        <span class="na">android:id=</span><span class="s">&quot;@+id/group_chat&quot;</span>
+        <span class="na">android:title=</span><span class="s">&quot;GroupChat&quot;</span>
+        <span class="na">android:icon=</span><span class="s">&quot;@drawable/menu_group_chat_icon&quot;</span>
+        <span class="nt">/&gt;&lt;/p&gt;</span>
+
+<span class="nt">&lt;pre&gt;&lt;code&gt;</span><span class="ni">&amp;lt;</span>item
+    android:id=&quot;@+id/feedback&quot;
+    android:title=&quot;FeedBack&quot;
+    android:icon=&quot;@drawable/menu_feedback_icon&quot;
+    /<span class="ni">&amp;gt;</span>
+
+<span class="ni">&amp;lt;</span>item
+    android:id=&quot;@+id/scan&quot;
+    android:title=&quot;Scan&quot;
+    android:icon=&quot;@drawable/menu_scan_icon&quot;
+    /<span class="ni">&amp;gt;</span>
+<span class="nt">&lt;/code&gt;&lt;/pre&gt;</span>
+
+<span class="nt">&lt;p&gt;&lt;/menu&gt;</span>
+<span class="nt">&lt;code&gt;</span>``
+效果如下   
+{% img  /images/android/actionbar/1.png %}
+默认都是在overflow按钮中的，如果想将其显示在ActionBar中，可以为item添加属性<span class="nt">&lt;/code&gt;</span>app:showAsAction=<span class="ni">&amp;ldquo;</span>ifRoom<span class="ni">&amp;rdquo;</span><span class="nt">&lt;code&gt;</span>，这个属性表示如果ActionBar的空间够用个话就显示在ActionBar中，如果空间不够就显示overflow按钮中，默认这个只显示了一个图片，如果需要显示文本的话，指定withText就行，<span class="nt">&lt;/code&gt;</span>app:showAsAction=<span class="ni">&amp;ldquo;</span>ifRoom|withText<span class="ni">&amp;rdquo;</span>`,两种效果如下
+{% img  /images/android/actionbar/2.png %}
+{% img  /images/android/actionbar/3.png %}<span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;h3&gt;</span>点击事件<span class="nt">&lt;/h3&gt;</span>
+
+<span class="nt">&lt;p&gt;</span>当用户点击ActionBar上的按钮时，系统会调用Activity的<span class="nt">&lt;code&gt;</span>onOptionsItemSelected(MenuItem item)<span class="nt">&lt;/code&gt;</span>方法，该方法返回一个MenuItem，我们可以通过它来来判断点击的是哪个Action。
+</pre></div>

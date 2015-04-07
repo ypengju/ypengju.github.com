@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Sprite</span><span class="o">::</span><span class="n">draw</span><span class="p">(</span><span class="n">Renderer</span> <span class="o">*</span><span class="n">renderer</span><span class="p">,</span> <span class="k">const</span> <span class="n">Mat4</span> <span class="o">&amp;</span><span class="n">transform</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">flags</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="c1">// Don&#39;t do calculate the culling if the transform was not updated</span>
+    <span class="n">_insideBounds</span> <span class="o">=</span> <span class="p">(</span><span class="n">flags</span> <span class="o">&amp;</span> <span class="n">FLAGS_TRANSFORM_DIRTY</span><span class="p">)</span> <span class="o">?</span> <span class="n">renderer</span><span class="o">-&gt;</span><span class="n">checkVisibility</span><span class="p">(</span><span class="n">transform</span><span class="p">,</span> <span class="n">_contentSize</span><span class="p">)</span> <span class="o">:</span> <span class="n">_insideBounds</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">_insideBounds</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_quadCommand</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">_globalZOrder</span><span class="p">,</span> <span class="n">_texture</span><span class="o">-&gt;</span><span class="n">getName</span><span class="p">(),</span> <span class="n">getGLProgramState</span><span class="p">(),</span> <span class="n">_blendFunc</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">_quad</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">transform</span><span class="p">);</span>
+        <span class="n">renderer</span><span class="o">-&gt;</span><span class="n">addCommand</span><span class="p">(</span><span class="o">&amp;</span><span class="n">_quadCommand</span><span class="p">);</span>
+<span class="cp">#if CC_SPRITE_DEBUG_DRAW</span>
+        <span class="n">_customDebugDrawCommand</span><span class="p">.</span><span class="n">init</span><span class="p">(</span><span class="n">_globalZOrder</span><span class="p">);</span>
+        <span class="n">_customDebugDrawCommand</span><span class="p">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">Sprite</span><span class="o">::</span><span class="n">drawDebugData</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+        <span class="n">renderer</span><span class="o">-&gt;</span><span class="n">addCommand</span><span class="p">(</span><span class="o">&amp;</span><span class="n">_customDebugDrawCommand</span><span class="p">);</span>
+<span class="cp">#endif </span><span class="c1">//CC_SPRITE_DEBUG_DRAW</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

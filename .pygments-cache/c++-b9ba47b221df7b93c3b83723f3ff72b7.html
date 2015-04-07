@@ -1,0 +1,39 @@
+<div class="highlight"><pre><span class="k">typedef</span> <span class="k">struct</span> <span class="n">JniMethodInfo_</span>
+<span class="p">{</span>
+    <span class="n">JNIEnv</span> <span class="o">*</span>    <span class="n">env</span><span class="p">;</span>
+    <span class="n">jclass</span>      <span class="n">classID</span><span class="p">;</span>
+    <span class="n">jmethodID</span>   <span class="n">methodID</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">JniMethodInfo</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">JniHelper</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="n">setJavaVM</span><span class="p">(</span><span class="n">JavaVM</span> <span class="o">*</span><span class="n">javaVM</span><span class="p">);</span>
+    <span class="k">static</span> <span class="n">JavaVM</span><span class="o">*</span> <span class="nf">getJavaVM</span><span class="p">();</span>
+    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">*</span> <span class="nf">getEnv</span><span class="p">();</span>
+
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">setClassLoaderFrom</span><span class="p">(</span><span class="n">jobject</span> <span class="n">activityInstance</span><span class="p">);</span>
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getStaticMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+                              <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+
+    <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">jstring2string</span><span class="p">(</span><span class="n">jstring</span> <span class="n">str</span><span class="p">);</span>
+
+    <span class="k">static</span> <span class="n">jmethodID</span> <span class="n">loadclassMethod_methodID</span><span class="p">;</span>
+    <span class="k">static</span> <span class="n">jobject</span> <span class="n">classloader</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">static</span> <span class="n">JNIEnv</span><span class="o">*</span> <span class="n">cacheEnv</span><span class="p">(</span><span class="n">JavaVM</span><span class="o">*</span> <span class="n">jvm</span><span class="p">);</span>
+
+    <span class="k">static</span> <span class="kt">bool</span> <span class="nf">getMethodInfo_DefaultClassLoader</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span>
+                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+                                                 <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">);</span>
+
+    <span class="k">static</span> <span class="n">JavaVM</span><span class="o">*</span> <span class="n">_psJavaVM</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

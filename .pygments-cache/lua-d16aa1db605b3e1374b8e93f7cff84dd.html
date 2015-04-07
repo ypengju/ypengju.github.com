@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="k">function</span> <span class="nf">newObject</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+	<span class="k">return</span> <span class="k">function</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">get&quot;</span> <span class="k">then</span> <span class="k">return</span> <span class="n">value</span>
+		<span class="k">elseif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">set&quot;</span> <span class="k">then</span> <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+		<span class="k">else</span> <span class="nb">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">invalid action&quot;</span><span class="p">)</span>
+		<span class="k">end</span>
+	<span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">d</span> <span class="o">=</span> <span class="n">newObject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">get&quot;</span><span class="p">))</span>    <span class="c1">--&gt; 0</span>
+<span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">set&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">get&quot;</span><span class="p">))</span>    <span class="c1">--&gt; 10</span>
+</pre></div>

@@ -1,0 +1,74 @@
+<div class="highlight"><pre><span class="c1">// Draw the Scene</span>
+<span class="kt">void</span> <span class="n">Director</span><span class="o">::</span><span class="n">drawScene</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">// calculate &quot;global&quot; dt</span>
+    <span class="n">calculateDeltaTime</span><span class="p">();</span>
+    
+    <span class="c1">// skip one flame when _deltaTime equal to zero.</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">_deltaTime</span> <span class="o">&lt;</span> <span class="n">FLT_EPSILON</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">_openGLView</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_openGLView</span><span class="o">-&gt;</span><span class="n">pollInputEvents</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="c1">//tick before glClear: issue #533</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">_paused</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_scheduler</span><span class="o">-&gt;</span><span class="n">update</span><span class="p">(</span><span class="n">_deltaTime</span><span class="p">);</span>
+        <span class="n">_eventDispatcher</span><span class="o">-&gt;</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">_eventAfterUpdate</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">glClear</span><span class="p">(</span><span class="n">GL_COLOR_BUFFER_BIT</span> <span class="o">|</span> <span class="n">GL_DEPTH_BUFFER_BIT</span><span class="p">);</span>
+
+    <span class="cm">/* to avoid flickr, nextScene MUST be here: after tick and before draw.</span>
+<span class="cm">     XXX: Which bug is this one. It seems that it can&#39;t be reproduced with v0.9 */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_nextScene</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">setNextScene</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="n">pushMatrix</span><span class="p">(</span><span class="n">MATRIX_STACK_TYPE</span><span class="o">::</span><span class="n">MATRIX_STACK_MODELVIEW</span><span class="p">);</span>
+
+    <span class="c1">// draw the scene</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_runningScene</span><span class="p">)</span>
+    <span class="p">{</span>
+    	<span class="c1">//调用当前场景的visit函数</span>
+        <span class="n">_runningScene</span><span class="o">-&gt;</span><span class="n">visit</span><span class="p">(</span><span class="n">_renderer</span><span class="p">,</span> <span class="n">Mat4</span><span class="o">::</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+        <span class="n">_eventDispatcher</span><span class="o">-&gt;</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">_eventAfterVisit</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// draw the notifications node</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_notificationNode</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_notificationNode</span><span class="o">-&gt;</span><span class="n">visit</span><span class="p">(</span><span class="n">_renderer</span><span class="p">,</span> <span class="n">Mat4</span><span class="o">::</span><span class="n">IDENTITY</span><span class="p">,</span> <span class="nb">false</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">_displayStats</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">showStats</span><span class="p">();</span>
+    <span class="p">}</span>
+
+	<span class="c1">//进行渲染</span>
+    <span class="n">_renderer</span><span class="o">-&gt;</span><span class="n">render</span><span class="p">();</span>
+    <span class="n">_eventDispatcher</span><span class="o">-&gt;</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">_eventAfterDraw</span><span class="p">);</span>
+
+    <span class="n">popMatrix</span><span class="p">(</span><span class="n">MATRIX_STACK_TYPE</span><span class="o">::</span><span class="n">MATRIX_STACK_MODELVIEW</span><span class="p">);</span>
+
+    <span class="n">_totalFrames</span><span class="o">++</span><span class="p">;</span>
+
+    <span class="c1">// swap buffers</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_openGLView</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_openGLView</span><span class="o">-&gt;</span><span class="n">swapBuffers</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">_displayStats</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">calculateMPF</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

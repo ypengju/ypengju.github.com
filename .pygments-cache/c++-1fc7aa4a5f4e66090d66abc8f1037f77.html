@@ -1,0 +1,23 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">TableViewDataSource</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">TableViewDataSource</span><span class="p">()</span> <span class="p">{}</span>
+
+    <span class="c1">//每个cell的大小，用于指定tableView中每个Cell的大小</span>
+    <span class="k">virtual</span> <span class="n">Size</span> <span class="n">tableCellSizeForIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">cellSizeForTable</span><span class="p">(</span><span class="n">table</span><span class="p">);</span>
+    <span class="p">};</span>
+    
+    <span class="c1">//默认cell的大小</span>
+    <span class="k">virtual</span> <span class="n">Size</span> <span class="nf">cellSizeForTable</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">Size</span><span class="o">::</span><span class="n">ZERO</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+    <span class="c1">//索引index处的TableViewCell内容</span>
+    <span class="k">virtual</span> <span class="n">TableViewCell</span><span class="o">*</span> <span class="n">tableCellAtIndex</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">,</span> <span class="kt">ssize_t</span> <span class="n">idx</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    
+    <span class="c1">//TableView中cell的个数</span>
+    <span class="k">virtual</span> <span class="kt">ssize_t</span> <span class="n">numberOfCellsInTableView</span><span class="p">(</span><span class="n">TableView</span> <span class="o">*</span><span class="n">table</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

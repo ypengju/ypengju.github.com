@@ -1,0 +1,5 @@
+<div class="highlight"><pre><span class="n">t1</span> <span class="o">=</span> <span class="n">new</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">getmetatable</span><span class="p">(</span><span class="n">t1</span><span class="p">))</span> <span class="c1">--table: 0x7f9851408c20</span>
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="p">{})</span>    
+<span class="nb">print</span><span class="p">(</span><span class="nb">getmetatable</span><span class="p">(</span><span class="n">t1</span><span class="p">))</span> <span class="c1">--table: 0x7faef2409ea0</span>
+</pre></div>

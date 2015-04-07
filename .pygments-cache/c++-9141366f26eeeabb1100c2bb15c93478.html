@@ -1,0 +1,25 @@
+<div class="highlight"><pre><span class="k">auto</span> <span class="n">listener</span> <span class="o">=</span> <span class="n">EventListenerTouchOneByOne</span><span class="o">::</span><span class="n">create</span><span class="p">();</span>   <span class="c1">//生成监听器</span>
+<span class="c1">//添加touchBegan方法，手指接触屏幕是调用</span>
+<span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchBegan</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch begin method&quot;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="c1">//添加touchMoved方法，手指在屏幕滑动时调用</span>
+<span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchMoved</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch moved method&quot;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="c1">//添加touchEnded方法，手指离开屏幕时调用</span>
+<span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchEnded</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch ended method&quot;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="c1">//添加touchCancelled，点击事件被打断是调用</span>
+<span class="n">listener</span><span class="o">-&gt;</span><span class="n">onTouchCancelled</span> <span class="o">=</span> <span class="p">[](</span><span class="n">Touch</span> <span class="o">*</span><span class="n">touch</span><span class="p">,</span> <span class="n">Event</span> <span class="o">*</span><span class="n">unused_event</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;you touch cancenlled method&quot;</span><span class="p">);</span>
+<span class="p">};</span>
+<span class="c1">//添加监听器</span>
+<span class="k">this</span><span class="o">-&gt;</span><span class="n">getEventDispatcher</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addEventListenerWithSceneGraphPriority</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+</pre></div>

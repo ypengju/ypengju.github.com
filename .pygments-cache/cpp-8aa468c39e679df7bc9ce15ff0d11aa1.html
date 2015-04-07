@@ -1,0 +1,18 @@
+<div class="highlight"><pre><span class="n">AutoreleasePool</span><span class="o">::</span><span class="n">AutoreleasePool</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">)</span>
+<span class="o">:</span> <span class="n">_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+<span class="p">,</span> <span class="n">_isClearing</span><span class="p">(</span><span class="nb">false</span><span class="p">)</span>
+<span class="cp">#endif</span>
+<span class="p">{</span>
+    <span class="n">_managedObjectArray</span><span class="p">.</span><span class="n">reserve</span><span class="p">(</span><span class="mi">150</span><span class="p">);</span>
+    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">push</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">AutoreleasePool</span><span class="o">::~</span><span class="n">AutoreleasePool</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CCLOGINFO</span><span class="p">(</span><span class="s">&quot;deallocing AutoreleasePool: %p&quot;</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+    <span class="n">clear</span><span class="p">();</span>
+    
+    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">pop</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>

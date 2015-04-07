@@ -1,0 +1,5 @@
+<div class="highlight"><pre><span class="n">mt</span><span class="p">.</span><span class="n">__metatable</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="s">this is metatable&quot;</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">new</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">getmetatable</span><span class="p">(</span><span class="n">t1</span><span class="p">))</span> <span class="c1">--this is metatable</span>
+<span class="nb">setmetatable</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1">-- 报错 cannot change a protected metatable</span>
+</pre></div>

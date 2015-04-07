@@ -1,0 +1,36 @@
+<div class="highlight"><pre><span class="kt">bool</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">JniMethodInfo</span> <span class="o">&amp;</span><span class="n">methodinfo</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">className</span><span class="p">,</span> 
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">methodName</span><span class="p">,</span>
+                                    <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">paramCode</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">((</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">className</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">methodName</span><span class="p">)</span> <span class="o">||</span>
+        <span class="p">(</span><span class="k">nullptr</span> <span class="o">==</span> <span class="n">paramCode</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">JNIEnv</span> <span class="o">*</span><span class="n">env</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getEnv</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">env</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to get JNIEnv&quot;</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+        
+    <span class="n">jclass</span> <span class="n">classID</span> <span class="o">=</span> <span class="n">_getClassID</span><span class="p">(</span><span class="n">className</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">classID</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to find class %s&quot;</span><span class="p">,</span> <span class="n">className</span><span class="p">);</span>
+        <span class="n">env</span><span class="o">-&gt;</span><span class="n">ExceptionClear</span><span class="p">();</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">jmethodID</span> <span class="n">methodID</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">GetStaticMethodID</span><span class="p">(</span><span class="n">classID</span><span class="p">,</span> <span class="n">methodName</span><span class="p">,</span> <span class="n">paramCode</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">methodID</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">LOGE</span><span class="p">(</span><span class="s">&quot;Failed to find static method id of %s&quot;</span><span class="p">,</span> <span class="n">methodName</span><span class="p">);</span>
+        <span class="n">env</span><span class="o">-&gt;</span><span class="n">ExceptionClear</span><span class="p">();</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="p">}</span>
+        
+    <span class="n">methodinfo</span><span class="p">.</span><span class="n">classID</span> <span class="o">=</span> <span class="n">classID</span><span class="p">;</span>
+    <span class="n">methodinfo</span><span class="p">.</span><span class="n">env</span> <span class="o">=</span> <span class="n">env</span><span class="p">;</span>
+    <span class="n">methodinfo</span><span class="p">.</span><span class="n">methodID</span> <span class="o">=</span> <span class="n">methodID</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

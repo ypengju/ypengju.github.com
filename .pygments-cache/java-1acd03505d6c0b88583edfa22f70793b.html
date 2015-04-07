@@ -1,0 +1,19 @@
+<div class="highlight"><pre><span class="o">&lt;</span><span class="n">application</span> <span class="o">...</span> <span class="o">&gt;</span>
+    <span class="o">...</span>
+    <span class="o">&lt;!--</span> <span class="n">The</span> <span class="n">main</span><span class="o">/</span><span class="n">home</span> <span class="nf">activity</span> <span class="o">(</span><span class="n">has</span> <span class="n">no</span> <span class="n">parent</span> <span class="n">activity</span><span class="o">)</span> <span class="o">--&gt;</span>
+    <span class="o">&lt;</span><span class="n">activity</span>
+        <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="o">...&gt;</span>
+        <span class="o">...</span>
+    <span class="o">&lt;/</span><span class="n">activity</span><span class="o">&gt;</span>
+    <span class="o">&lt;!--</span> <span class="n">A</span> <span class="n">child</span> <span class="n">of</span> <span class="n">the</span> <span class="n">main</span> <span class="n">activity</span> <span class="o">--&gt;</span>
+    <span class="o">&lt;</span><span class="n">activity</span>
+        <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.DisplayMessageActivity&quot;</span>
+        <span class="nl">android:</span><span class="n">label</span><span class="o">=</span><span class="s">&quot;@string/title_activity_display_message&quot;</span>
+        <span class="nl">android:</span><span class="n">parentActivityName</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="o">&gt;</span>
+        <span class="o">&lt;!--</span> <span class="n">Parent</span> <span class="n">activity</span> <span class="n">meta</span><span class="o">-</span><span class="n">data</span> <span class="n">to</span> <span class="n">support</span> <span class="n">API</span> <span class="n">level</span> <span class="mi">7</span><span class="o">+</span> <span class="o">--&gt;</span>
+        <span class="o">&lt;</span><span class="n">meta</span><span class="o">-</span><span class="n">data</span>
+            <span class="nl">android:</span><span class="n">name</span><span class="o">=</span><span class="s">&quot;android.support.PARENT_ACTIVITY&quot;</span>
+            <span class="nl">android:</span><span class="n">value</span><span class="o">=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="o">/&gt;</span>
+    <span class="o">&lt;/</span><span class="n">activity</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">application</span><span class="o">&gt;</span>
+</pre></div>

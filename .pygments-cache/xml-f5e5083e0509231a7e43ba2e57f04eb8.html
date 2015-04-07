@@ -1,0 +1,22 @@
+<div class="highlight"><pre>@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+
+    MenuItem item = menu.findItem(R.id.group_chat);
+
+    MenuItemCompat.setOnActionExpandListener(item, new MenuItemCompat.OnActionExpandListener() {
+        @Override
+        public boolean onMenuItemActionExpand(MenuItem menuItem) {
+            System.out.println(&quot;---展开的时候&quot;);
+            return true; //true 表示可展开， 否则不可展开
+        }
+
+        @Override
+        public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+            System.out.println(&quot;---收缩的时候&quot;);
+            return true;//true 表示可收缩，否则不可收缩
+        }
+    });
+    return super.onCreateOptionsMenu(menu);
+}
+</pre></div>

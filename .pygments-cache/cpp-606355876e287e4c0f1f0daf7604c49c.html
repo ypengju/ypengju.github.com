@@ -1,0 +1,30 @@
+<div class="highlight"><pre><span class="c1">//Singleton.h</span>
+<span class="cp">#ifndef __Singleton__Singleton__</span>
+<span class="cp">#define __Singleton__Singleton__</span>
+
+<span class="cp">#include &lt;stdio.h&gt;</span>
+<span class="k">class</span> <span class="nc">Singleton</span><span class="p">{</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">Singleton</span><span class="p">();</span>
+
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">static</span> <span class="n">Singleton</span><span class="o">*</span> <span class="n">getInstance</span><span class="p">();</span> 
+<span class="p">};</span>
+
+<span class="cp">#endif </span><span class="cm">/* defined(__Singleton__Singleton__) */</span><span class="cp"></span>
+
+<span class="c1">//Singleton.cpp</span>
+<span class="cp">#include &quot;Singleton.h&quot;</span>
+
+<span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span><span class="n">instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="n">Singleton</span><span class="o">::</span><span class="n">Singleton</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="p">}</span>
+<span class="n">Singleton</span><span class="o">*</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

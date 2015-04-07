@@ -1,0 +1,15 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">AutoreleasePool</span><span class="o">::</span><span class="n">clear</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+    <span class="n">_isClearing</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="cp">#endif</span>
+    <span class="k">for</span> <span class="p">(</span><span class="k">const</span> <span class="k">auto</span> <span class="o">&amp;</span><span class="nl">obj</span> <span class="p">:</span> <span class="n">_managedObjectArray</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">obj</span><span class="o">-&gt;</span><span class="n">release</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">_managedObjectArray</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+    <span class="n">_isClearing</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+</pre></div>

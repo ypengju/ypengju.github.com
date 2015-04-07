@@ -1,0 +1,24 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">send</span><span class="p">(</span><span class="n">HttpRequest</span><span class="o">*</span> <span class="n">request</span><span class="p">)</span>
+<span class="p">{</span>    
+    <span class="k">if</span> <span class="p">(</span><span class="nb">false</span> <span class="o">==</span> <span class="n">lazyInitThreadSemphore</span><span class="p">())</span> 
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">request</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+        
+    <span class="n">request</span><span class="o">-&gt;</span><span class="n">retain</span><span class="p">();</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">s_requestQueue</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">lock</span><span class="p">();</span>
+        <span class="n">s_requestQueue</span><span class="o">-&gt;</span><span class="n">pushBack</span><span class="p">(</span><span class="n">request</span><span class="p">);</span>
+        <span class="n">s_requestQueueMutex</span><span class="p">.</span><span class="n">unlock</span><span class="p">();</span>
+        
+        <span class="c1">// Notify thread start to work</span>
+        <span class="n">s_SleepCondition</span><span class="p">.</span><span class="n">notify_one</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+<span class="n">doc</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>  
+<span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;Milo&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+<span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;married&quot;</span><span class="p">,</span> <span class="nb">true</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>    
+<span class="c1">//    doc.RemoveMember(&quot;married&quot;);    </span>
+<span class="n">FileStream</span> <span class="nf">f</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+<span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="n">doc</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+</pre></div>

@@ -1,0 +1,7 @@
+<div class="highlight"><pre><span class="p">[]</span>        <span class="c1">//未定义变量.试图在Lambda内使用任何外部变量都是错误的.</span>
+<span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">y</span><span class="p">]</span>   <span class="c1">//x 按值捕获, y 按引用捕获.</span>
+<span class="p">[</span><span class="o">&amp;</span><span class="p">]</span>       <span class="c1">//用到的任何外部变量都隐式按引用捕获</span>
+<span class="p">[</span><span class="o">=</span><span class="p">]</span>       <span class="c1">//用到的任何外部变量都隐式按值捕获</span>
+<span class="p">[</span><span class="o">&amp;</span><span class="p">,</span> <span class="n">x</span><span class="p">]</span>    <span class="c1">//x显式地按值捕获. 其它变量按引用捕获</span>
+<span class="p">[</span><span class="o">=</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">z</span><span class="p">]</span>   <span class="c1">//z按引用捕获. 其它变量按值捕获</span>
+</pre></div>

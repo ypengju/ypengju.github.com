@@ -1,0 +1,43 @@
+<div class="highlight"><pre><span class="k">function</span> <span class="nf">newAccount</span><span class="p">(</span> <span class="n">initValue</span> <span class="p">)</span>
+    <span class="kd">local</span> <span class="n">self</span> <span class="o">=</span> <span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">initValue</span> <span class="p">}</span>
+    <span class="kd">local</span> <span class="n">hello</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">hello</span> <span class="n">method</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;)</span>
+    <span class="k">end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="kd">local</span> <span class="n">world</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">world method&quot;</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="kd">local</span> <span class="n">getBalance</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+    <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span>
+<span class="k">end</span>
+
+<span class="k">return</span> <span class="p">{</span>
+    <span class="n">hello</span> <span class="o">=</span> <span class="n">hello</span><span class="p">,</span>
+    <span class="n">getBalanceValue</span> <span class="o">=</span> <span class="n">getBalance</span>
+<span class="p">}</span>
+<span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">n</span> <span class="o">=</span> <span class="n">newAccount</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">n</span><span class="p">.</span><span class="n">hello</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">getBalanceValue</span><span class="p">())</span>
+<span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span>  
+<span class="err">可以看到在表的最后生成一个新表，只将需要的方法暴露给外边，像上边</span><span class="n">newAccount</span><span class="err">中的</span><span class="n">world</span><span class="p">()</span><span class="err">方法就只能在内部访问，外部无法访问。</span>   
+<span class="p">[</span><span class="err">《</span><span class="n">Programming</span> <span class="k">in</span> <span class="n">Lua</span><span class="err">》</span><span class="p">](</span><span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="p">.</span><span class="n">lua</span><span class="p">.</span><span class="n">org</span><span class="o">/</span><span class="n">pil</span><span class="o">/</span><span class="mf">16.5</span><span class="p">.</span><span class="n">html</span><span class="p">)</span><span class="err">中讲到一种使用闭包实现更高效的方法。</span>   
+<span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span><span class="n">lua</span>
+<span class="k">function</span> <span class="nf">newObject</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="k">function</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">get</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="k">then</span> <span class="k">return</span> <span class="n">value</span>
+        <span class="k">elseif</span> <span class="n">action</span> <span class="o">==</span> <span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">set</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="k">then</span> <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">else</span> <span class="nb">error</span><span class="p">(</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">invalid</span> <span class="n">action</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+
+<span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">=</span> <span class="n">newObject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">get</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;))</span>    <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">0</span>
+<span class="n">d</span><span class="p">(</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">set</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="err">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">get</span><span class="err">&amp;</span><span class="n">rdquo</span><span class="p">;))</span>    <span class="err">&amp;</span><span class="n">ndash</span><span class="p">;</span><span class="o">&gt;</span> <span class="mi">10</span>
+</pre></div>

@@ -1,0 +1,24 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">insertElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">_richElements</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">element</span><span class="p">);</span>
+    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+    
+<span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">pushBackElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">_richElements</span><span class="p">.</span><span class="n">pushBack</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+    
+<span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">removeElement</span><span class="p">(</span><span class="kt">int</span> <span class="n">index</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">_richElements</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">index</span><span class="p">);</span>
+    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+    
+<span class="kt">void</span> <span class="n">RichText</span><span class="o">::</span><span class="n">removeElement</span><span class="p">(</span><span class="n">RichElement</span> <span class="o">*</span><span class="n">element</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">_richElements</span><span class="p">.</span><span class="n">eraseObject</span><span class="p">(</span><span class="n">element</span><span class="p">);</span>
+    <span class="n">_formatTextDirty</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

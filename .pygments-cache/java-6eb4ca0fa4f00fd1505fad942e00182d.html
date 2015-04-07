@@ -1,0 +1,43 @@
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.support.v4.app.Fragment</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">android.support.v7.app.ActionBar</span><span class="o">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Created by ypengju on 2015/3/29.</span>
+<span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyActionBarTab</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">Fragment</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="n">ActionBar</span><span class="o">.</span><span class="na">TabListener</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="n">Fragment</span> <span class="n">fragment</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Activity</span> <span class="n">mActivity</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">mTag</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mClass</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nf">MyActionBarTab</span><span class="o">(</span><span class="n">Activity</span> <span class="n">mActivity</span><span class="o">,</span> <span class="n">String</span> <span class="n">mTag</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">mClass</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mActivity</span> <span class="o">=</span> <span class="n">mActivity</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mTag</span> <span class="o">=</span> <span class="n">mTag</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">mClass</span> <span class="o">=</span> <span class="n">mClass</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabSelected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">fragment</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">fragment</span> <span class="o">=</span> <span class="n">Fragment</span><span class="o">.</span><span class="na">instantiate</span><span class="o">(</span><span class="n">mActivity</span><span class="o">,</span> <span class="n">mClass</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">content</span><span class="o">,</span><span class="n">fragment</span><span class="o">,</span><span class="n">mTag</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">attach</span><span class="o">(</span><span class="n">fragment</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabUnselected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">fragment</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">fragmentTransaction</span><span class="o">.</span><span class="na">detach</span><span class="o">(</span><span class="n">fragment</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTabReselected</span><span class="o">(</span><span class="n">ActionBar</span><span class="o">.</span><span class="na">Tab</span> <span class="n">tab</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">support</span><span class="o">.</span><span class="na">v4</span><span class="o">.</span><span class="na">app</span><span class="o">.</span><span class="na">FragmentTransaction</span> <span class="n">fragmentTransaction</span><span class="o">)</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>

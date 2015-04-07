@@ -1,0 +1,19 @@
+<div class="highlight"><pre><span class="c1">//Lazy create semaphore &amp; mutex &amp; thread</span>
+<span class="kt">bool</span> <span class="n">HttpClient</span><span class="o">::</span><span class="n">lazyInitThreadSemphore</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">s_requestQueue</span> <span class="o">!=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        
+        <span class="n">s_requestQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">HttpRequest</span><span class="o">*&gt;</span><span class="p">();</span>
+        <span class="n">s_responseQueue</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Vector</span><span class="o">&lt;</span><span class="n">HttpResponse</span><span class="o">*&gt;</span><span class="p">();</span>
+        
+		<span class="n">s_need_quit</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+		
+        <span class="k">auto</span> <span class="n">t</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="kr">thread</span><span class="p">(</span><span class="n">CC_CALLBACK_0</span><span class="p">(</span><span class="n">HttpClient</span><span class="o">::</span><span class="n">networkThread</span><span class="p">,</span> <span class="k">this</span><span class="p">));</span>
+        <span class="n">t</span><span class="p">.</span><span class="n">detach</span><span class="p">();</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

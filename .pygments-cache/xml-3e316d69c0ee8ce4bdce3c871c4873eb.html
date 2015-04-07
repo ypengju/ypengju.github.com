@@ -1,0 +1,18 @@
+<div class="highlight"><pre>private ShareActionProvider actionProvider;
+@Override
+public boolean onCreateOptionsMenu(Menu menu) {
+    // Inflate the menu; this adds items to the action bar if it is present.
+    getMenuInflater().inflate(R.menu.menu_main, menu);
+
+    MenuItem item = menu.findItem(R.id.group_chat); //获取Action
+    actionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item); //获取ShareActionProvider
+    actionProvider.setShareIntent(getDefaultIntent()); //设置Intent
+    return super.onCreateOptionsMenu(menu);
+}
+
+private Intent getDefaultIntent() {
+    Intent intent = new Intent(Intent.ACTION_SEND);
+    intent.setType(&quot;image/*&quot;);
+    return intent;
+}
+</pre></div>

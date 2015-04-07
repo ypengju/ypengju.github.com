@@ -1,0 +1,11 @@
+<div class="highlight"><pre><span class="k">function</span> <span class="nf">tabletostring</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+	<span class="kd">local</span> <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+	<span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="k">in</span> <span class="nb">pairs</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="k">do</span>
+		<span class="n">res</span><span class="p">[</span><span class="o">#</span><span class="n">res</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
+	<span class="k">end</span>
+	<span class="k">return</span> <span class="s2">&quot;</span><span class="s">{&quot;</span> <span class="o">..</span> <span class="nb">table.concat</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;</span><span class="s">, &quot;</span><span class="p">)</span> <span class="o">..</span> <span class="s2">&quot;</span><span class="s">}&quot;</span>
+<span class="k">end</span>
+<span class="n">mt</span><span class="p">.</span><span class="n">__tostring</span> <span class="o">=</span> <span class="n">tabletostring</span>
+<span class="n">t1</span> <span class="o">=</span> <span class="n">new</span><span class="p">{</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">}</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span> <span class="c1">--{10, 20, 30}   </span>
+</pre></div>

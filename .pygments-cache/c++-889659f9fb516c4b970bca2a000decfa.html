@@ -1,0 +1,19 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">CC_DLL</span> <span class="n">PoolManager</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">static</span> <span class="n">PoolManager</span><span class="o">*</span> <span class="n">getInstance</span><span class="p">();</span>
+    <span class="k">static</span> <span class="kt">void</span> <span class="nf">destroyInstance</span><span class="p">();</span>
+    <span class="n">AutoreleasePool</span> <span class="o">*</span><span class="n">getCurrentPool</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+
+    <span class="kt">bool</span> <span class="n">isObjectInPools</span><span class="p">(</span><span class="n">Ref</span><span class="o">*</span> <span class="n">obj</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+    <span class="k">friend</span> <span class="k">class</span> <span class="nc">AutoreleasePool</span><span class="p">;</span>
+    
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">PoolManager</span><span class="p">();</span>
+    <span class="o">~</span><span class="n">PoolManager</span><span class="p">();</span>
+    <span class="kt">void</span> <span class="nf">push</span><span class="p">(</span><span class="n">AutoreleasePool</span> <span class="o">*</span><span class="n">pool</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">pop</span><span class="p">();</span>
+    <span class="k">static</span> <span class="n">PoolManager</span><span class="o">*</span> <span class="n">s_singleInstance</span><span class="p">;</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AutoreleasePool</span><span class="o">*&gt;</span> <span class="n">_releasePoolStack</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>

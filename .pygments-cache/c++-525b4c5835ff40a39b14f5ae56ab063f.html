@@ -1,0 +1,61 @@
+<div class="highlight"><pre><span class="kt">int</span> <span class="n">LuaStack</span><span class="o">::</span><span class="n">executeFunction</span><span class="p">(</span><span class="kt">int</span> <span class="n">numArgs</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">functionIndex</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">numArgs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionIndex</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;value at stack [%d] is not function&quot;</span><span class="p">,</span> <span class="n">functionIndex</span><span class="p">);</span>
+        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">numArgs</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove function and arguments</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">int</span> <span class="n">traceback</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">lua_getglobal</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="s">&quot;__G__TRACKBACK__&quot;</span><span class="p">);</span>                         <span class="cm">/* L: ... func arg1 arg2 ... G */</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">lua_isfunction</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>                                            <span class="cm">/* L: ... func arg1 arg2 ... */</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">lua_insert</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">functionIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>                         <span class="cm">/* L: ... G func arg1 arg2 ... */</span>
+        <span class="n">traceback</span> <span class="o">=</span> <span class="n">functionIndex</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="kt">int</span> <span class="n">error</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="o">++</span><span class="n">_callFromLua</span><span class="p">;</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">lua_pcall</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="n">numArgs</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">traceback</span><span class="p">);</span>                  <span class="cm">/* L: ... [G] ret */</span>
+    <span class="o">--</span><span class="n">_callFromLua</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">error</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">traceback</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">CCLOG</span><span class="p">(</span><span class="s">&quot;[LUA ERROR] %s&quot;</span><span class="p">,</span> <span class="n">lua_tostring</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span> <span class="mi">1</span><span class="p">));</span>        <span class="cm">/* L: ... error */</span>
+            <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove error message from stack</span>
+        <span class="p">}</span>
+        <span class="k">else</span>                                                            <span class="cm">/* L: ... G error */</span>
+        <span class="p">{</span>
+            <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// remove __G__TRACKBACK__ and error message from stack</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// get return value</span>
+    <span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">lua_isnumber</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">lua_tointeger</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">lua_isboolean</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+    <span class="p">{</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">lua_toboolean</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="c1">// remove return value from stack</span>
+    <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>                                                <span class="cm">/* L: ... [G] */</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">traceback</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">lua_pop</span><span class="p">(</span><span class="n">_state</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// remove __G__TRACKBACK__ from stack      /* L: ... */</span>
+    <span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

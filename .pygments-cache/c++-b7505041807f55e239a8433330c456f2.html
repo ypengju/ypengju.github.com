@@ -1,0 +1,9 @@
+<div class="highlight"><pre><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+<span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getStaticMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;staticMethod1&quot;</span><span class="p">,</span> <span class="s">&quot;()V&quot;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method if&quot;</span><span class="p">);</span>
+    <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallStaticVoidMethod</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; static void method else&quot;</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

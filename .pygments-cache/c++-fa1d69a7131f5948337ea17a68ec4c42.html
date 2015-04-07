@@ -1,0 +1,37 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">dispatchEvent</span><span class="p">(</span><span class="n">Event</span><span class="o">*</span> <span class="n">event</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_isEnabled</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    
+    <span class="n">updateDirtyFlagForSceneGraph</span><span class="p">();</span>
+    
+    
+    <span class="n">DispatchGuard</span> <span class="nf">guard</span><span class="p">(</span><span class="n">_inDispatch</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="o">-&gt;</span><span class="n">getType</span><span class="p">()</span> <span class="o">==</span> <span class="n">Event</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">TOUCH</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">dispatchTouchEvent</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">EventTouch</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">event</span><span class="p">));</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+    <span class="k">auto</span> <span class="n">listenerID</span> <span class="o">=</span> <span class="n">__getListenerID</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+    
+    <span class="n">sortEventListeners</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+    
+    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">listenerID</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">!=</span> <span class="n">_listenerMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">listeners</span> <span class="o">=</span> <span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+        
+        <span class="k">auto</span> <span class="n">onEvent</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">event</span><span class="p">](</span><span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">bool</span><span class="p">{</span>
+            <span class="n">event</span><span class="o">-&gt;</span><span class="n">setCurrentTarget</span><span class="p">(</span><span class="n">listener</span><span class="o">-&gt;</span><span class="n">getAssociatedNode</span><span class="p">());</span>
+            <span class="n">listener</span><span class="o">-&gt;</span><span class="n">_onEvent</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+            <span class="k">return</span> <span class="n">event</span><span class="o">-&gt;</span><span class="n">isStopped</span><span class="p">();</span>
+        <span class="p">};</span>
+        
+        <span class="n">dispatchEventToListeners</span><span class="p">(</span><span class="n">listeners</span><span class="p">,</span> <span class="n">onEvent</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="n">updateListeners</span><span class="p">(</span><span class="n">event</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

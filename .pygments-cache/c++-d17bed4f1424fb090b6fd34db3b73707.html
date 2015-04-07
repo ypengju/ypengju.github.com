@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">DisplayLinkDirector</span><span class="o">::</span><span class="n">mainLoop</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_purgeDirectorInNextLoop</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">_purgeDirectorInNextLoop</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="n">purgeDirector</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="n">_invalid</span><span class="p">)</span>
+    <span class="p">{</span>
+    	 <span class="c1">//渲染场景</span>
+        <span class="n">drawScene</span><span class="p">();</span>
+     
+        <span class="c1">// release the objects</span>
+        <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">clear</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

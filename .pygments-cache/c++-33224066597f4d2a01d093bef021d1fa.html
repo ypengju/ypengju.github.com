@@ -1,0 +1,26 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Renderer</span><span class="o">::</span><span class="n">render</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="c1">//Uncomment this once everything is rendered by new renderer</span>
+    <span class="c1">//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</span>
+
+    <span class="c1">//TODO setup camera or MVP</span>
+    <span class="n">_isRendering</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="n">_glViewAssigned</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="c1">// cleanup</span>
+        <span class="n">_drawnBatches</span> <span class="o">=</span> <span class="n">_drawnVertices</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="c1">//Process render commands</span>
+        <span class="c1">//1. Sort render commands based on ID</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="o">&amp;</span><span class="nl">renderqueue</span> <span class="p">:</span> <span class="n">_renderGroups</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">renderqueue</span><span class="p">.</span><span class="n">sort</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="n">visitRenderQueue</span><span class="p">(</span><span class="n">_renderGroups</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+        <span class="n">flush</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="n">clean</span><span class="p">();</span>
+    <span class="n">_isRendering</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

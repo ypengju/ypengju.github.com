@@ -1,0 +1,14 @@
+<div class="highlight"><pre><span class="n">Document</span> <span class="n">doc</span><span class="p">;</span>
+<span class="n">doc</span><span class="p">.</span><span class="n">SetObject</span><span class="p">();</span>
+<span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">array</span><span class="p">(</span><span class="n">kArrayType</span><span class="p">);</span>
+<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">rapidjson</span><span class="o">::</span><span class="n">Value</span> <span class="n">tmp</span><span class="p">(</span><span class="n">kObjectType</span><span class="p">);</span>
+    <span class="n">tmp</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;class1&quot;</span><span class="p">,</span> <span class="s">&quot;ypengju&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+    <span class="n">tmp</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;class2&quot;</span><span class="p">,</span> <span class="s">&quot;xcode&quot;</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+    <span class="n">array</span><span class="p">.</span><span class="n">PushBack</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+<span class="p">}</span>    
+<span class="n">doc</span><span class="p">.</span><span class="n">AddMember</span><span class="p">(</span><span class="s">&quot;array&quot;</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">doc</span><span class="p">.</span><span class="n">GetAllocator</span><span class="p">());</span>
+<span class="n">FileStream</span> <span class="nf">f</span><span class="p">(</span><span class="n">stdout</span><span class="p">);</span>
+<span class="n">PrettyWriter</span><span class="o">&lt;</span><span class="n">FileStream</span><span class="o">&gt;</span> <span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">);</span>
+<span class="n">doc</span><span class="p">.</span><span class="n">Accept</span><span class="p">(</span><span class="n">writer</span><span class="p">);</span>
+</pre></div>

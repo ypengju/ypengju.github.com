@@ -1,0 +1,17 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">EventDispatcher</span><span class="o">::</span><span class="n">associateNodeAndEventListener</span><span class="p">(</span><span class="n">Node</span><span class="o">*</span> <span class="n">node</span><span class="p">,</span> <span class="n">EventListener</span><span class="o">*</span> <span class="n">listener</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EventListener</span><span class="o">*&gt;*</span> <span class="n">listeners</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="k">auto</span> <span class="n">found</span> <span class="o">=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">found</span> <span class="o">!=</span> <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+    <span class="p">{</span>
+        <span class="n">listeners</span> <span class="o">=</span> <span class="n">found</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">listeners</span> <span class="o">=</span> <span class="k">new</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">EventListener</span><span class="o">*&gt;</span><span class="p">();</span>
+        <span class="n">_nodeListenersMap</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">listeners</span><span class="p">));</span>
+    <span class="p">}</span>
+    
+    <span class="n">listeners</span><span class="o">-&gt;</span><span class="n">push_back</span><span class="p">(</span><span class="n">listener</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>

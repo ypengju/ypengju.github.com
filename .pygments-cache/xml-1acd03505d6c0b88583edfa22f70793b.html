@@ -1,0 +1,19 @@
+<div class="highlight"><pre><span class="nt">&lt;application</span> <span class="err">...</span> <span class="nt">&gt;</span>
+    ...
+    <span class="c">&lt;!-- The main/home activity (has no parent activity) --&gt;</span>
+    <span class="nt">&lt;activity</span>
+        <span class="na">android:name=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="err">...</span><span class="nt">&gt;</span>
+        ...
+    <span class="nt">&lt;/activity&gt;</span>
+    <span class="c">&lt;!-- A child of the main activity --&gt;</span>
+    <span class="nt">&lt;activity</span>
+        <span class="na">android:name=</span><span class="s">&quot;com.example.myfirstapp.DisplayMessageActivity&quot;</span>
+        <span class="na">android:label=</span><span class="s">&quot;@string/title_activity_display_message&quot;</span>
+        <span class="na">android:parentActivityName=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="nt">&gt;</span>
+        <span class="c">&lt;!-- Parent activity meta-data to support API level 7+ --&gt;</span>
+        <span class="nt">&lt;meta-data</span>
+            <span class="na">android:name=</span><span class="s">&quot;android.support.PARENT_ACTIVITY&quot;</span>
+            <span class="na">android:value=</span><span class="s">&quot;com.example.myfirstapp.MainActivity&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/activity&gt;</span>
+<span class="nt">&lt;/application&gt;</span>
+</pre></div>

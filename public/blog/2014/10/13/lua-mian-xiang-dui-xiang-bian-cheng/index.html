@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Lua &#8211; 面向对象编程 - 左轮</title>
+  <meta name="author" content="左轮">
+
+  
+  <meta name="description" content="在了解表的使用，以及元表和元方法的使用后，就可以用表来实现面向对象编程了。 类 面向对象编程的核心就是类了，先来看看lua怎么实现类，并通过类生成不同实例。 Class1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+local Account = {}
+function &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://ypengju.github.io/blog/2014/10/13/lua-mian-xiang-dui-xiang-bian-cheng">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="" rel="alternate" title="左轮" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.useso.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.useso.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.useso.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">左轮</a></h1>
+  
+    <h2>我是一把手枪</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+
+  
+</ul>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Lua &#8211; 面向对象编程</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-13T22:08:10+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:08 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>在了解表的使用，以及元表和元方法的使用后，就可以用表来实现面向对象编程了。</p>
+
+<h3>类</h3>
+
+<p>面向对象编程的核心就是类了，先来看看lua怎么实现类，并通过类生成不同实例。   <!-- more --></p>
+
+<figure class='code'><figcaption><span>Class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">Account</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">Account</span><span class="p">:</span><span class="n">new</span><span class="p">(</span> <span class="n">o</span> <span class="p">)</span>
+</span><span class='line'>  <span class="n">o</span> <span class="o">=</span> <span class="n">o</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="nb">setmetatable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">o</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">Account</span><span class="p">:</span><span class="n">printBalance</span><span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">Account balance = &quot;</span> <span class="o">..</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="n">Account</span><span class="p">:</span><span class="n">new</span><span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">}</span>
+</span><span class='line'><span class="n">b</span> <span class="o">=</span> <span class="n">Account</span><span class="p">:</span><span class="n">new</span><span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">2</span><span class="p">}</span>
+</span><span class='line'><span class="n">a</span><span class="p">:</span><span class="n">printBalance</span><span class="p">()</span> <span class="c1">-- Account balance = 1</span>
+</span><span class='line'><span class="n">b</span><span class="p">:</span><span class="n">printBalance</span><span class="p">()</span> <span class="c1">-- Account balance = 2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+生成了两个实例a，b，都可以调用printBalance()函数打印内容，那么就来分析一下：</p>
+
+<ul>
+<li>首先调用<code>Accout:new{ balance = 1 }</code>将一个表传入new()函数中，如果传入参数为空，赋值一个空的表</li>
+<li>设置表o的元表为Account，此时的self代表Account</li>
+<li>设置Account表的<code>__index</code>域为自己，然后返回表o，此时得到一个元表为Account的表</li>
+<li>当调用printBalance()表的时候，在返回的表中没有定义此方法，所以会去访问返回表的元表    <code>__index</code>域，这个域是Account表,并在表Account定义了printBalance()方法，所以就调用了Account表中定义的printBalance()方法。</li>
+<li>a:printBalance()时，此时self就是a表，所以self.balance就是a表中的balance，所以就打印1</li>
+</ul>
+
+
+<p>这样就定义了一个简单的类，使得new出来的实例，可以调用类中定义的方法。</p>
+
+<h3>继承</h3>
+
+<p>有类就要有继承，再看lua怎么实现继承</p>
+
+<figure class='code'><figcaption><span>继承</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">Account</span> <span class="o">=</span> <span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="mi">0</span> <span class="p">}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">Account</span><span class="p">:</span><span class="n">new</span><span class="p">(</span> <span class="n">o</span> <span class="p">)</span>
+</span><span class='line'>  <span class="n">o</span> <span class="o">=</span> <span class="n">o</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="nb">setmetatable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">self</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">self</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">self</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">o</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">function</span> <span class="nf">Account</span><span class="p">:</span><span class="n">printBalance</span><span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">Account balance = &quot;</span> <span class="o">..</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">function</span> <span class="nf">Account</span><span class="p">:</span><span class="n">addBalance</span><span class="p">(</span> <span class="n">v</span> <span class="p">)</span>
+</span><span class='line'>  <span class="k">if</span> <span class="nb">tonumber</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">then</span>
+</span><span class='line'>      <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span> <span class="o">+</span> <span class="n">v</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">SubAccount</span> <span class="o">=</span> <span class="n">Account</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">function</span> <span class="nf">SubAccount</span><span class="p">:</span><span class="n">printSub</span><span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">this is come from subAccount&quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">a</span> <span class="o">=</span> <span class="n">SubAccount</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+</span><span class='line'><span class="n">a</span><span class="p">:</span><span class="n">printSub</span><span class="p">()</span>      <span class="c1">-- this is come from subAccount</span>
+</span><span class='line'><span class="n">a</span><span class="p">:</span><span class="n">printBalance</span><span class="p">()</span>    <span class="c1">-- Account balance = 0</span>
+</span><span class='line'><span class="n">a</span><span class="p">:</span><span class="n">addBalance</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">a</span><span class="p">:</span><span class="n">printBalance</span><span class="p">()</span>    <span class="c1">-- Account balance = 10   </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li>首先定义Account表，相当于父类，其中定义了一个成员变量及两个方法</li>
+<li>通过<code>Account:new()</code>定义SubAccount，相当于子类，在子类中定义了printSub()方法。</li>
+<li><code>a = SubAccount:new()</code>，用来生成子类的实例，可是SubAccount中并没有定义new()方法，但可以看到SubAccount就是<code>Account:new()</code>返回的一个表，因为传入参数为零，所以此时其实返回的是一个空表，空表中当然没有new()方法，但是这个空表的元表为Account表，并且<code>__index</code>域设置为Account表，所以追中<code>SubAccount:new()</code>调用的就是<code>Account:new()</code>，所以a就是一个表，表的元表就是Account表</li>
+<li>当调用printSub()，因为SubAccount定义了printSub，直接调用，相当于子类有这个方法，直接调用子类的方法</li>
+<li>调用printBalance()，SubAccount并未定义次方法，所以就会去访问<code>__index</code>域，就会调到<code>Account:printBalance()</code>方法，而在此方法中，调用了self.balance成员，此时的self是a，a中也没有balance定义，所以就会方位<code>__index</code>域，调用<code>Account.balance</code>,最后打印出0</li>
+<li>调用addBalance(10)，相当于给Account中的balance加了10,所以再次打印的时候为10</li>
+<li>上边两个方法的访问相当于子类中没有定义的方法和变量，会去长它的父类。</li>
+</ul>
+
+
+<h3>多继承</h3>
+
+<p>除了单继承，lua还可以实现多重继承，继续看例子</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="kd">local</span> <span class="n">A</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">A</span><span class="p">:</span><span class="n">hello</span><span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">A hello method &quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">local</span> <span class="n">B</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'><span class="k">function</span> <span class="nf">B</span><span class="p">:</span><span class="n">world</span><span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>  <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">B world method &quot;</span><span class="p">)</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">function</span> <span class="nf">createClass</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">c</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">parents</span> <span class="o">=</span> <span class="p">{</span> <span class="o">...</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">local</span> <span class="k">function</span> <span class="nf">search</span><span class="p">(</span> <span class="n">k</span><span class="p">,</span> <span class="n">parents</span> <span class="p">)</span>
+</span><span class='line'>      <span class="k">for</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">#</span><span class="n">parents</span> <span class="k">do</span>
+</span><span class='line'>          <span class="kd">local</span> <span class="n">func</span> <span class="o">=</span> <span class="n">parents</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">k</span><span class="p">]</span>
+</span><span class='line'>          <span class="k">if</span> <span class="n">func</span> <span class="k">then</span>
+</span><span class='line'>              <span class="k">return</span> <span class="n">func</span>
+</span><span class='line'>          <span class="k">end</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nb">setmetatable</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="p">{</span><span class="n">__index</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">search</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">parents</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">c</span><span class="p">.</span><span class="n">__index</span> <span class="o">=</span> <span class="n">c</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">function</span> <span class="nf">c</span><span class="p">:</span><span class="n">new</span><span class="p">(</span> <span class="n">o</span> <span class="p">)</span>
+</span><span class='line'>      <span class="n">o</span> <span class="o">=</span> <span class="n">o</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span class='line'>      <span class="nb">setmetatable</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">o</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">c</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">C</span> <span class="o">=</span> <span class="n">createClass</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</span><span class='line'><span class="n">c1</span> <span class="o">=</span> <span class="n">C</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+</span><span class='line'><span class="n">c1</span><span class="p">:</span><span class="n">hello</span><span class="p">()</span> <span class="c1">-- A hello method </span>
+</span><span class='line'><span class="n">c1</span><span class="p">:</span><span class="n">world</span><span class="p">()</span> <span class="c1">-- B world method </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<ul>
+<li>先定义基类A,B，并分别定义了了方法</li>
+<li>然后使用createClass()方法实现多重继承，其实可以看到，只是遍历两个基类表，找到对应的方法，并调用</li>
+<li>C相当于继承自A，B，实现了多重继承，来看具体调用过程</li>
+<li><code>c1 = C:new()</code>生成C的实例，C其实就是createClass()方法中的表c，(具体是c的一个副本)，所以<code>C:new()</code>调用的是<code>function c:new( o )</code>函数，返回一个以c表为元表的表</li>
+<li>调用<code>c1:hello()</code>方法，因为<code>C:new()</code>返回的表中并未定义hello()方法，所以会去访问反回表的元表<code>__idnex</code>域，即<code>c.__index = c</code>，多以访问了c表，在c表中，也没有定义hello()方法，所以会继续访问c表的元表<code>__index</code>域，可以看到c表元表<code>__index</code>与定义的是一个函数，在这个函数中调用了search()函数，search()函数完成的一个功能是根据一个k查找由<code>createClass(A, B)</code>传进来参数生成的表parents，遍历parents中所有表，查找为k的值，此时k就是方法名，这个hello()方法会在A中找到，所以返回，所以最终调用了A中的hello()方法。</li>
+<li>c1:world()同上，调用了B中的world()方法</li>
+<li>这样就实现了多重继承，使得子类可以访问父类方法。但这只是简单的模拟实现了多重继承，具体多重继承中的好多问题并未解决。</li>
+</ul>
+
+
+<h3>封装</h3>
+
+<p>类的一大作用就是封装，使得我们可以选择性的对外暴露的借口。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">newAccount</span><span class="p">(</span> <span class="n">initValue</span> <span class="p">)</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">self</span> <span class="o">=</span> <span class="p">{</span> <span class="n">balance</span> <span class="o">=</span> <span class="n">initValue</span> <span class="p">}</span>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">hello</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">hello method&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">world</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>      <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">world method&quot;</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">local</span> <span class="n">getBalance</span> <span class="o">=</span> <span class="k">function</span> <span class="p">(</span>  <span class="p">)</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">self</span><span class="p">.</span><span class="n">balance</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">hello</span> <span class="o">=</span> <span class="n">hello</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">getBalanceValue</span> <span class="o">=</span> <span class="n">getBalance</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">n</span> <span class="o">=</span> <span class="n">newAccount</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="n">n</span><span class="p">.</span><span class="n">hello</span><span class="p">()</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">.</span><span class="n">getBalanceValue</span><span class="p">())</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p> <br/>
+可以看到在表的最后生成一个新表，只将需要的方法暴露给外边，像上边newAccount中的world()方法就只能在内部访问，外部无法访问。 <br/>
+<a href="http://www.lua.org/pil/16.5.html">《Programming in Lua》</a>中讲到一种使用闭包实现更高效的方法。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='lua'><span class='line'><span class="k">function</span> <span class="nf">newObject</span><span class="p">(</span> <span class="n">value</span> <span class="p">)</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">function</span> <span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">get&quot;</span> <span class="k">then</span> <span class="k">return</span> <span class="n">value</span>
+</span><span class='line'>      <span class="k">elseif</span> <span class="n">action</span> <span class="o">==</span> <span class="s2">&quot;</span><span class="s">set&quot;</span> <span class="k">then</span> <span class="n">value</span> <span class="o">=</span> <span class="n">v</span>
+</span><span class='line'>      <span class="k">else</span> <span class="nb">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">invalid action&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">d</span> <span class="o">=</span> <span class="n">newObject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">get&quot;</span><span class="p">))</span>    <span class="c1">--&gt; 0</span>
+</span><span class='line'><span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">set&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span><span class='line'><span class="nb">print</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">get&quot;</span><span class="p">))</span>    <span class="c1">--&gt; 10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">左轮</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2014-10-13T22:08:10+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>13</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:08 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/lua/'>lua</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+  	<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1970300"></script>
+<!-- UY END -->
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/07/cocos2d-x-shi-jian-fen-fa-ji-zhi/" title="Previous Post: cocos2d-x -- 事件分发机制">&laquo; cocos2d-x &#8211; 事件分发机制</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/" title="Next Post: cocos2d-x -- 内存管理">cocos2d-x &#8211; 内存管理 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/26/android-layout/">Android &#8211; Layout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/23/android-ios-tuisong/">Android IOS 推送</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-activity-lifttime/">Android &#8211; Activity</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/08/android-new-android/">Android &#8211; 再学android</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/07/cocos2d-x-clippingnode/">Cocos2d-x &#8211; ClippingNode</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/05/cocos2d-x-fu-wen-ben-richtext/">Cocos2d-x &#8211; 富文本RichText</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/27/ios-bian-yi-jing-tai-ku/">IOS &#8211; 编译静态库</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+<section>
+  <h1>Categories</h1>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2015 - 左轮 -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<div class="highlight"><pre><span class="n">Ref</span><span class="o">::</span><span class="n">Ref</span><span class="p">()</span>
+<span class="o">:</span> <span class="n">_referenceCount</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1">// when the Ref is created, the reference count of it is 1</span>
+<span class="p">{</span>
+<span class="cp">#if CC_ENABLE_SCRIPT_BINDING</span>
+    <span class="k">static</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">uObjectCount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">_luaID</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">_ID</span> <span class="o">=</span> <span class="o">++</span><span class="n">uObjectCount</span><span class="p">;</span>
+    <span class="n">_scriptObject</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+<span class="cp">#endif</span>
+    
+<span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+    <span class="n">trackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="n">Ref</span><span class="o">::~</span><span class="n">Ref</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="cp">#if CC_ENABLE_SCRIPT_BINDING</span>
+    <span class="c1">// if the object is referenced by Lua engine, remove it</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_luaID</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">ScriptEngineManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getScriptEngine</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">removeScriptObjectByObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">else</span>
+    <span class="p">{</span>
+        <span class="n">ScriptEngineProtocol</span><span class="o">*</span> <span class="n">pEngine</span> <span class="o">=</span> <span class="n">ScriptEngineManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getScriptEngine</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">pEngine</span> <span class="o">!=</span> <span class="k">nullptr</span> <span class="o">&amp;&amp;</span> <span class="n">pEngine</span><span class="o">-&gt;</span><span class="n">getScriptType</span><span class="p">()</span> <span class="o">==</span> <span class="n">kScriptTypeJavascript</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">pEngine</span><span class="o">-&gt;</span><span class="n">removeScriptObjectByObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="cp">#endif</span>
+
+
+<span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_referenceCount</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">untrackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">Ref</span><span class="o">::</span><span class="n">retain</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">_referenceCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;reference count should greater than 0&quot;</span><span class="p">);</span>
+    <span class="o">++</span><span class="n">_referenceCount</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">Ref</span><span class="o">::</span><span class="n">release</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">CCASSERT</span><span class="p">(</span><span class="n">_referenceCount</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s">&quot;reference count should greater than 0&quot;</span><span class="p">);</span>
+    <span class="o">--</span><span class="n">_referenceCount</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">_referenceCount</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">{</span>
+<span class="cp">#if defined(COCOS2D_DEBUG) &amp;&amp; (COCOS2D_DEBUG &gt; 0)</span>
+        <span class="k">auto</span> <span class="n">poolManager</span> <span class="o">=</span> <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">poolManager</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">isClearing</span><span class="p">()</span> <span class="o">&amp;&amp;</span> <span class="n">poolManager</span><span class="o">-&gt;</span><span class="n">isObjectInPools</span><span class="p">(</span><span class="k">this</span><span class="p">))</span>
+        <span class="p">{</span>
+            <span class="n">CCASSERT</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">&quot;The reference shouldn&#39;t be 0 because it is still in autorelease pool.&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="cp">#endif</span>
+
+<span class="cp">#if CC_USE_MEM_LEAK_DETECTION</span>
+        <span class="n">untrackRef</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="cp">#endif</span>
+        <span class="k">delete</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">Ref</span><span class="o">*</span> <span class="n">Ref</span><span class="o">::</span><span class="n">autorelease</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">PoolManager</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">getCurrentPool</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">addObject</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>

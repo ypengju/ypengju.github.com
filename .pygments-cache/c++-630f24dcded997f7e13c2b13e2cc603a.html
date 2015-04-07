@@ -1,0 +1,70 @@
+<div class="highlight"><pre><span class="kt">void</span> <span class="n">Renderer</span><span class="o">::</span><span class="n">visitRenderQueue</span><span class="p">(</span><span class="k">const</span> <span class="n">RenderQueue</span><span class="o">&amp;</span> <span class="n">queue</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">ssize_t</span> <span class="n">size</span> <span class="o">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="kt">ssize_t</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="n">size</span><span class="p">;</span> <span class="o">++</span><span class="n">index</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">auto</span> <span class="n">command</span> <span class="o">=</span> <span class="n">queue</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+        <span class="k">auto</span> <span class="n">commandType</span> <span class="o">=</span> <span class="n">command</span><span class="o">-&gt;</span><span class="n">getType</span><span class="p">();</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">RenderCommand</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">QUAD_COMMAND</span> <span class="o">==</span> <span class="n">commandType</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">flush3D</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">QuadCommand</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+            <span class="c1">//Batch quads</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">_numQuads</span> <span class="o">+</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">VBO_SIZE</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="n">CCASSERT</span><span class="p">(</span><span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">()</span><span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">VBO_SIZE</span><span class="p">,</span> <span class="s">&quot;VBO is not big enough for quad data, please break the quad data down or use customized render command&quot;</span><span class="p">);</span>
+                
+                <span class="c1">//Draw batched quads if VBO is full</span>
+                <span class="n">drawBatchedQuads</span><span class="p">();</span>
+            <span class="p">}</span>
+            
+            <span class="n">_batchedQuadCommands</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">cmd</span><span class="p">);</span>
+            
+            <span class="n">memcpy</span><span class="p">(</span><span class="n">_quads</span> <span class="o">+</span> <span class="n">_numQuads</span><span class="p">,</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuads</span><span class="p">(),</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">V3F_C4B_T2F_Quad</span><span class="p">)</span> <span class="o">*</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">());</span>
+            <span class="n">convertToWorldCoordinates</span><span class="p">(</span><span class="n">_quads</span> <span class="o">+</span> <span class="n">_numQuads</span><span class="p">,</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">(),</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getModelView</span><span class="p">());</span>
+            
+            <span class="n">_numQuads</span> <span class="o">+=</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getQuadCount</span><span class="p">();</span>
+
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">RenderCommand</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">GROUP_COMMAND</span> <span class="o">==</span> <span class="n">commandType</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">flush</span><span class="p">();</span>
+            <span class="kt">int</span> <span class="n">renderQueueID</span> <span class="o">=</span> <span class="p">((</span><span class="n">GroupCommand</span><span class="o">*</span><span class="p">)</span> <span class="n">command</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">getRenderQueueID</span><span class="p">();</span>
+            <span class="n">visitRenderQueue</span><span class="p">(</span><span class="n">_renderGroups</span><span class="p">[</span><span class="n">renderQueueID</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">RenderCommand</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">CUSTOM_COMMAND</span> <span class="o">==</span> <span class="n">commandType</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">flush</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">CustomCommand</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+            <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">RenderCommand</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">BATCH_COMMAND</span> <span class="o">==</span> <span class="n">commandType</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">flush</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">BatchCommand</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+            <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">execute</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">RenderCommand</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">MESH_COMMAND</span> <span class="o">==</span> <span class="n">commandType</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">flush2D</span><span class="p">();</span>
+            <span class="k">auto</span> <span class="n">cmd</span> <span class="o">=</span> <span class="k">static_cast</span><span class="o">&lt;</span><span class="n">MeshCommand</span><span class="o">*&gt;</span><span class="p">(</span><span class="n">command</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">_lastBatchedMeshCommand</span> <span class="o">==</span> <span class="k">nullptr</span> <span class="o">||</span> <span class="n">_lastBatchedMeshCommand</span><span class="o">-&gt;</span><span class="n">getMaterialID</span><span class="p">()</span> <span class="o">!=</span> <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">getMaterialID</span><span class="p">())</span>
+            <span class="p">{</span>
+                <span class="n">flush3D</span><span class="p">();</span>
+                <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">preBatchDraw</span><span class="p">();</span>
+                <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">batchDraw</span><span class="p">();</span>
+                <span class="n">_lastBatchedMeshCommand</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="k">else</span>
+            <span class="p">{</span>
+                <span class="n">cmd</span><span class="o">-&gt;</span><span class="n">batchDraw</span><span class="p">();</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">else</span>
+        <span class="p">{</span>
+            <span class="n">CCLOGERROR</span><span class="p">(</span><span class="s">&quot;Unknown commands in renderQueue&quot;</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>

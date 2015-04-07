@@ -1,0 +1,15 @@
+<div class="highlight"><pre><span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+    <span class="p">{</span>
+        <span class="n">UNKNOWN</span><span class="p">,</span>
+        <span class="n">TOUCH_ONE_BY_ONE</span><span class="p">,</span>
+        <span class="n">TOUCH_ALL_AT_ONCE</span><span class="p">,</span>
+        <span class="n">KEYBOARD</span><span class="p">,</span>
+        <span class="n">MOUSE</span><span class="p">,</span>
+        <span class="n">ACCELERATION</span><span class="p">,</span>
+        <span class="n">FOCUS</span><span class="p">,</span>
+<span class="cp">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)</span>
+		<span class="n">GAME_CONTROLLER</span><span class="p">,</span>
+<span class="cp">#endif</span>
+        <span class="n">CUSTOM</span>
+    <span class="p">};</span>
+</pre></div>

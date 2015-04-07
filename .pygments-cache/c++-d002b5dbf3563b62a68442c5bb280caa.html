@@ -1,0 +1,13 @@
+<div class="highlight"><pre><span class="n">JniMethodInfo</span> <span class="n">info</span><span class="p">;</span>
+<span class="kt">bool</span> <span class="n">isHave</span> <span class="o">=</span> <span class="n">JniHelper</span><span class="o">::</span><span class="n">getMethodInfo</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="s">&quot;org/cocos2dx/cpp/AppActivity&quot;</span><span class="p">,</span> <span class="s">&quot;voidMethod1&quot;</span><span class="p">,</span> <span class="s">&quot;(II)I&quot;</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">isHave</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; void method if&quot;</span><span class="p">);</span>
+    <span class="n">jobject</span> <span class="n">jobj</span> <span class="o">=</span> <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">NewObject</span><span class="p">(</span><span class="n">info</span><span class="p">.</span><span class="n">classID</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">);</span>
+    <span class="n">jint</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span>
+    <span class="n">jint</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+    <span class="n">jint</span> <span class="n">result</span> <span class="o">=</span> <span class="n">info</span><span class="p">.</span><span class="n">env</span><span class="o">-&gt;</span><span class="n">CallIntMethod</span><span class="p">(</span><span class="n">jobj</span><span class="p">,</span> <span class="n">info</span><span class="p">.</span><span class="n">methodID</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot;------return result %ld&quot;</span><span class="p">,</span><span class="n">result</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="n">log</span><span class="p">(</span><span class="s">&quot; void method else&quot;</span><span class="p">);</span>
+<span class="p">}</span>   
+</pre></div>

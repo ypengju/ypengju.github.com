@@ -1,0 +1,25 @@
+<div class="highlight"><pre><span class="bp">UILocalNotification</span> <span class="o">*</span><span class="n">notification</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UILocalNotification</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">notification</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//设置时区</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">timeZone</span><span class="o">=</span><span class="p">[</span><span class="bp">NSTimeZone</span> <span class="n">defaultTimeZone</span><span class="p">];</span>
+    <span class="c1">//设置推送的时间点</span>
+    <span class="bp">NSDateFormatter</span> <span class="o">*</span><span class="n">formatter</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSDateFormatter</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">formatter</span> <span class="nl">setDateFormat</span><span class="p">:</span><span class="s">@&quot;HH:mm:ss&quot;</span><span class="p">];</span>
+    <span class="bp">NSDate</span> <span class="o">*</span><span class="n">date</span> <span class="o">=</span> <span class="p">[</span><span class="n">formatter</span> <span class="nl">dateFromString</span><span class="p">:</span><span class="s">@&quot;09:00:00&quot;</span><span class="p">];</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">fireDate</span><span class="o">=</span><span class="n">date</span><span class="p">;</span>
+    <span class="c1">//通知重复提示的单位，可以是天、周、月</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">repeatInterval</span> <span class="o">=</span> <span class="n">kCFCalendarUnitDay</span><span class="p">;</span>
+    <span class="c1">//推送的内容</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">alertBody</span> <span class="o">=</span> <span class="s">@&quot;this is a notificaiton&quot;</span><span class="p">;</span>
+    <span class="c1">//推送声音</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">soundName</span> <span class="o">=</span> <span class="n">UILocalNotificationDefaultSoundName</span><span class="p">;</span>
+    <span class="c1">//应用右上角红色图标数字</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">applicationIconBadgeNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="c1">//自定义信息</span>
+    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDictionary</span> <span class="nl">dictionaryWithObject</span><span class="p">:</span><span class="s">@&quot;two&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span> <span class="o">=</span> <span class="n">infoDict</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="bp">UIApplication</span> <span class="o">*</span><span class="n">app</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">];</span>
+<span class="p">[</span><span class="n">app</span> <span class="nl">scheduleLocalNotification</span><span class="p">:</span><span class="n">notification</span><span class="p">];</span>
+</pre></div>

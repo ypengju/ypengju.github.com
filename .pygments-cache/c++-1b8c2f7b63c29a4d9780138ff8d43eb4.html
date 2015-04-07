@@ -1,0 +1,13 @@
+<div class="highlight"><pre><span class="k">enum</span> <span class="k">class</span> <span class="nc">Type</span>
+<span class="p">{</span>
+    <span class="n">TOUCH</span><span class="p">,</span>  				<span class="c1">//触摸事件</span>
+    <span class="n">KEYBOARD</span><span class="p">,</span>			<span class="c1">//键盘事件</span>
+    <span class="n">ACCELERATION</span><span class="p">,</span>		<span class="c1">//加速器事件</span>
+    <span class="n">MOUSE</span><span class="p">,</span>				<span class="c1">//鼠标事件</span>
+    <span class="n">FOCUS</span><span class="p">,</span>				<span class="c1">//UI控件事件</span>
+<span class="cp">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)</span>
+    <span class="n">GAME_CONTROLLER</span><span class="p">,</span>	<span class="c1">//游戏手柄事件</span>
+<span class="cp">#endif</span>
+    <span class="n">CUSTOM</span>				<span class="c1">//自定义事件</span>
+<span class="p">};</span>
+</pre></div>

@@ -1,0 +1,60 @@
+<div class="highlight"><pre><span class="c1">//ios8需要注册推送</span>
+<span class="k">if</span> <span class="p">([</span><span class="bp">UIApplication</span> <span class="nl">instancesRespondToSelector</span><span class="p">:</span><span class="k">@selector</span><span class="p">(</span><span class="nl">registerUserNotificationSettings</span><span class="p">:)]){</span>
+    <span class="n">UIMutableUserNotificationAction</span> <span class="o">*</span><span class="n">acceptAction</span> <span class="o">=</span>
+    <span class="p">[[</span><span class="n">UIMutableUserNotificationAction</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="n">acceptAction</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;accept_action&quot;</span><span class="p">;</span> <span class="c1">//ID</span>
+    <span class="n">acceptAction</span><span class="p">.</span><span class="n">title</span> <span class="o">=</span> <span class="s">@&quot;Accept&quot;</span><span class="p">;</span>             <span class="c1">//按钮内容</span>
+    <span class="n">acceptAction</span><span class="p">.</span><span class="n">activationMode</span> <span class="o">=</span> <span class="n">UIUserNotificationActivationModeBackground</span><span class="p">;</span>
+    <span class="n">acceptAction</span><span class="p">.</span><span class="n">destructive</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="n">acceptAction</span><span class="p">.</span><span class="n">authenticationRequired</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    
+    <span class="n">UIMutableUserNotificationAction</span> <span class="o">*</span><span class="n">cancelAction</span> <span class="o">=</span>
+    <span class="p">[[</span><span class="n">UIMutableUserNotificationAction</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="n">cancelAction</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;cancel_action&quot;</span><span class="p">;</span>
+    <span class="n">cancelAction</span><span class="p">.</span><span class="n">title</span><span class="o">=</span><span class="s">@&quot;Cancel&quot;</span><span class="p">;</span>
+    <span class="n">cancelAction</span><span class="p">.</span><span class="n">activationMode</span> <span class="o">=</span> <span class="n">UIUserNotificationActivationModeBackground</span><span class="p">;</span>
+    <span class="n">cancelAction</span><span class="p">.</span><span class="n">destructive</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="n">cancelAction</span><span class="p">.</span><span class="n">authenticationRequired</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    
+    <span class="c1">// First create the category</span>
+    <span class="n">UIMutableUserNotificationCategory</span> <span class="o">*</span><span class="n">inviteCategory</span> <span class="o">=</span>
+    <span class="p">[[</span><span class="n">UIMutableUserNotificationCategory</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="n">inviteCategory</span><span class="p">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="s">@&quot;INVITE_CATEGORY&quot;</span><span class="p">;</span>
+    <span class="p">[</span><span class="n">inviteCategory</span> <span class="nl">setActions</span><span class="p">:</span><span class="l">@[</span><span class="n">acceptAction</span><span class="p">,</span> <span class="n">cancelAction</span><span class="l">]</span>
+                    <span class="nl">forContext</span><span class="p">:</span><span class="n">UIUserNotificationActionContextDefault</span><span class="p">];</span>
+    <span class="bp">NSSet</span> <span class="o">*</span><span class="n">categories</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSSet</span> <span class="nl">setWithObject</span><span class="p">:</span><span class="n">inviteCategory</span><span class="p">];</span>
+
+    <span class="c1">//通知类型</span>
+    <span class="n">UIUserNotificationType</span> <span class="n">types</span> <span class="o">=</span> <span class="n">UIUserNotificationTypeBadge</span> <span class="o">|</span>
+    <span class="n">UIUserNotificationTypeSound</span> <span class="o">|</span> <span class="n">UIUserNotificationTypeAlert</span><span class="p">;</span>
+    <span class="n">UIUserNotificationSettings</span> <span class="o">*</span><span class="n">mySettings</span> <span class="o">=</span>
+    <span class="p">[</span><span class="n">UIUserNotificationSettings</span> <span class="nl">settingsForTypes</span><span class="p">:</span><span class="n">types</span> <span class="nl">categories</span><span class="p">:</span><span class="n">categories</span><span class="p">];</span>
+    <span class="c1">//注册</span>
+    <span class="p">[[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">]</span> <span class="nl">registerUserNotificationSettings</span><span class="p">:</span><span class="n">mySettings</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="bp">UILocalNotification</span> <span class="o">*</span><span class="n">notification</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UILocalNotification</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">notification</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//时区</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">timeZone</span><span class="o">=</span><span class="p">[</span><span class="bp">NSTimeZone</span> <span class="n">defaultTimeZone</span><span class="p">];</span>
+    <span class="bp">NSDateFormatter</span> <span class="o">*</span><span class="n">formatter</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">NSDateFormatter</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">formatter</span> <span class="nl">setDateFormat</span><span class="p">:</span><span class="s">@&quot;ss&quot;</span><span class="p">];</span>
+    <span class="bp">NSDate</span> <span class="o">*</span><span class="n">date</span> <span class="o">=</span> <span class="p">[</span><span class="n">formatter</span> <span class="nl">dateFromString</span><span class="p">:</span><span class="s">@&quot;10&quot;</span><span class="p">];</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">alertBody</span> <span class="o">=</span> <span class="s">@&quot;haha&quot;</span><span class="p">;</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">fireDate</span><span class="o">=</span><span class="n">date</span><span class="p">;</span>
+    <span class="c1">//通知重复提示的单位，可以是天、周、月</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">repeatInterval</span> <span class="o">=</span> <span class="n">kCFCalendarUnitMinute</span><span class="p">;</span>
+    <span class="c1">//推送声音</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">soundName</span> <span class="o">=</span> <span class="n">UILocalNotificationDefaultSoundName</span><span class="p">;</span>
+    <span class="c1">//应用右上角红色图标数字</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">applicationIconBadgeNumber</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">category</span> <span class="o">=</span> <span class="s">@&quot;INVITE_CATEGORY&quot;</span><span class="p">;</span>
+    
+    <span class="bp">NSDictionary</span> <span class="o">*</span><span class="n">infoDict</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSDictionary</span> <span class="nl">dictionaryWithObject</span><span class="p">:</span><span class="s">@&quot;two&quot;</span> <span class="nl">forKey</span><span class="p">:</span><span class="s">@&quot;one&quot;</span><span class="p">];</span>
+    <span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span> <span class="o">=</span> <span class="n">infoDict</span><span class="p">;</span>
+    
+<span class="p">}</span>
+
+<span class="bp">UIApplication</span> <span class="o">*</span><span class="n">app</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIApplication</span> <span class="n">sharedApplication</span><span class="p">];</span>
+<span class="p">[</span><span class="n">app</span> <span class="nl">scheduleLocalNotification</span><span class="p">:</span><span class="n">notification</span><span class="p">];</span>
+</pre></div>
