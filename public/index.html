@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="ActionBar是在安卓3.0（API11）之后引入Android框架，如果想在3.0之前的版本使用，就得使用支持库去完成这个工作了。支持库支持2.1（API7）级以上版本。所以当我们引入类的时候聚需要主义，如果是在API11及以上版本可以直接引入Android框架中的ActionBar 1 &hellip;">
+  <meta name="description" content="为了在游戏中达到更好的用户体验，现在好多游戏都会将当前电量，网络连接，手机时间等显示在游戏界面中方便玩家更好的安排游戏时间，虽然这是个小小的提示，但却是一个很方便贴心的小功能，获得越来越多游戏采用，但是在cocos2d-x中并不支持这些功能，需要利用原生系统去获取这些信息，并反馈给cocos2d- &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,39 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/04/02/android-huo-qu-shou-ji-dian-liang-,wang-luo-,shi-jian/">Android &#8211; 获取手机电量，网络，时间</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-04-02T14:34:38+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>2</span><span class='date-suffix'>nd</span>, <span class='date-year'>2015</span></span> <span class='time'>2:34 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>为了在游戏中达到更好的用户体验，现在好多游戏都会将当前电量，网络连接，手机时间等显示在游戏界面中方便玩家更好的安排游戏时间，虽然这是个小小的提示，但却是一个很方便贴心的小功能，获得越来越多游戏采用，但是在cocos2d-x中并不支持这些功能，需要利用原生系统去获取这些信息，并反馈给cocos2d-x中，这篇文章主要学习总结了在安卓手机中如何实现获取这些信息。  <br/>
+电量，这个在游戏中可以用一个进度条来实现这个功能，所以只需要知道电量百分比然后传给cocos2d-x就可以实习这个功能。网络，其实主要获取使用wifi和数据流量就可以了，至于是用2G还是3G个人感觉没有必要弄的这么细，如果是wifi的话可以提示wifi信号强弱。时间的话，其实可以在cocos2d-x中来获取，这里也列出安卓中获取时间的方法。除了获取这些信息外，还需要注册一个BroadcastReceiver，当这些量变换时，来接受系统的一些通知，用来改变这些值来通知cocos2d-x改变界面显示。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2015/04/02/android-huo-qu-shou-ji-dian-liang-,wang-luo-,shi-jian/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -554,101 +587,6 @@
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-01-04T16:54:35+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>4</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>4:54 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>单例可以说是我们最常使用的一种设计模式了，它使得我们在调用过程中始终保持一个实例，用来进行全局调用。</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="c1">//Singleton.h</span>
-</span><span class='line'><span class="cp">#ifndef __Singleton__Singleton__</span>
-</span><span class='line'><span class="cp">#define __Singleton__Singleton__</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="k">class</span> <span class="nc">Singleton</span><span class="p">{</span>
-</span><span class='line'><span class="k">private</span><span class="o">:</span>
-</span><span class='line'>    <span class="n">Singleton</span><span class="p">();</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">public</span><span class="o">:</span>
-</span><span class='line'>    <span class="k">static</span> <span class="n">Singleton</span><span class="o">*</span> <span class="n">getInstance</span><span class="p">();</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#endif </span><span class="cm">/* defined(__Singleton__Singleton__) */</span><span class="cp"></span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">//Singleton.cpp</span>
-</span><span class='line'><span class="cp">#include &quot;Singleton.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span><span class="n">instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
-</span><span class='line'><span class="n">Singleton</span><span class="o">::</span><span class="n">Singleton</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="n">Singleton</span><span class="o">*</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">getInstance</span><span class="p">()</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">();</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>   </div>
-  
-  
-    <footer>
-      <a rel="full-article" href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">Read on &rarr;</a>
-    </footer>
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -662,6 +600,10 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/04/02/android-huo-qu-shou-ji-dian-liang-,wang-luo-,shi-jian/">Android &#8211; 获取手机电量，网络，时间</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
@@ -699,10 +641,6 @@
         <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -711,7 +649,7 @@
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (6)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   

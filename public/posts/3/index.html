@@ -9,7 +9,7 @@
   <meta name="author" content="左轮">
 
   
-  <meta name="description" content="在了解表的使用，以及元表和元方法的使用后，就可以用表来实现面向对象编程了。 类 面向对象编程的核心就是类了，先来看看lua怎么实现类，并通过类生成不同实例。 ">
+  <meta name="description" content="cocos2d-x采用引用计数来对内存进行管理。在2.X版本中，所有类都继承CCObject类来完成内存的管理，而在3.X版本中，cocos2d-x将管理引用计数的内单独了处理命名为Ref，在这个类中对引用计数进行操作。">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -58,6 +58,38 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Cocos2d-x &#8211; 内存管理</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2014-10-14T22:13:24+08:00'><span class='date'><span class='date-month'>Oct</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2014</span></span> <span class='time'>10:13 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>cocos2d-x采用引用计数来对内存进行管理。在2.X版本中，所有类都继承CCObject类来完成内存的管理，而在3.X版本中，cocos2d-x将管理引用计数的内单独了处理命名为Ref，在这个类中对引用计数进行操作。</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/2014/10/14/cocos2d-x-nei-cun-guan-li/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
   
   
     <article>
@@ -336,6 +368,10 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/04/02/android-huo-qu-shou-ji-dian-liang-,wang-luo-,shi-jian/">Android &#8211; 获取手机电量，网络，时间</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/29/android-actionbar/">Android &#8211; ActionBar</a>
       </li>
     
@@ -371,10 +407,6 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
         <a href="/blog/2015/01/08/ios-ben-di-tui-song/">IOS &#8211; 本地通知</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2015/01/04/she-ji-mo-shi-dan-li/">设计模式 &#8211; 单例</a>
-      </li>
-    
   </ul>
 </section>
 
@@ -383,7 +415,7 @@ lua的table可以以整数和字符串为下标，但是我们可以在一个tab
 
 <section>
   <h1>Categories</h1>
-    <ul id="category-list"><li><a href='/blog/categories/android'>android (5)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
+    <ul id="category-list"><li><a href='/blog/categories/android'>android (6)</a></li><li><a href='/blog/categories/c-plus-plus'>c++ (1)</a></li><li><a href='/blog/categories/cocos2d-x'>cocos2d-x (12)</a></li><li><a href='/blog/categories/designpattern'>designpattern (1)</a></li><li><a href='/blog/categories/ios'>ios (4)</a></li><li><a href='/blog/categories/lua'>lua (4)</a></li><li><a href='/blog/categories/other'>other (1)</a></li></ul>
 </section>
 
   
